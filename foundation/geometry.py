@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from itertools import chain
 from typing import FrozenSet, Generator, Iterable, Optional
 
-from .python_out.geometry_pb2 import BBox as PBBBox, Interval as PBInterval, Point as PBPoint
+from .protos.python_out.geometry_pb2 import BBox as PBBBox, Interval as PBInterval, Point as PBPoint
 
 
 @dataclass(frozen=True)
