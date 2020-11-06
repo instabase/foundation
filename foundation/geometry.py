@@ -76,6 +76,9 @@ class Interval:
   def from_proto(proto: PBInterval) -> Optional['Interval']:
     return Interval.build(proto.a, proto.b)
 
+  def to_proto(self) -> PBInterval:
+    return PBInterval(a=self.a, b=self.b)
+
   @staticmethod
   def spanning(xs: Iterable[float]) -> 'Interval':
     xs = tuple(xs)
@@ -132,6 +135,9 @@ class Point:
   @staticmethod
   def from_proto(proto: PBPoint) -> 'Point':
     return Point(proto.x, proto.y)
+
+  def to_proto(self) -> PBPoint:
+    return PBPoint(x=self.x, y=self.y)
 
 
 @dataclass(frozen=True)
@@ -204,6 +210,11 @@ class BBox:
     return BBox.build(
       Interval.from_proto(proto.ix),
       Interval.from_proto(proto.iy))
+
+  def to_proto(self) -> PBBBox:
+    return PBBBox(
+      ix=PBInterval(a=self.ix.a, b=self.ix.b),
+      iy=PBInterval(a=self.iy.a, b=self.iy.b))
 
   @staticmethod
   def spanning(ps: Iterable[Point]) -> Optional['BBox']:
