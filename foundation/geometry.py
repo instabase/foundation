@@ -2,9 +2,10 @@
 
 from dataclasses import dataclass
 from itertools import chain
+from math import sqrt
 from typing import FrozenSet, Generator, Iterable, Optional
 
-from .protos.python_out.geometry_pb2 import BBox as PBBBox, Interval as PBInterval, Point as PBPoint
+from .protos.python.geometry_pb2 import BBox as PBBBox, Interval as PBInterval, Point as PBPoint
 
 
 @dataclass(frozen=True)
