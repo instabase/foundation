@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+package word;
+
+import "geometry.proto";
+
+message Word {
+  optional string word_id = 1;
+  optional string text = 2;
+  optional geometry.BBox bbox = 3;
+}
