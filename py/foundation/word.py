@@ -16,10 +16,7 @@ class Word:
   Attributes:
     word_id: A string to uniquely identify the word.
     text: The text. The word itself.
-    bbox: The bounding box of the word. It is guaranteed that
-      `bbox.ix.a <= bbox.ix.b` and `bbox.iy.a <= bbox.iy.b`. All of the words
-      passed in a single custom extractor call are considered to be in a single
-      coordinate system.
+    bbox: The bounding box of the word.
   """
 
   word_id: WordID
