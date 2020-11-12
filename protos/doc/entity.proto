@@ -18,7 +18,6 @@ message RawPayload {
 }
 
 message Entity {
-	reserved 16;
 	oneof payload {
 		OcrWord ocr_word = 1;
 		Line line = 2;
@@ -26,7 +25,7 @@ message Entity {
 		TableCell table_cell = 4;
 		TableRow table_row = 5;
 		Table table = 6;
-		Word word = 7;
+		Token word = 7;
 		Phrase phrase = 8;
 		Number number = 9;
 		Integer integer = 10;
@@ -35,6 +34,7 @@ message Entity {
 		Name name = 13;
 		Address address = 14;
 		NamedNLP named_nlp = 15;
+		Time time = 16;
 		RawPayload custom = 17;
 	}
 }
@@ -52,8 +52,8 @@ message Paragraph {
 }
 
 message TableCell {
-	// A TableCell should support heterogeneous content?
-	repeated RawPayload content = 1;
+	// A TableCell should support heterogeneous content
+	repeated Entity content = 1;
 }
 
 message TableRow {
@@ -64,63 +64,74 @@ message Table {
 	repeated TableRow rows = 1;
 }
 
-/* What follows are NLP entities?
+/* ----- Semantic types ----- */
 
-	 I don't know if going this approach makes things harder or not...
+/* Tokens are a semantic type, e.g. a natural-language word like "fire truck".
+	 They are also a way to associate a span of ocr.InputWord with some score.
+   We may also want to handle OCR errors which split natural language
+   words into multiple OCR rectangles.
  */
-
-/* A Word is not the same as an OcrWord.
-
-	 Words are a semantic type, and only make sense under interpretation.
-	 For example, we may want to handle OCR errors which split natural language
-	 words into multiple OCR Objects.
- */
-message Word {
-	repeated ocr.InputWord components = 1;
-	optional double score = 2 [default = -1.0];
-	// should we keep a transformed object?
+message Token {
+	repeated ocr.InputWord span = 1;
+	optional double score = 2;
 }
 
 /* A Phrase is not the same as a Line.
 
-	 Phrases are semantic types, and make sense in a natural language context.
+   Phrases are semantic types, and are a sequence of words with some potential
+   denotation.
 */
 message Phrase {
-	repeated Word words = 1;
-	optional double score = 2 [default = -1.0];
-
+	repeated Token words = 1;
+	optional double score = 2;
 }
 
+
 /* -------------------------------------------------------------------
-   These are essentially NER types... but can be useful to distinguish
+   These are essentially NER types... but it can be useful to distinguish
    from something that's explicitly output by an NER model?
    -------------------------------------------------------------------
 */
 
 
 message Number {
-	repeated ocr.InputWord components = 1;
-	optional double score = 2 [default = -1.0];
+	required Token token = 1;
+	optional double value = 2;
 }
 
 message Integer {
-	repeated ocr.InputWord components = 1;
-	optional double score = 2 [default = -1.0];
+	required Token token = 1;
+	optional int64 value = 2;
 }
 
 message Date {
-	repeated ocr.InputWord components = 1;
-	optional double score = 2 [default = -1.0];
+	required Token token = 1;
+	// What should the denotation of a date be?
+	optional string value = 2;
 }
 
+message Time {
+	required Token token = 1;
+	// unix timestamp?
+	optional uint64 value = 2;
+}
+
+// do we want a Datetime type?
+
 message Currency {
-	repeated ocr.InputWord components = 1;
-	optional double score = 2 [default = -1.0];
+	required Token token = 1;
+	// What should the denotation of a currency amount be?
+	message FixedDecimal {
+		required int64 integer_part = 1;
+		required uint32 fractional_part = 2;
+	}
+	optional FixedDecimal value = 3;
+	optional string units = 4;
 }
 
 message Name {
-	repeated Word names = 1;
-	optional double score = 2 [default = -1.0];
+	required Phrase name_parts = 1;
+	optional string value = 3;
 }
 
 message Address {
@@ -128,11 +139,12 @@ message Address {
 	// Then Phrase makes sense here?
 	repeated Phrase lines = 1;
 	optional double score = 2 [default = -1.0];
+	// What should the denotation of an address be?
+	optional string value = 3;
 }
 
 message NamedNLP {
-	repeated Word words = 1;
-	optional double score = 2 [default = -1.0];
+	required Phrase token_span = 1;
 	optional string label = 3;
 }
 
