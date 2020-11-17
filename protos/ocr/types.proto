@@ -1,0 +1,45 @@
+/* Unified OCR data representation.
+
+	 In its current form, this is essentially a translation layer to read data
+	 from IBDOC without introducing a dependency on shared-utils.
+ */
+syntax = "proto2";
+
+package ocr;
+
+import "geometry.proto";
+
+/* This should represent a word as emitted by an OCR engine.
+*/
+message InputWord {
+	required geometry.BBox bounding_box = 1;
+	optional string text = 2;
+
+	optional WordConfidence confidence = 6;
+	// TODO: if line_height/word_width are taken from the BBox info,
+	//       we should omit these fields here.
+	optional float line_height = 7;
+	optional float word_width = 8;
+
+	optional float char_width = 9;
+	// TODO: define units here (radians? degrees?).
+	optional float rotation_angle = 10;
+}
+
+/* Confidence associated with an OCR Word.
+*/
+message WordConfidence {
+	// Word-level confidence score provided by MSFT OCR Read 3.0 API.
+	optional double word_confidence = 1;
+	// Confidence indicator returned from the MSFT OCR Read 2.0 API.
+	optional bool low_confidence = 2;
+	// Confidence scores per letter returned by Abbyy.
+	repeated CharConfidence char_confidences = 3;
+}
+
+/* Confidence for an OCR'd letter.
+*/
+message CharConfidence {
+	required double percentage = 1;
+	optional bool unsure = 2;
+}

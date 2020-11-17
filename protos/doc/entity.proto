@@ -1,0 +1,185 @@
+syntax = "proto2";
+
+package doc.entity;
+
+import "ocr/types.proto";
+
+message Entity {
+	oneof payload {
+		OcrWord ocr_word = 1;
+		Line line = 2;
+		Paragraph paragraph = 3;
+		TableCell table_cell = 4;
+		TableRow table_row = 5;
+		Table table = 6;
+		Token word = 7;
+		Phrase phrase = 8;
+		Number number = 9;
+		Integer integer = 10;
+		Date date = 11;
+		Time time = 12;
+		Currency currency = 13;
+		Name name = 14;
+		Address address = 15;
+		Cluster cluster = 16;
+		GenericEntity custom = 17;
+	}
+}
+
+/* Generic Entity type.
+	 Analagous to how machine-words in memory are just bytes, the interpretation
+	 of RawData is determined by its type flag.
+
+	 Useful if we want to support custom types that define their own wire formats.
+ */
+message GenericEntity {
+	// The 'type' field tells a decoder how to deserialize the 'data' field.
+	required string type = 1;
+	required bytes data = 2;
+}
+
+/* Corresponds to an OCR input word. */
+message OcrWord {
+	required ocr.InputWord word = 1;
+}
+
+/* A sequence of OCR words. */
+message Line {
+	repeated ocr.InputWord ocr_words = 1;
+}
+
+/* A sequence of Lines.
+
+	 This should correspond to the OCR engine's paragraphs.
+*/
+message Paragraph {
+	repeated Line lines = 1;
+}
+
+/* A Cell of a table.
+
+	 Can contain arbitrary Entity data.
+*/
+message TableCell {
+	repeated Entity content = 1;
+}
+
+/* A Row is a sequence of table cells. */
+message TableRow {
+	repeated TableCell cells = 1;
+}
+
+/* A Table is a sequence of rows.
+
+	 TODO: do we want to support sparse tables at a protocol level?
+*/
+message Table {
+	repeated TableRow rows = 1;
+}
+
+/* ----- Semantic types ----- */
+
+/* A Token is a sequence of OCR words, grouped into a useful semantic unit.
+
+	 Tokens are a semantic type, e.g. a natural-language word like "fire truck".
+
+	 They are also a way to associate a span of ocr.InputWord with some score.
+	 We may also want to handle OCR errors which split natural language
+	 words into multiple OCR rectangles.
+ */
+message Token {
+	repeated ocr.InputWord span = 1;
+	optional double score = 3;
+}
+
+/* A Phrase is a sequence of Tokens, grouped into a useful semantic unit.
+*/
+message Phrase {
+	repeated Token words = 1;
+	optional double score = 3;
+}
+
+
+/* -------------------------------------------------------------------
+	 These are essentially NER types. It can be useful to distinguish a set of
+	 "first-class" types from some label class that a specific NER model might
+	 output.
+
+	 We distinguish the score of assigning a type to a Token from the scoring of
+	 whatever model emitted that Token.
+   -------------------------------------------------------------------
+*/
+
+
+/* A Number is a real-valued number.
+*/
+message Number {
+	required Token token = 1;
+	optional double value = 2;
+	optional double score = 3;
+}
+
+message Integer {
+	required Token token = 1;
+	optional int64 value = 2;
+	optional double score = 3;
+}
+
+message Date {
+	required Token token = 1;
+	// Let this value be an ISO8601 formatted date.
+	// TODO: we should settle on an appropriate denotation format here.
+	optional string value = 2;
+	optional double score = 3;
+}
+
+message Time {
+	required Token token = 1;
+	// Let this value be UNIX time in seconds from the epoch.
+	// TODO: we should settle on an appropriate denotation format here.
+	optional uint64 value = 2;
+	optional double score = 3;
+}
+
+// TODO: do we want a Datetime type?
+
+message Currency {
+	required Token token = 1;
+	// Fixed-point representation for currency avoids float-rounding issues.
+	// TODO: we should settle on an appropriate denotation format here.
+	message FixedDecimal {
+		required int64 integer_part = 1;
+		required uint32 fractional_part = 2;
+	}
+	optional FixedDecimal value = 2;
+	optional double score = 3;
+	optional string units = 4;
+}
+
+message Name {
+	required Phrase name_parts = 1;
+	optional string value = 2;
+	optional double score = 3;
+}
+
+message Address {
+	// Grouping Phrases, each phrase a "line", into an Address message may be good.
+	// This would distinguish an OCR Line from some other way of grouping Tokens together.
+	// TODO: is sequence of Phrase the right unit type here?
+	repeated Phrase lines = 1;
+	// TODO: we should settle on an appropriate denotation format here.
+	optional string value = 2;
+	optional double score = 3;
+}
+
+/* A Cluster associates a Phrase [a sequence of Tokens] with some semantic label.
+
+	 This type should be useful to NER-like models.
+*/
+message Cluster {
+	// TODO: is Phrase the right unit type here?
+	required Phrase token_span = 1;
+	optional string label = 2;
+	optional double score = 3;
+}
+
