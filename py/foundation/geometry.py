@@ -5,7 +5,7 @@ from itertools import chain
 from math import sqrt
 from typing import FrozenSet, Generator, Iterable, Optional
 
-from .python_pb.geometry_pb2 import BBox as PBBBox, Interval as PBInterval, Point as PBPoint
+from foundation.protos.geometry_pb2 import BBox as PBBBox, Interval as PBInterval, Point as PBPoint
 
 
 @dataclass(frozen=True)
