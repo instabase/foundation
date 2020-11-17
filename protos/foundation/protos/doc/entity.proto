@@ -1,8 +1,8 @@
 syntax = "proto2";
 
-package doc.entity;
+package doc;
 
-import "ocr/types.proto";
+import "foundation/protos/ocr/types.proto";
 
 message Entity {
 	oneof payload {

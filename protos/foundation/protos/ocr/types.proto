@@ -7,7 +7,7 @@ syntax = "proto2";
 
 package ocr;
 
-import "geometry.proto";
+import "foundation/protos/geometry.proto";
 
 /* This should represent a word as emitted by an OCR engine.
 */
