@@ -7,9 +7,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 PY_OUT="${REPO_ROOT}/py"
 
-STUB_OUT="${REPO_ROOT}/py/stubs/"
-mkdir -p ${STUB_OUT}
-
 # Find all directories containing at least one proto file.
 # Based on: https://buf.build/docs/migration-prototool#prototool-generate.
 for dir in $(find ${DIR} -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq); do
