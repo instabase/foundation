@@ -1,8 +1,7 @@
 /* Unified OCR data representation.
 
-	 We already do this in shared-utils/protos in doc_types/ocr_types.proto and
-	 core_types. This is essentially a translation layer to read data from IBDOC
-	 without introducing a dependency on shared-utils.
+	 In its current form, this is essentially a translation layer to read data
+	 from IBDOC without introducing a dependency on shared-utils.
  */
 syntax = "proto2";
 
@@ -11,42 +10,35 @@ package ocr;
 import "geometry.proto";
 
 /* This should represent a word as emitted by an OCR engine.
-
-Questions:
- * can a "second stage processing" continue to populate unpopulated fields?
- or should we assume a best-effort population of everything? relevant for e.g.
- font style info, which might be needed by doceye but not provided by OCR
-
- I'm leaning towards the word being the minimal representation, and any
- additional info can exist in separate messages, where the user of the protobufs
- is responsible for associating a Word with its Font for example.
- */
+*/
 message InputWord {
 	required geometry.BBox bounding_box = 1;
 	optional string text = 2;
 
 	optional WordConfidence confidence = 6;
-	/* questions about core_types.proto:
-	 * defines a raw_text, unclear what that means
-	 * where do line_height, word_width, char_width come from?
-	 * where does word style, font info, etc come from? how are they populated?
-	 */
+	// TODO: if line_height/word_width are taken from the BBox info,
+	//       we should omit these fields here.
 	optional float line_height = 7;
 	optional float word_width = 8;
+
 	optional float char_width = 9;
+	// TODO: define units here (radians? degrees?).
 	optional float rotation_angle = 10;
 }
 
-/* Confidence associated with an OCR word's characters.
-
-Question:
- * what does low-confidence mean? where does it come from?
- */
+/* Confidence associated with an OCR Word.
+*/
 message WordConfidence {
-	repeated CharConfidence char_confidences = 1;
+	// Word-level confidence score provided by MSFT OCR Read 3.0 API.
+	optional double word_confidence = 1;
+	// Confidence indicator returned from the MSFT OCR Read 2.0 API.
 	optional bool low_confidence = 2;
+	// Confidence scores per letter returned by Abbyy.
+	repeated CharConfidence char_confidences = 3;
 }
 
+/* Confidence for an OCR'd letter.
+*/
 message CharConfidence {
 	required double percentage = 1;
 	optional bool unsure = 2;
