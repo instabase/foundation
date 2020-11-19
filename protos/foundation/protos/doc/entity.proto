@@ -12,7 +12,7 @@ message Entity {
 		TableCell table_cell = 4;
 		TableRow table_row = 5;
 		Table table = 6;
-		Token word = 7;
+		Token token = 7;
 		Phrase phrase = 8;
 		Number number = 9;
 		Integer integer = 10;
