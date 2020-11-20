@@ -3,9 +3,8 @@
 import abc
 from dataclasses import dataclass
 from itertools import chain
-from typing import (
-  Dict, Generic, Iterable, List, Optional, Type, TypeVar, Union
-)
+from typing import (Dict, Generic, Iterable, List, Optional, Type, TypeVar,
+                    Union)
 
 from foundation.protos import geometry_pb2
 from foundation.protos.doc import entity_pb2
@@ -24,6 +23,7 @@ PbEntityPayloadType = Union[entity_pb2.OcrWord, entity_pb2.Line,
                             entity_pb2.GenericEntity]
 
 E = TypeVar('E', bound='Entity')
+
 
 class Entity(abc.ABC, Generic[E]):
 
@@ -414,7 +414,10 @@ class ClusterEntity(Entity):
 # TODO: think this through some more.
 CustomEntityDecoderCtx = Dict[str, Type[Entity]]
 
-def proto_to_entity(msg: entity_pb2.Entity, decoder_ctx: Optional[CustomEntityDecoderCtx] = None) -> Entity:
+
+def proto_to_entity(
+    msg: entity_pb2.Entity,
+    decoder_ctx: Optional[CustomEntityDecoderCtx] = None) -> Entity:
   """Handles dispatching entity_pb2.Entity unpacking to subclasses of Entity.
 
   In the proto definition, Entity is a message containing a payload which
@@ -459,10 +462,10 @@ def proto_to_entity(msg: entity_pb2.Entity, decoder_ctx: Optional[CustomEntityDe
         CustomClass = decoder_ctx[custom_type]
         return CustomClass.from_proto(msg.custom)
 
-    raise ValueError(f'No decoder found for GenericEntity type "{custom_type}".')
+    raise ValueError(
+        f'No decoder found for GenericEntity type "{custom_type}".')
 
   # This is a protocol decoding error, probably missing an if statement
   # in this function.
   payload_type = msg.WhichOneof('payload')
   raise AssertionError(f'Unhandled message type: {payload_type}')
-
