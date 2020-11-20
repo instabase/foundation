@@ -2,7 +2,10 @@
 
 import abc
 from dataclasses import dataclass
-from typing import Generic, List, Optional, TypeVar, Union
+from itertools import chain
+from typing import (
+  Dict, Generic, Iterable, List, Optional, Type, TypeVar, Union
+)
 
 from foundation.protos import geometry_pb2
 from foundation.protos.doc import entity_pb2
@@ -17,36 +20,94 @@ PbEntityPayloadType = Union[entity_pb2.OcrWord, entity_pb2.Line,
                             entity_pb2.Number, entity_pb2.Integer,
                             entity_pb2.Date, entity_pb2.Time,
                             entity_pb2.Currency, entity_pb2.Name,
-                            entity_pb2.Address, entity_pb2.Cluster]
+                            entity_pb2.Address, entity_pb2.Cluster,
+                            entity_pb2.GenericEntity]
 
+E = TypeVar('E', bound='Entity')
 
-class Entity(abc.ABC):
+class Entity(abc.ABC, Generic[E]):
 
   @staticmethod
   @abc.abstractmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Entity':
-    pass
+    """Defines the necessary logic for unpacking a protobuf Entity payload.
+
+    See implementing subclass methods for entity-specific definitions.
+    Custom Entities will receive msg as a entity_pb2.GenericEntity instance,
+    and are responsible for handling its 'bytes' field.
+
+    """
+    ...
+
+  @property
+  @abc.abstractmethod
+  def children(self) -> Iterable[E]:
+    """Yields all sub-entities of this entity.
+
+    See implementing subclass methods for entity-specific definitions.
+    Can be seen as returning the adjacent entities in a document's Entity
+    scene DAG.
+
+    This method CANNOT call ocr_words() unless the implementing subclass
+    also overrides ocr_words() to not recurse on self.children.
+    """
+    ...
+
+  def ocr_words(self) -> Iterable['OcrWordEntity']:
+    """Yields all OcrWordEntity's among this entity's children.
+
+    Can be seen as returning an iterator over the leaves of this
+    Entity's scene DAG.
+
+    If this Entity is a WORD, yields itself.
+    """
+    yield from chain.from_iterable(e.ocr_words() for e in self.children)
 
 
 @dataclass(frozen=True)
 class OcrWordEntity(Entity):
   word: InputWord
 
+  @property
+  def origin(self) -> InputWord:
+    """Provenance data.
+
+    Returns the OCR InputWord corresponding to this Entity.
+    """
+    return self.word
+
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'OcrWordEntity':
     assert isinstance(msg, entity_pb2.OcrWord)
     return OcrWordEntity(InputWord.from_proto(msg.word))
 
+  @property
+  def children(self) -> Iterable[E]:
+    """ OcrWordEntity has no children. """
+    yield from []
+
+  def ocr_words(self) -> Iterable['OcrWordEntity']:
+    """ Yields itself.
+
+    This provides the base case for Entity.ocr_words.
+    """
+    yield self
+
 
 @dataclass(frozen=True)
 class LineEntity(Entity):
-  ocr_words: List[InputWord]
+  _ocr_words: List[OcrWordEntity]
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'LineEntity':
     assert isinstance(msg, entity_pb2.Line)
-    ocr_words = [InputWord.from_proto(w) for w in msg.ocr_words]
+    ocr_words = [OcrWordEntity(InputWord.from_proto(w)) for w in msg.ocr_words]
     return LineEntity(ocr_words)
+
+  @property
+  def children(self) -> Iterable[OcrWordEntity]:
+    """ A LineEntity's children are its OCR words. """
+    yield from self._ocr_words
 
 
 @dataclass(frozen=True)
@@ -59,6 +120,11 @@ class ParagraphEntity(Entity):
     lines = [LineEntity.from_proto(l) for l in msg.lines]
     return ParagraphEntity(lines)
 
+  @property
+  def children(self) -> Iterable[LineEntity]:
+    """ A ParagraphEntity's children are its Lines. """
+    yield from self.lines
+
 
 @dataclass(frozen=True)
 class TableCellEntity(Entity):
@@ -69,6 +135,11 @@ class TableCellEntity(Entity):
     assert isinstance(msg, entity_pb2.TableCell)
     content = [proto_to_entity(e) for e in msg.content]
     return TableCellEntity(content)
+
+  @property
+  def children(self) -> Iterable[Entity]:
+    """ A TableCellEntity's children are its contents. """
+    yield from self.content
 
 
 @dataclass(frozen=True)
@@ -81,6 +152,11 @@ class TableRowEntity(Entity):
     cells = [TableCellEntity.from_proto(c) for c in msg.cells]
     return TableRowEntity(cells)
 
+  @property
+  def children(self) -> Iterable[TableCellEntity]:
+    """ A TableRowEntity's children are its cells. """
+    yield from self.cells
+
 
 @dataclass(frozen=True)
 class TableEntity(Entity):
@@ -92,20 +168,30 @@ class TableEntity(Entity):
     rows = [TableRowEntity.from_proto(r) for r in msg.rows]
     return TableEntity(rows)
 
+  @property
+  def children(self) -> Iterable[TableRowEntity]:
+    """ A Table's children are its rows. """
+    yield from self.rows
+
 
 @dataclass(frozen=True)
 class TokenEntity(Entity):
-  span: List[InputWord]
+  span: List[OcrWordEntity]
   score: Optional[float]
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'TokenEntity':
     assert isinstance(msg, entity_pb2.Token)
-    span = [InputWord.from_proto(w) for w in msg.span]
+    span = [OcrWordEntity(InputWord.from_proto(w)) for w in msg.span]
     score = None
     if msg.HasField('score'):
       score = msg.score
     return TokenEntity(span, score)
+
+  @property
+  def children(self) -> Iterable[OcrWordEntity]:
+    """ A TokenEntity's children are its span of OcrWordEntities. """
+    yield from self.span
 
 
 @dataclass(frozen=True)
@@ -121,6 +207,11 @@ class PhraseEntity(Entity):
     if msg.HasField('score'):
       score = msg.score
     return PhraseEntity(words, score)
+
+  @property
+  def children(self) -> Iterable[TokenEntity]:
+    """ A PhraseEntity's children are its tokens. """
+    yield from self.words
 
 
 @dataclass(frozen=True)
@@ -141,6 +232,11 @@ class NumberEntity(Entity):
       score = msg.score
     return NumberEntity(token, value, score)
 
+  @property
+  def children(self) -> Iterable[Entity]:
+    """ A NumberEntity's child is its token. """
+    yield self.token
+
 
 @dataclass(frozen=True)
 class IntegerEntity(Entity):
@@ -159,6 +255,11 @@ class IntegerEntity(Entity):
     if msg.HasField('score'):
       score = msg.score
     return IntegerEntity(token, value, score)
+
+  @property
+  def children(self) -> Iterable[Entity]:
+    """ An IntegerEntity's child is its token. """
+    yield self.token
 
 
 @dataclass(frozen=True)
@@ -179,6 +280,11 @@ class DateEntity(Entity):
       score = msg.score
     return DateEntity(token, value, score)
 
+  @property
+  def children(self) -> Iterable[Entity]:
+    """ A DateEntity's child is its token. """
+    yield self.token
+
 
 @dataclass(frozen=True)
 class TimeEntity(Entity):
@@ -197,6 +303,11 @@ class TimeEntity(Entity):
     if msg.HasField('score'):
       score = msg.score
     return TimeEntity(token, value, score)
+
+  @property
+  def children(self) -> Iterable[Entity]:
+    """ A TimeEntity's child is its token. """
+    yield self.token
 
 
 @dataclass(frozen=True)
@@ -222,6 +333,11 @@ class CurrencyEntity(Entity):
       score = msg.score
     return CurrencyEntity(token, value, score, units)
 
+  @property
+  def children(self) -> Iterable[Entity]:
+    """ A CurrencyEntity's child is its token. """
+    yield self.token
+
 
 @dataclass(frozen=True)
 class NameEntity(Entity):
@@ -240,6 +356,11 @@ class NameEntity(Entity):
     if msg.HasField('score'):
       score = msg.score
     return NameEntity(name_parts, value, score)
+
+  @property
+  def children(self) -> Iterable[PhraseEntity]:
+    """ A NameEntity's child is the PhraseEntity of its name parts. """
+    yield self.name_parts
 
 
 @dataclass(frozen=True)
@@ -260,6 +381,11 @@ class AddressEntity(Entity):
       score = msg.score
     return AddressEntity(lines, value, score)
 
+  @property
+  def children(self) -> Iterable[PhraseEntity]:
+    """ A AddressEntity's children are the PhraseEntities of its line parts. """
+    yield from self.lines
+
 
 @dataclass(frozen=True)
 class ClusterEntity(Entity):
@@ -279,8 +405,21 @@ class ClusterEntity(Entity):
       score = msg.score
     return ClusterEntity(token_span, label, score)
 
+  @property
+  def children(self) -> Iterable[PhraseEntity]:
+    """ A ClusterEntity's child is the PhraseEntity spanning its tokens. """
+    yield self.token_span
 
-def proto_to_entity(msg: entity_pb2.Entity) -> Entity:
+
+# TODO: think this through some more.
+CustomEntityDecoderCtx = Dict[str, Type[Entity]]
+
+def proto_to_entity(msg: entity_pb2.Entity, decoder_ctx: Optional[CustomEntityDecoderCtx] = None) -> Entity:
+  """Handles dispatching entity_pb2.Entity unpacking to subclasses of Entity.
+
+  In the proto definition, Entity is a message containing a payload which
+  is any of the possible Entity types.
+  """
   if msg.HasField('ocr_word'):
     return OcrWordEntity.from_proto(msg.ocr_word)
   if msg.HasField('line'):
@@ -313,8 +452,17 @@ def proto_to_entity(msg: entity_pb2.Entity) -> Entity:
     return AddressEntity.from_proto(msg.address)
   if msg.HasField('cluster'):
     return ClusterEntity.from_proto(msg.cluster)
+  if msg.HasField('custom'):
+    custom_type: str = getattr(msg.custom, 'type')
+    if decoder_ctx is not None:
+      if custom_type in decoder_ctx:
+        CustomClass = decoder_ctx[custom_type]
+        return CustomClass.from_proto(msg.custom)
 
-  # TODO: handle custom entity types, maybe this function should take a custom
-  # decoder handle or something?
-  raise AssertionError('Unhandled message type: {}'.format(
-      msg.WhichOneof('payload')))
+    raise ValueError(f'No decoder found for GenericEntity type "{custom_type}".')
+
+  # This is a protocol decoding error, probably missing an if statement
+  # in this function.
+  payload_type = msg.WhichOneof('payload')
+  raise AssertionError(f'Unhandled message type: {payload_type}')
+
