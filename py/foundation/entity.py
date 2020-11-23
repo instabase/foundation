@@ -46,10 +46,9 @@ class Entity(abc.ABC, Generic[E]):
 
     See implementing subclass methods for entity-specific definitions.
     Can be seen as returning the adjacent entities in a document's Entity
-    scene DAG.
+    DAG.
 
-    This method CANNOT call ocr_words() unless the implementing subclass
-    also overrides ocr_words() to not recurse on self.children.
+    This method CANNOT call ocr_words().
     """
     ...
 
@@ -57,9 +56,11 @@ class Entity(abc.ABC, Generic[E]):
     """Yields all OcrWordEntity's among this entity's children.
 
     Can be seen as returning an iterator over the leaves of this
-    Entity's scene DAG.
+    Entity's DAG.
 
     If this Entity is a WORD, yields itself.
+
+    STRONGLY RECOMMENDED not to override this.
     """
     yield from chain.from_iterable(e.ocr_words() for e in self.children)
 
@@ -411,61 +412,77 @@ class ClusterEntity(Entity):
     yield self.token_span
 
 
-# TODO: think this through some more.
-CustomEntityDecoderCtx = Dict[str, Type[Entity]]
+""" Associates a string entity type name to a custom class that inherits
+    from Entity.
+"""
+CustomEntityRegistry = Dict[str, Type[Entity]]
 
 
 def proto_to_entity(
     msg: entity_pb2.Entity,
-    decoder_ctx: Optional[CustomEntityDecoderCtx] = None) -> Entity:
+    entity_registry: Optional[CustomEntityRegistry] = None) -> Entity:
   """Handles dispatching entity_pb2.Entity unpacking to subclasses of Entity.
 
   In the proto definition, Entity is a message containing a payload which
   is any of the possible Entity types.
-  """
-  if msg.HasField('ocr_word'):
-    return OcrWordEntity.from_proto(msg.ocr_word)
-  if msg.HasField('line'):
-    return LineEntity.from_proto(msg.line)
-  if msg.HasField('paragraph'):
-    return ParagraphEntity.from_proto(msg.paragraph)
-  if msg.HasField('table_cell'):
-    return TableCellEntity.from_proto(msg.table_cell)
-  if msg.HasField('table_row'):
-    return TableRowEntity.from_proto(msg.table_row)
-  if msg.HasField('table'):
-    return TableEntity.from_proto(msg.table)
-  if msg.HasField('token'):
-    return TokenEntity.from_proto(msg.token)
-  if msg.HasField('phrase'):
-    return TokenEntity.from_proto(msg.phrase)
-  if msg.HasField('number'):
-    return NumberEntity.from_proto(msg.number)
-  if msg.HasField('integer'):
-    return IntegerEntity.from_proto(msg.integer)
-  if msg.HasField('date'):
-    return DateEntity.from_proto(msg.date)
-  if msg.HasField('time'):
-    return TimeEntity.from_proto(msg.time)
-  if msg.HasField('currency'):
-    return CurrencyEntity.from_proto(msg.currency)
-  if msg.HasField('name'):
-    return NameEntity.from_proto(msg.name)
-  if msg.HasField('address'):
-    return AddressEntity.from_proto(msg.address)
-  if msg.HasField('cluster'):
-    return ClusterEntity.from_proto(msg.cluster)
-  if msg.HasField('custom'):
-    custom_type: str = getattr(msg.custom, 'type')
-    if decoder_ctx is not None:
-      if custom_type in decoder_ctx:
-        CustomClass = decoder_ctx[custom_type]
-        return CustomClass.from_proto(msg.custom)
 
+  See https://github.com/instabase/foundation/pull/6#discussion_r528896807.
+
+  Args:
+    msg: The deserialized entity_pb2.Entity data
+    entity_registry: Provides a lookup from custom Entity type name to the
+                 appropriate class which implements from_proto for the custom
+                 entity data.
+  Returns:
+    An instance of subclass of Entity which wraps the protobuf data.
+  Raises:
+    ValueError: If msg is a GenericEntity and no custom Entity decoder is
+                found in decoder_ctx for the 'msg.custom.type' field.
+    AssertionError: If not all payload types (defined in the .proto spec) are
+                    cased in this function.
+  """
+  payload_type = msg.WhichOneof('payload')
+  if payload_type == 'ocr_word':
+    return OcrWordEntity.from_proto(msg.ocr_word)
+  elif payload_type == 'line':
+    return LineEntity.from_proto(msg.line)
+  elif payload_type == 'paragraph':
+    return ParagraphEntity.from_proto(msg.paragraph)
+  elif payload_type == 'table_cell':
+    return TableCellEntity.from_proto(msg.table_cell)
+  elif payload_type == 'table_row':
+    return TableRowEntity.from_proto(msg.table_row)
+  elif payload_type == 'table':
+    return TableEntity.from_proto(msg.table)
+  elif payload_type == 'token':
+    return TokenEntity.from_proto(msg.token)
+  elif payload_type == 'phrase':
+    return TokenEntity.from_proto(msg.phrase)
+  elif payload_type == 'number':
+    return NumberEntity.from_proto(msg.number)
+  elif payload_type == 'integer':
+    return IntegerEntity.from_proto(msg.integer)
+  elif payload_type == 'date':
+    return DateEntity.from_proto(msg.date)
+  elif payload_type == 'time':
+    return TimeEntity.from_proto(msg.time)
+  elif payload_type == 'currency':
+    return CurrencyEntity.from_proto(msg.currency)
+  elif payload_type == 'name':
+    return NameEntity.from_proto(msg.name)
+  elif payload_type == 'address':
+    return AddressEntity.from_proto(msg.address)
+  elif payload_type == 'cluster':
+    return ClusterEntity.from_proto(msg.cluster)
+  elif payload_type == 'custom':
+    custom_type: str = getattr(msg.custom, 'type')
+    if entity_registry is not None:
+      if custom_type in entity_registry:
+        CustomClass = entity_registry[custom_type]
+        return CustomClass.from_proto(msg.custom)
     raise ValueError(
-        f'No decoder found for GenericEntity type "{custom_type}".')
+        f'No implementation found for GenericEntity type "{custom_type}".')
 
   # This is a protocol decoding error, probably missing an if statement
   # in this function.
-  payload_type = msg.WhichOneof('payload')
   raise AssertionError(f'Unhandled message type: {payload_type}')
