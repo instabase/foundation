@@ -436,8 +436,8 @@ def proto_to_entity(
   Returns:
     An instance of subclass of Entity which wraps the protobuf data.
   Raises:
-    ValueError: If msg is a GenericEntity and no custom Entity decoder is
-                found in decoder_ctx for the 'msg.custom.type' field.
+    ValueError: If msg is a GenericEntity and no custom Entity class is
+                found in entity_registry for the 'msg.custom.type' field.
     AssertionError: If not all payload types (defined in the .proto spec) are
                     cased in this function.
   """
