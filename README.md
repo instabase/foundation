@@ -20,3 +20,13 @@ RUN git clone git@github.com:instabase/foundation.git && \ # preferably at some 
     cd .. && \
     rm -rf foundation
 ```
+
+## Generate Typings
+
+The following command can be used to generate mypy stubs, which can be copied into a codebase
+
+```
+make generate-stubs
+```
+
+The stubs will be written to a `stubs` folder in the root project directory.
