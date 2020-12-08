@@ -39,6 +39,15 @@ class Entity(abc.ABC, Generic[E]):
     """
     ...
 
+  @abc.abstractmethod
+  def to_proto(self) -> PbEntityPayloadType:
+    """Defines the necessary serialization logic for the Entity.
+
+    Custom Entities should return an entity_pb2.GenericEntity instance,
+    and are responsible for setting the 'type' field appropriately.
+    """
+    ...
+
   @property
   @abc.abstractmethod
   def children(self) -> Iterable[E]:
@@ -82,6 +91,11 @@ class OcrWordEntity(Entity):
     assert isinstance(msg, entity_pb2.OcrWord)
     return OcrWordEntity(InputWord.from_proto(msg.word))
 
+  def to_proto(self) -> entity_pb2.OcrWord:
+    msg = entity_pb2.OcrWord()
+    msg.word.CopyFrom(self.word.to_proto())
+    return msg
+
   @property
   def children(self) -> Iterable[E]:
     """ OcrWordEntity has no children. """
@@ -105,6 +119,13 @@ class LineEntity(Entity):
     ocr_words = [OcrWordEntity(InputWord.from_proto(w)) for w in msg.ocr_words]
     return LineEntity(ocr_words)
 
+  def to_proto(self) -> entity_pb2.Line:
+    msg = entity_pb2.Line()
+    for w in self._ocr_words:
+      input_word_msg = w.word.to_proto()
+      msg.ocr_words.append(input_word_msg)
+    return msg
+
   @property
   def children(self) -> Iterable[OcrWordEntity]:
     """ A LineEntity's children are its OCR words. """
@@ -120,6 +141,11 @@ class ParagraphEntity(Entity):
     assert isinstance(msg, entity_pb2.Paragraph)
     lines = [LineEntity.from_proto(l) for l in msg.lines]
     return ParagraphEntity(lines)
+
+  def to_proto(self) -> entity_pb2.Paragraph:
+    msg = entity_pb2.Paragraph()
+    msg.lines.extend(l.to_proto() for l in self.lines)
+    return msg
 
   @property
   def children(self) -> Iterable[LineEntity]:
@@ -137,6 +163,11 @@ class TableCellEntity(Entity):
     content = [proto_to_entity(e) for e in msg.content]
     return TableCellEntity(content)
 
+  def to_proto(self) -> entity_pb2.TableCell:
+    msg = entity_pb2.TableCell()
+    msg.content.extend(entity_to_proto(e) for e in self.content)
+    return msg
+
   @property
   def children(self) -> Iterable[Entity]:
     """ A TableCellEntity's children are its contents. """
@@ -153,6 +184,11 @@ class TableRowEntity(Entity):
     cells = [TableCellEntity.from_proto(c) for c in msg.cells]
     return TableRowEntity(cells)
 
+  def to_proto(self) -> entity_pb2.TableRow:
+    msg = entity_pb2.TableRow()
+    msg.cells.extend(c.to_proto() for c in self.cells)
+    return msg
+
   @property
   def children(self) -> Iterable[TableCellEntity]:
     """ A TableRowEntity's children are its cells. """
@@ -168,6 +204,11 @@ class TableEntity(Entity):
     assert isinstance(msg, entity_pb2.Table)
     rows = [TableRowEntity.from_proto(r) for r in msg.rows]
     return TableEntity(rows)
+
+  def to_proto(self) -> entity_pb2.Table:
+    msg = entity_pb2.Table()
+    msg.rows.extend(r.to_proto() for r in self.rows)
+    return msg
 
   @property
   def children(self) -> Iterable[TableRowEntity]:
@@ -189,6 +230,14 @@ class TokenEntity(Entity):
       score = msg.score
     return TokenEntity(span, score)
 
+  def to_proto(self) -> entity_pb2.Token:
+    msg = entity_pb2.Token()
+    input_words = (s.word for s in self.span)
+    msg.span.extend(s.to_proto() for s in input_words)
+    if self.score is not None:
+      msg.score = self.score
+    return msg
+
   @property
   def children(self) -> Iterable[OcrWordEntity]:
     """ A TokenEntity's children are its span of OcrWordEntities. """
@@ -208,6 +257,13 @@ class PhraseEntity(Entity):
     if msg.HasField('score'):
       score = msg.score
     return PhraseEntity(words, score)
+
+  def to_proto(self) -> entity_pb2.Phrase:
+    msg = entity_pb2.Phrase()
+    msg.words.extend(w.to_proto() for w in self.words)
+    if self.score is not None:
+      msg.score = self.score
+    return msg
 
   @property
   def children(self) -> Iterable[TokenEntity]:
@@ -233,6 +289,15 @@ class NumberEntity(Entity):
       score = msg.score
     return NumberEntity(token, value, score)
 
+  def to_proto(self) -> entity_pb2.Number:
+    msg = entity_pb2.Number()
+    msg.token.CopyFrom(self.token.to_proto())
+    if self.value is not None:
+      msg.value = self.value
+    if self.score is not None:
+      msg.score = self.score
+    return msg
+
   @property
   def children(self) -> Iterable[Entity]:
     """ A NumberEntity's child is its token. """
@@ -256,6 +321,15 @@ class IntegerEntity(Entity):
     if msg.HasField('score'):
       score = msg.score
     return IntegerEntity(token, value, score)
+
+  def to_proto(self) -> entity_pb2.Integer:
+    msg = entity_pb2.Integer()
+    msg.token.CopyFrom(self.token.to_proto())
+    if self.value is not None:
+      msg.value = self.value
+    if self.score is not None:
+      msg.score = self.score
+    return msg
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -281,6 +355,15 @@ class DateEntity(Entity):
       score = msg.score
     return DateEntity(token, value, score)
 
+  def to_proto(self) -> entity_pb2.Date:
+    msg = entity_pb2.Date()
+    msg.token.CopyFrom(self.token.to_proto())
+    if self.value is not None:
+      msg.value = self.value
+    if self.score is not None:
+      msg.score = self.score
+    return msg
+
   @property
   def children(self) -> Iterable[Entity]:
     """ A DateEntity's child is its token. """
@@ -304,6 +387,15 @@ class TimeEntity(Entity):
     if msg.HasField('score'):
       score = msg.score
     return TimeEntity(token, value, score)
+
+  def to_proto(self) -> entity_pb2.Time:
+    msg = entity_pb2.Time()
+    msg.token.CopyFrom(self.token.to_proto())
+    if self.value is not None:
+      msg.value = self.value
+    if self.score is not None:
+      msg.score = self.score
+    return msg
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -334,6 +426,17 @@ class CurrencyEntity(Entity):
       score = msg.score
     return CurrencyEntity(token, value, score, units)
 
+  def to_proto(self) -> entity_pb2.Currency:
+    msg = entity_pb2.Currency()
+    msg.token.CopyFrom(self.token.to_proto())
+    if self.value is not None:
+      msg.value.CopyFrom(self.value)
+    if self.score is not None:
+      msg.score = self.score
+    if self.units is not None:
+      msg.units = self.units
+    return msg
+
   @property
   def children(self) -> Iterable[Entity]:
     """ A CurrencyEntity's child is its token. """
@@ -357,6 +460,15 @@ class NameEntity(Entity):
     if msg.HasField('score'):
       score = msg.score
     return NameEntity(name_parts, value, score)
+
+  def to_proto(self) -> entity_pb2.Name:
+    msg = entity_pb2.Name()
+    msg.name_parts.CopyFrom(self.name_parts.to_proto())
+    if self.value is not None:
+      msg.value = self.value
+    if self.score is not None:
+      msg.score = self.score
+    return msg
 
   @property
   def children(self) -> Iterable[PhraseEntity]:
@@ -382,6 +494,15 @@ class AddressEntity(Entity):
       score = msg.score
     return AddressEntity(lines, value, score)
 
+  def to_proto(self) -> entity_pb2.Address:
+    msg = entity_pb2.Address()
+    msg.lines.extend(l.to_proto() for l in self.lines)
+    if self.value is not None:
+      msg.value = self.value
+    if self.score is not None:
+      msg.score = self.score
+    return msg
+
   @property
   def children(self) -> Iterable[PhraseEntity]:
     """ A AddressEntity's children are the PhraseEntities of its line parts. """
@@ -405,6 +526,15 @@ class ClusterEntity(Entity):
     if msg.HasField('score'):
       score = msg.score
     return ClusterEntity(token_span, label, score)
+
+  def to_proto(self) -> entity_pb2.Cluster:
+    msg = entity_pb2.Cluster()
+    msg.token_span.CopyFrom(self.token_span.to_proto())
+    if self.label is not None:
+      msg.label = self.label
+    if self.score is not None:
+      msg.score = self.score
+    return msg
 
   @property
   def children(self) -> Iterable[PhraseEntity]:
@@ -457,7 +587,7 @@ def proto_to_entity(
   elif payload_type == 'token':
     return TokenEntity.from_proto(msg.token)
   elif payload_type == 'phrase':
-    return TokenEntity.from_proto(msg.phrase)
+    return PhraseEntity.from_proto(msg.phrase)
   elif payload_type == 'number':
     return NumberEntity.from_proto(msg.number)
   elif payload_type == 'integer':
@@ -486,3 +616,60 @@ def proto_to_entity(
   # This is a protocol decoding error, probably missing an if statement
   # in this function.
   raise AssertionError(f'Unhandled message type: {payload_type}')
+
+
+def entity_to_proto(entity: Entity) -> entity_pb2.Entity:
+  """Handles dispatching Entity serialization to subclasses of Entity.
+
+  In the proto definition, entity_pb2.Entity is a message containing a payload
+  which is any of the possible Entity types. This function wraps the result of
+  Entity.to_proto in the payload of entity_pb2.Entity.
+
+  Args:
+    entity: A Foundation Entity instance.
+  Returns:
+    A protobuf entity_pb2.Entity message.
+  Raises:
+    AssertionError: If not all payload types (defined in the .proto spec) are
+                    cased in this function.
+  """
+  payload = entity.to_proto()
+  if isinstance(payload, entity_pb2.OcrWord):
+    return entity_pb2.Entity(ocr_word=payload)
+  elif isinstance(payload, entity_pb2.Line):
+    return entity_pb2.Entity(line=payload)
+  elif isinstance(payload, entity_pb2.Paragraph):
+    return entity_pb2.Entity(paragraph=payload)
+  elif isinstance(payload, entity_pb2.TableCell):
+    return entity_pb2.Entity(table_cell=payload)
+  elif isinstance(payload, entity_pb2.TableRow):
+    return entity_pb2.Entity(table_row=payload)
+  elif isinstance(payload, entity_pb2.Table):
+    return entity_pb2.Entity(table=payload)
+  elif isinstance(payload, entity_pb2.Token):
+    return entity_pb2.Entity(token=payload)
+  elif isinstance(payload, entity_pb2.Phrase):
+    return entity_pb2.Entity(phrase=payload)
+  elif isinstance(payload, entity_pb2.Number):
+    return entity_pb2.Entity(number=payload)
+  elif isinstance(payload, entity_pb2.Integer):
+    return entity_pb2.Entity(integer=payload)
+  elif isinstance(payload, entity_pb2.Date):
+    return entity_pb2.Entity(date=payload)
+  elif isinstance(payload, entity_pb2.Time):
+    return entity_pb2.Entity(time=payload)
+  elif isinstance(payload, entity_pb2.Currency):
+    return entity_pb2.Entity(currency=payload)
+  elif isinstance(payload, entity_pb2.Name):
+    return entity_pb2.Entity(name=payload)
+  elif isinstance(payload, entity_pb2.Address):
+    return entity_pb2.Entity(address=payload)
+  elif isinstance(payload, entity_pb2.Cluster):
+    return entity_pb2.Entity(cluster=payload)
+  elif isinstance(payload, entity_pb2.GenericEntity):
+    return entity_pb2.Entity(custom=payload)
+
+  # This is a protocol decoding error, probably missing an if statement
+  # in this function.
+  raise AssertionError(f'Unhandled value: {type(payload).__name__}')
+
