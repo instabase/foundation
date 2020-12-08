@@ -219,23 +219,17 @@ class TableEntity(Entity):
 @dataclass(frozen=True)
 class TokenEntity(Entity):
   span: List[OcrWordEntity]
-  score: Optional[float]
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'TokenEntity':
     assert isinstance(msg, entity_pb2.Token)
     span = [OcrWordEntity(InputWord.from_proto(w)) for w in msg.span]
-    score = None
-    if msg.HasField('score'):
-      score = msg.score
-    return TokenEntity(span, score)
+    return TokenEntity(span)
 
   def to_proto(self) -> entity_pb2.Token:
     msg = entity_pb2.Token()
     input_words = (s.word for s in self.span)
     msg.span.extend(s.to_proto() for s in input_words)
-    if self.score is not None:
-      msg.score = self.score
     return msg
 
   @property
@@ -247,22 +241,16 @@ class TokenEntity(Entity):
 @dataclass(frozen=True)
 class PhraseEntity(Entity):
   words: List[TokenEntity]
-  score: Optional[float]
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'PhraseEntity':
     assert isinstance(msg, entity_pb2.Phrase)
     words = [TokenEntity.from_proto(t) for t in msg.words]
-    score = None
-    if msg.HasField('score'):
-      score = msg.score
-    return PhraseEntity(words, score)
+    return PhraseEntity(words)
 
   def to_proto(self) -> entity_pb2.Phrase:
     msg = entity_pb2.Phrase()
     msg.words.extend(w.to_proto() for w in self.words)
-    if self.score is not None:
-      msg.score = self.score
     return msg
 
   @property
@@ -275,7 +263,6 @@ class PhraseEntity(Entity):
 class NumberEntity(Entity):
   token: TokenEntity
   value: Optional[float]
-  score: Optional[float]
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'NumberEntity':
@@ -284,18 +271,13 @@ class NumberEntity(Entity):
     value = None
     if msg.HasField('value'):
       value = msg.value
-    score = None
-    if msg.HasField('score'):
-      score = msg.score
-    return NumberEntity(token, value, score)
+    return NumberEntity(token, value)
 
   def to_proto(self) -> entity_pb2.Number:
     msg = entity_pb2.Number()
     msg.token.CopyFrom(self.token.to_proto())
     if self.value is not None:
       msg.value = self.value
-    if self.score is not None:
-      msg.score = self.score
     return msg
 
   @property
@@ -308,7 +290,6 @@ class NumberEntity(Entity):
 class IntegerEntity(Entity):
   token: TokenEntity
   value: Optional[int]
-  score: Optional[float]
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'IntegerEntity':
@@ -317,18 +298,13 @@ class IntegerEntity(Entity):
     value = None
     if msg.HasField('value'):
       value = msg.value
-    score = None
-    if msg.HasField('score'):
-      score = msg.score
-    return IntegerEntity(token, value, score)
+    return IntegerEntity(token, value)
 
   def to_proto(self) -> entity_pb2.Integer:
     msg = entity_pb2.Integer()
     msg.token.CopyFrom(self.token.to_proto())
     if self.value is not None:
       msg.value = self.value
-    if self.score is not None:
-      msg.score = self.score
     return msg
 
   @property
@@ -341,7 +317,6 @@ class IntegerEntity(Entity):
 class DateEntity(Entity):
   token: TokenEntity
   value: Optional[str]
-  score: Optional[float]
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'DateEntity':
@@ -350,18 +325,13 @@ class DateEntity(Entity):
     value = None
     if msg.HasField('value'):
       value = msg.value
-    score = None
-    if msg.HasField('score'):
-      score = msg.score
-    return DateEntity(token, value, score)
+    return DateEntity(token, value)
 
   def to_proto(self) -> entity_pb2.Date:
     msg = entity_pb2.Date()
     msg.token.CopyFrom(self.token.to_proto())
     if self.value is not None:
       msg.value = self.value
-    if self.score is not None:
-      msg.score = self.score
     return msg
 
   @property
@@ -374,7 +344,6 @@ class DateEntity(Entity):
 class TimeEntity(Entity):
   token: TokenEntity
   value: Optional[int]
-  score: Optional[float]
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'TimeEntity':
@@ -383,18 +352,13 @@ class TimeEntity(Entity):
     value = None
     if msg.HasField('value'):
       value = msg.value
-    score = None
-    if msg.HasField('score'):
-      score = msg.score
-    return TimeEntity(token, value, score)
+    return TimeEntity(token, value)
 
   def to_proto(self) -> entity_pb2.Time:
     msg = entity_pb2.Time()
     msg.token.CopyFrom(self.token.to_proto())
     if self.value is not None:
       msg.value = self.value
-    if self.score is not None:
-      msg.score = self.score
     return msg
 
   @property
@@ -408,7 +372,6 @@ class CurrencyEntity(Entity):
   token: TokenEntity
   # TODO: wrap FixedDecimal
   value: Optional[Currency_pb2.FixedDecimal]
-  score: Optional[float]
   units: Optional[str]
 
   @staticmethod
@@ -421,18 +384,13 @@ class CurrencyEntity(Entity):
     value = None
     if msg.HasField('value'):
       value = msg.value
-    score = None
-    if msg.HasField('score'):
-      score = msg.score
-    return CurrencyEntity(token, value, score, units)
+    return CurrencyEntity(token, value, units)
 
   def to_proto(self) -> entity_pb2.Currency:
     msg = entity_pb2.Currency()
     msg.token.CopyFrom(self.token.to_proto())
     if self.value is not None:
       msg.value.CopyFrom(self.value)
-    if self.score is not None:
-      msg.score = self.score
     if self.units is not None:
       msg.units = self.units
     return msg
@@ -447,7 +405,6 @@ class CurrencyEntity(Entity):
 class NameEntity(Entity):
   name_parts: PhraseEntity
   value: Optional[str]
-  score: Optional[float]
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'NameEntity':
@@ -456,18 +413,13 @@ class NameEntity(Entity):
     value = None
     if msg.HasField('value'):
       value = msg.value
-    score = None
-    if msg.HasField('score'):
-      score = msg.score
-    return NameEntity(name_parts, value, score)
+    return NameEntity(name_parts, value)
 
   def to_proto(self) -> entity_pb2.Name:
     msg = entity_pb2.Name()
     msg.name_parts.CopyFrom(self.name_parts.to_proto())
     if self.value is not None:
       msg.value = self.value
-    if self.score is not None:
-      msg.score = self.score
     return msg
 
   @property
@@ -480,7 +432,6 @@ class NameEntity(Entity):
 class AddressEntity(Entity):
   lines: List[PhraseEntity]
   value: Optional[str]
-  score: Optional[float]
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'AddressEntity':
@@ -489,18 +440,13 @@ class AddressEntity(Entity):
     value = None
     if msg.HasField('value'):
       value = msg.value
-    score = None
-    if msg.HasField('score'):
-      score = msg.score
-    return AddressEntity(lines, value, score)
+    return AddressEntity(lines, value)
 
   def to_proto(self) -> entity_pb2.Address:
     msg = entity_pb2.Address()
     msg.lines.extend(l.to_proto() for l in self.lines)
     if self.value is not None:
       msg.value = self.value
-    if self.score is not None:
-      msg.score = self.score
     return msg
 
   @property
@@ -513,7 +459,6 @@ class AddressEntity(Entity):
 class ClusterEntity(Entity):
   token_span: PhraseEntity
   label: Optional[str]
-  score: Optional[float]
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'ClusterEntity':
@@ -522,18 +467,13 @@ class ClusterEntity(Entity):
     label = None
     if msg.HasField('label'):
       label = msg.label
-    score = None
-    if msg.HasField('score'):
-      score = msg.score
-    return ClusterEntity(token_span, label, score)
+    return ClusterEntity(token_span, label)
 
   def to_proto(self) -> entity_pb2.Cluster:
     msg = entity_pb2.Cluster()
     msg.token_span.CopyFrom(self.token_span.to_proto())
     if self.label is not None:
       msg.label = self.label
-    if self.score is not None:
-      msg.score = self.score
     return msg
 
   @property
