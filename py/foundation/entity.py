@@ -10,6 +10,7 @@ from foundation.protos import geometry_pb2
 from foundation.protos.doc import entity_pb2
 from foundation.protos.doc.entity_pb2 import Currency as Currency_pb2
 
+from .typing_utils import assert_exhaustive
 from .ocr import InputWord
 """ These are the built-in Entity types supported by Foundation. """
 PbEntityPayloadType = Union[entity_pb2.OcrWord, entity_pb2.Line,
@@ -483,6 +484,4 @@ def proto_to_entity(
     raise ValueError(
         f'No implementation found for GenericEntity type "{custom_type}".')
 
-  # This is a protocol decoding error, probably missing an if statement
-  # in this function.
-  raise AssertionError(f'Unhandled message type: {payload_type}')
+  assert_exhaustive(payload_type)
