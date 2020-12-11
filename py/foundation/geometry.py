@@ -113,9 +113,6 @@ class Point:
   def __str__(self) -> str:
     return "Point({}, {})".format(self.x, self.y)
 
-  def toarray(self):
-    return np.array(self.x, self.y)
-
   @staticmethod
   def distance(p1: 'Point', p2: 'Point') -> float:
     return sqrt((p2.x - p1.x)**2 + (p2.y - p1.y)**2)
@@ -143,6 +140,11 @@ class Point:
   def to_proto(self) -> PBPoint:
     return PBPoint(x=self.x, y=self.y)
 
+  def __sub__(self, other) -> 'Point':
+    return Point(self.x - other.x, self.y - other.y)
+
+  def __matmul__(self, other) -> float:
+    return (self.x * other.x) + (self.y * other.y)
 
 @dataclass(frozen=True)
 class BBox:
@@ -283,65 +285,52 @@ class BBox:
     inner_width = max(0, ix.length - b1.ix.length - b2.ix.length)
     inner_height = max(0, iy.length - b1.iy.length - b2.iy.length)
     return sqrt(inner_width**2 + inner_height**2)
+
+
 @dataclass(frozen=True)
 class Separator:
-  start_x: float
-  start_y: float
-  end_x: float
-  end_y: float
+  start_point: Point
+  end_point: Point
 
-  @property
-  def start_point(self):
-    return Point(self.start_x, self.start_y)
-
-  @property
-  def end_point(self):
-    return Point(self.end_x, self.end_y)
-
-  @staticmethod
-  def _min_distance_line_point(a: np.ndarray, b: np.ndarray, e: np.ndarray):
+  def min_distance_from_point(self, p: 'Point'):
     '''
-    >>> Separator._min_distance_line_point(np.array([0,0]),np.array([10,0]),np.array([-3,4]))
+    Minimum distance between a line from point a to point b and point e
+
+    >>> Separator(Point(0,0),Point(10,0)).min_distance_from_point(Point(-3,4))
     5.0
-    >>> Separator._min_distance_line_point(np.array([0,0]),np.array([10,0]),np.array([16,8]))
+    >>> Separator(Point(0,0),Point(10,0)).min_distance_from_point(Point(16,8))
     10.0
-    >>> Separator._min_distance_line_point(np.array([0,0]),np.array([10,0]),np.array([7,6]))
+    >>> Separator(Point(0,0),Point(10,0)).min_distance_from_point(Point(7,6))
     6.0
     '''
+    a, b = self.start_point, self.end_point
     ab = b - a
-    be = e - b
-    ae = e - a
+    bp = p - b
+    ap = p - a
+    ab_bp = ab @ bp
+    ab_ap = ab @ ap
 
-    ab_be = ab @ be
-    ab_ae = ab @ ae
-
-    if ab_be > 0:
-      return np.linalg.norm(be)
-    elif ab_ae < 0:
-      return np.linalg.norm(ae)
+    if ab_bp > 0:
+      return (bp@bp) ** (1/2)
+    elif ab_ap < 0:
+      return (ap@ap) ** (1/2)
     else:
-      return abs(np.cross(ab, ae)) / np.linalg.norm(ab)
+      return abs((ab.x * ap.y) - (ab.y * ap.x)) / (ab@ab) ** (1/2)
 
   def intersects(self, other: 'Separator', max_distance=0):
-    a, b, c, d = (
-      self.start_point.toarray(),
-      self.end_point.toarray(),
-      other.start_point.toarray(),
-      other.end_point.toarray(),
-    )
     distance = min(
-      self._min_distance_line_point(a, b, c),
-      self._min_distance_line_point(a, b, d),
-      self._min_distance_line_point(c, d, a),
-      self._min_distance_line_point(c, d, b),
+      self._min_distance_line_point(self, other.start_point),
+      self._min_distance_line_point(self, other.end_point),
+      self._min_distance_line_point(other, self.start_point),
+      self._min_distance_line_point(other, self.end_point),
     )
     return distance <= max_distance
 
   def is_vertical(self, max_d=2):
-    return abs(int(self.end_x) - int(self.start_x)) < max_d
+    return abs(int(self.end_point.x) - int(self.start_point.x)) < max_d
 
   def is_horizontal(self, max_d=2):
-    return abs(int(self.end_y) - int(self.start_y)) < max_d
+    return abs(int(self.end_point.y) - int(self.start_point.y)) < max_d
 
   @classmethod
   def from_separator(cls, sep: 'Separator'):
@@ -350,15 +339,15 @@ class Separator:
   @property
   def bounding_box(self) -> 'BBox':
     return BBox(
-      ix=Interval(self.start_x, self.end_x),
-      iy=Interval(self.start_y, self.end_y),
+      ix=Interval(self.start_point.x, self.end_point.x),
+      iy=Interval(self.start_point.y, self.end_point.y),
     )
 
 
 @dataclass(frozen=True)
 class HorizontalSeparator(Separator):
-  def get_y(self) -> int:
-    return self.start_y
+  def get_y(self) -> float:
+    return self.start_point.y
 
   def is_above_or_at(self, other: 'HorizontalSeparator'):
     return self.get_y() <= other.get_y()
@@ -375,8 +364,8 @@ class HorizontalSeparator(Separator):
 
 @dataclass(frozen=True)
 class VerticalSeparator(Separator):
-  def get_x(self):
-    return self.start_x
+  def get_x(self) -> float:
+    return self.start_point.x
 
   def is_left_of_or_at(self, other: 'VerticalSeparator'):
     return self.get_x() <= other.get_x()
