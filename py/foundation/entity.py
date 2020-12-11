@@ -10,8 +10,9 @@ from foundation.protos import geometry_pb2
 from foundation.protos.doc import entity_pb2
 from foundation.protos.doc.entity_pb2 import Currency as Currency_pb2
 
-from .typing_utils import assert_exhaustive
 from .ocr import InputWord
+from .typing_utils import assert_exhaustive
+
 """ These are the built-in Entity types supported by Foundation. """
 PbEntityPayloadType = Union[entity_pb2.OcrWord, entity_pb2.Line,
                             entity_pb2.Paragraph, entity_pb2.TableCell,
