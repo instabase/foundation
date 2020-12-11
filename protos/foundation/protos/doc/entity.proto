@@ -83,20 +83,17 @@ message Table {
 
 	 Tokens are a semantic type, e.g. a natural-language word like "fire truck".
 
-	 They are also a way to associate a span of ocr.InputWord with some score.
 	 We may also want to handle OCR errors which split natural language
 	 words into multiple OCR rectangles.
  */
 message Token {
 	repeated ocr.InputWord span = 1;
-	optional double score = 3;
 }
 
 /* A Phrase is a sequence of Tokens, grouped into a useful semantic unit.
 */
 message Phrase {
 	repeated Token words = 1;
-	optional double score = 3;
 }
 
 
@@ -104,9 +101,6 @@ message Phrase {
 	 These are essentially NER types. It can be useful to distinguish a set of
 	 "first-class" types from some label class that a specific NER model might
 	 output.
-
-	 We distinguish the score of assigning a type to a Token from the scoring of
-	 whatever model emitted that Token.
    -------------------------------------------------------------------
 */
 
@@ -116,13 +110,11 @@ message Phrase {
 message Number {
 	required Token token = 1;
 	optional double value = 2;
-	optional double score = 3;
 }
 
 message Integer {
 	required Token token = 1;
 	optional int64 value = 2;
-	optional double score = 3;
 }
 
 message Date {
@@ -130,7 +122,6 @@ message Date {
 	// Let this value be an ISO8601 formatted date.
 	// TODO: we should settle on an appropriate denotation format here.
 	optional string value = 2;
-	optional double score = 3;
 }
 
 message Time {
@@ -138,7 +129,6 @@ message Time {
 	// Let this value be UNIX time in seconds from the epoch.
 	// TODO: we should settle on an appropriate denotation format here.
 	optional uint64 value = 2;
-	optional double score = 3;
 }
 
 // TODO: do we want a Datetime type?
@@ -152,14 +142,12 @@ message Currency {
 		required uint32 fractional_part = 2;
 	}
 	optional FixedDecimal value = 2;
-	optional double score = 3;
 	optional string units = 4;
 }
 
 message Name {
 	required Phrase name_parts = 1;
 	optional string value = 2;
-	optional double score = 3;
 }
 
 message Address {
@@ -169,7 +157,6 @@ message Address {
 	repeated Phrase lines = 1;
 	// TODO: we should settle on an appropriate denotation format here.
 	optional string value = 2;
-	optional double score = 3;
 }
 
 /* A Cluster associates a Phrase [a sequence of Tokens] with some semantic label.
@@ -180,6 +167,5 @@ message Cluster {
 	// TODO: is Phrase the right unit type here?
 	required Phrase token_span = 1;
 	optional string label = 2;
-	optional double score = 3;
 }
 
