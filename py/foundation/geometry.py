@@ -113,6 +113,9 @@ class Point:
   def __str__(self) -> str:
     return "Point({}, {})".format(self.x, self.y)
 
+  def toarray(self):
+    return np.array(self.x, self.y)
+
   @staticmethod
   def distance(p1: 'Point', p2: 'Point') -> float:
     return sqrt((p2.x - p1.x)**2 + (p2.y - p1.y)**2)
@@ -202,6 +205,42 @@ class BBox:
         self.ix.percentages_overlapping(other.ix),
         self.iy.percentages_overlapping(other.iy))
 
+  @property
+  def separator_above(self) -> 'HorizontalSeparator':
+    return HorizontalSeparator(
+      start_x=self.ix.a,
+      end_x=self.ix.b,
+      start_y=self.iy.a,
+      end_y=self.iy.a
+    )
+
+  @property
+  def separator_below(self) -> 'HorizontalSeparator':
+    return HorizontalSeparator(
+      start_x=self.ix.a,
+      end_x=self.ix.b,
+      start_y=self.iy.b,
+      end_y=self.iy.b
+    )
+
+  @property
+  def separator_left(self) -> 'VerticalSeparator':
+    return VerticalSeparator(
+      start_x=self.ix.a,
+      end_x=self.ix.a,
+      start_y=self.iy.a,
+      end_y=self.iy.b
+    )
+
+  @property
+  def separator_right(self) -> 'VerticalSeparator':
+    return VerticalSeparator(
+      start_x=self.ix.b,
+      end_x=self.ix.b,
+      start_y=self.iy.a,
+      end_y=self.iy.b
+    )
+
   @staticmethod
   def build(ix: Optional[Interval], iy: Optional[Interval]) -> Optional['BBox']:
     return BBox(ix, iy) if ix is not None and iy is not None else None
@@ -244,3 +283,109 @@ class BBox:
     inner_width = max(0, ix.length - b1.ix.length - b2.ix.length)
     inner_height = max(0, iy.length - b1.iy.length - b2.iy.length)
     return sqrt(inner_width**2 + inner_height**2)
+@dataclass(frozen=True)
+class Separator:
+  start_x: float
+  start_y: float
+  end_x: float
+  end_y: float
+
+  @property
+  def start_point(self):
+    return Point(self.start_x, self.start_y)
+
+  @property
+  def end_point(self):
+    return Point(self.end_x, self.end_y)
+
+  @staticmethod
+  def _min_distance_line_point(a: np.ndarray, b: np.ndarray, e: np.ndarray):
+    '''
+    >>> Separator._min_distance_line_point(np.array([0,0]),np.array([10,0]),np.array([-3,4]))
+    5.0
+    >>> Separator._min_distance_line_point(np.array([0,0]),np.array([10,0]),np.array([16,8]))
+    10.0
+    >>> Separator._min_distance_line_point(np.array([0,0]),np.array([10,0]),np.array([7,6]))
+    6.0
+    '''
+    ab = b - a
+    be = e - b
+    ae = e - a
+
+    ab_be = ab @ be
+    ab_ae = ab @ ae
+
+    if ab_be > 0:
+      return np.linalg.norm(be)
+    elif ab_ae < 0:
+      return np.linalg.norm(ae)
+    else:
+      return abs(np.cross(ab, ae)) / np.linalg.norm(ab)
+
+  def intersects(self, other: 'Separator', max_distance=0):
+    a, b, c, d = (
+      self.start_point.toarray(),
+      self.end_point.toarray(),
+      other.start_point.toarray(),
+      other.end_point.toarray(),
+    )
+    distance = min(
+      self._min_distance_line_point(a, b, c),
+      self._min_distance_line_point(a, b, d),
+      self._min_distance_line_point(c, d, a),
+      self._min_distance_line_point(c, d, b),
+    )
+    return distance <= max_distance
+
+  def is_vertical(self, max_d=2):
+    return abs(int(self.end_x) - int(self.start_x)) < max_d
+
+  def is_horizontal(self, max_d=2):
+    return abs(int(self.end_y) - int(self.start_y)) < max_d
+
+  @classmethod
+  def from_separator(cls, sep: 'Separator'):
+    return cls(**sep.__dict__)
+
+  @property
+  def bounding_box(self) -> 'BBox':
+    return BBox(
+      ix=Interval(self.start_x, self.end_x),
+      iy=Interval(self.start_y, self.end_y),
+    )
+
+
+@dataclass(frozen=True)
+class HorizontalSeparator(Separator):
+  def get_y(self) -> int:
+    return self.start_y
+
+  def is_above_or_at(self, other: 'HorizontalSeparator'):
+    return self.get_y() <= other.get_y()
+
+  def is_above(self, other: 'HorizontalSeparator'):
+    return self.get_y() < other.get_y()
+
+  def is_below(self, other: 'HorizontalSeparator'):
+    return not self.is_above_or_at(other)
+
+  def is_below_or_at(self, other: 'HorizontalSeparator'):
+    return not self.is_above(other)
+
+
+@dataclass(frozen=True)
+class VerticalSeparator(Separator):
+  def get_x(self):
+    return self.start_x
+
+  def is_left_of_or_at(self, other: 'VerticalSeparator'):
+    return self.get_x() <= other.get_x()
+
+  def is_left_of(self, other: 'VerticalSeparator'):
+    return self.get_x() < other.get_x()
+
+  def is_right_of(self, other: 'VerticalSeparator'):
+    return not self.is_left_of_or_at(other)
+
+  def is_right_of_or_at(self, other: 'VerticalSeparator'):
+    return not self.is_left_of(other)
