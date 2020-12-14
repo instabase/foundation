@@ -28,6 +28,7 @@ E = TypeVar('E', bound='Entity')
 
 
 class Entity(abc.ABC, Generic[E]):
+  bbox: BBox
 
   @staticmethod
   @abc.abstractmethod
@@ -52,11 +53,6 @@ class Entity(abc.ABC, Generic[E]):
 
   @property
   @abc.abstractmethod
-  def bbox(self) -> BBox:
-    ...
-
-  @property
-  @abc.abstractmethod
   def children(self) -> Iterable[E]:
     """Yields all sub-entities of this entity.
 
@@ -68,7 +64,7 @@ class Entity(abc.ABC, Generic[E]):
     """
     ...
 
-  def ocr_words(self) -> Iterable['WordEntity']:
+  def ocr_words(self) -> Iterable['Word']:
     """Yields all OcrWordEntity's among this entity's children.
 
     Can be seen as returning an iterator over the leaves of this
@@ -82,20 +78,20 @@ class Entity(abc.ABC, Generic[E]):
 
 
 @dataclass(frozen=True)
-class WordEntity(Entity):
+class Word(Entity):
   text: str
   bbox: BBox
   origin: Optional[InputWord] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'WordEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Word':
     assert isinstance(msg, entity_pb2.Word)
     text = msg.text
     bbox = unwrap(BBox.from_proto(msg.bbox))  # TODO: what does None mean here?
     input_word = None
     if msg.HasField('origin'):
       input_word = InputWord.from_proto(msg.origin)
-    return WordEntity(text, bbox, input_word)
+    return Word(text, bbox, input_word)
 
   def to_proto(self) -> entity_pb2.Word:
     msg = entity_pb2.Word(text=self.text,
@@ -106,10 +102,10 @@ class WordEntity(Entity):
 
   @property
   def children(self) -> Iterable[E]:
-    """ WordEntity has no children. """
+    """ Word has no children. """
     yield from []
 
-  def ocr_words(self) -> Iterable['WordEntity']:
+  def ocr_words(self) -> Iterable['Word']:
     """ Yields itself.
 
     This provides the base case for Entity.ocr_words.
@@ -118,16 +114,16 @@ class WordEntity(Entity):
 
 
 @dataclass(frozen=True)
-class LineEntity(Entity):
-  _ocr_words: List[WordEntity]
+class Line(Entity):
+  _ocr_words: List[Word]
   bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'LineEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Line':
     assert isinstance(msg, entity_pb2.Line)
     bbox = unwrap(BBox.from_proto(msg.bbox))
-    ocr_words = [WordEntity.from_proto(w) for w in msg.words]
-    return LineEntity(ocr_words, bbox)
+    ocr_words = [Word.from_proto(w) for w in msg.words]
+    return Line(ocr_words, bbox)
 
   def to_proto(self) -> entity_pb2.Line:
     msg = entity_pb2.Line(bbox=self.bbox.to_proto())
@@ -135,22 +131,22 @@ class LineEntity(Entity):
     return msg
 
   @property
-  def children(self) -> Iterable[WordEntity]:
-    """ A LineEntity's children are its OCR words. """
+  def children(self) -> Iterable[Word]:
+    """ A Line's children are its OCR words. """
     yield from self._ocr_words
 
 
 @dataclass(frozen=True)
-class ParagraphEntity(Entity):
-  lines: List[LineEntity]
+class Paragraph(Entity):
+  lines: List[Line]
   bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'ParagraphEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Paragraph':
     assert isinstance(msg, entity_pb2.Paragraph)
-    lines = [LineEntity.from_proto(l) for l in msg.lines]
+    lines = [Line.from_proto(l) for l in msg.lines]
     bbox = unwrap(BBox.from_proto(msg.bbox))
-    return ParagraphEntity(lines, bbox)
+    return Paragraph(lines, bbox)
 
   def to_proto(self) -> entity_pb2.Paragraph:
     msg = entity_pb2.Paragraph(bbox=self.bbox.to_proto())
@@ -158,22 +154,22 @@ class ParagraphEntity(Entity):
     return msg
 
   @property
-  def children(self) -> Iterable[LineEntity]:
-    """ A ParagraphEntity's children are its Lines. """
+  def children(self) -> Iterable[Line]:
+    """ A Paragraph's children are its Lines. """
     yield from self.lines
 
 
 @dataclass(frozen=True)
-class TableCellEntity(Entity):
+class TableCell(Entity):
   content: List[Entity]
   bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'TableCellEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'TableCell':
     assert isinstance(msg, entity_pb2.TableCell)
     content = [proto_to_entity(e) for e in msg.content]
     bbox = unwrap(BBox.from_proto(msg.bbox))
-    return TableCellEntity(content, bbox)
+    return TableCell(content, bbox)
 
   def to_proto(self) -> entity_pb2.TableCell:
     msg = entity_pb2.TableCell(bbox=self.bbox.to_proto())
@@ -182,21 +178,21 @@ class TableCellEntity(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A TableCellEntity's children are its contents. """
+    """ A TableCell's children are its contents. """
     yield from self.content
 
 
 @dataclass(frozen=True)
-class TableRowEntity(Entity):
-  cells: List[TableCellEntity]
+class TableRow(Entity):
+  cells: List[TableCell]
   bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'TableRowEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'TableRow':
     assert isinstance(msg, entity_pb2.TableRow)
-    cells = [TableCellEntity.from_proto(c) for c in msg.cells]
+    cells = [TableCell.from_proto(c) for c in msg.cells]
     bbox = unwrap(BBox.from_proto(msg.bbox))
-    return TableRowEntity(cells, bbox)
+    return TableRow(cells, bbox)
 
   def to_proto(self) -> entity_pb2.TableRow:
     msg = entity_pb2.TableRow(bbox=self.bbox.to_proto())
@@ -204,22 +200,22 @@ class TableRowEntity(Entity):
     return msg
 
   @property
-  def children(self) -> Iterable[TableCellEntity]:
-    """ A TableRowEntity's children are its cells. """
+  def children(self) -> Iterable[TableCell]:
+    """ A TableRow's children are its cells. """
     yield from self.cells
 
 
 @dataclass(frozen=True)
-class TableEntity(Entity):
-  rows: List[TableRowEntity]
+class Table(Entity):
+  rows: List[TableRow]
   bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'TableEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Table':
     assert isinstance(msg, entity_pb2.Table)
-    rows = [TableRowEntity.from_proto(r) for r in msg.rows]
+    rows = [TableRow.from_proto(r) for r in msg.rows]
     bbox = unwrap(BBox.from_proto(msg.bbox))
-    return TableEntity(rows, bbox)
+    return Table(rows, bbox)
 
   def to_proto(self) -> entity_pb2.Table:
     msg = entity_pb2.Table(bbox=self.bbox.to_proto())
@@ -227,22 +223,22 @@ class TableEntity(Entity):
     return msg
 
   @property
-  def children(self) -> Iterable[TableRowEntity]:
+  def children(self) -> Iterable[TableRow]:
     """ A Table's children are its rows. """
     yield from self.rows
 
 
 @dataclass(frozen=True)
-class TokenEntity(Entity):
-  span: List[WordEntity]
+class Token(Entity):
+  span: List[Word]
   bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'TokenEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Token':
     assert isinstance(msg, entity_pb2.Token)
-    span = [WordEntity.from_proto(w) for w in msg.span]
+    span = [Word.from_proto(w) for w in msg.span]
     bbox = unwrap(BBox.from_proto(msg.bbox))
-    return TokenEntity(span, bbox)
+    return Token(span, bbox)
 
   def to_proto(self) -> entity_pb2.Token:
     msg = entity_pb2.Token(bbox=self.bbox.to_proto())
@@ -250,22 +246,22 @@ class TokenEntity(Entity):
     return msg
 
   @property
-  def children(self) -> Iterable[WordEntity]:
-    """ A TokenEntity's children are its span of OcrWordEntities. """
+  def children(self) -> Iterable[Word]:
+    """ A Token's children are its span of OcrWordEntities. """
     yield from self.span
 
 
 @dataclass(frozen=True)
-class PhraseEntity(Entity):
-  words: List[TokenEntity]
+class Phrase(Entity):
+  words: List[Token]
   bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'PhraseEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Phrase':
     assert isinstance(msg, entity_pb2.Phrase)
-    words = [TokenEntity.from_proto(t) for t in msg.words]
+    words = [Token.from_proto(t) for t in msg.words]
     bbox = unwrap(BBox.from_proto(msg.bbox))
-    return PhraseEntity(words, bbox)
+    return Phrase(words, bbox)
 
   def to_proto(self) -> entity_pb2.Phrase:
     msg = entity_pb2.Phrase(bbox=self.bbox.to_proto())
@@ -273,26 +269,26 @@ class PhraseEntity(Entity):
     return msg
 
   @property
-  def children(self) -> Iterable[TokenEntity]:
-    """ A PhraseEntity's children are its tokens. """
+  def children(self) -> Iterable[Token]:
+    """ A Phrase's children are its tokens. """
     yield from self.words
 
 
 @dataclass(frozen=True)
-class NumberEntity(Entity):
-  token: TokenEntity
+class Number(Entity):
+  token: Token
   bbox: BBox
-  value: Optional[float]
+  value: Optional[float] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'NumberEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Number':
     assert isinstance(msg, entity_pb2.Number)
-    token = TokenEntity.from_proto(msg.token)
+    token = Token.from_proto(msg.token)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return NumberEntity(token, bbox, value)
+    return Number(token, bbox, value)
 
   def to_proto(self) -> entity_pb2.Number:
     msg = entity_pb2.Number(bbox=self.bbox.to_proto())
@@ -303,25 +299,25 @@ class NumberEntity(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A NumberEntity's child is its token. """
+    """ A Number's child is its token. """
     yield self.token
 
 
 @dataclass(frozen=True)
-class IntegerEntity(Entity):
-  token: TokenEntity
+class Integer(Entity):
+  token: Token
   bbox: BBox
-  value: Optional[int]
+  value: Optional[int] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'IntegerEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Integer':
     assert isinstance(msg, entity_pb2.Integer)
-    token = TokenEntity.from_proto(msg.token)
+    token = Token.from_proto(msg.token)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return IntegerEntity(token, bbox, value)
+    return Integer(token, bbox, value)
 
   def to_proto(self) -> entity_pb2.Integer:
     msg = entity_pb2.Integer(bbox=self.bbox.to_proto())
@@ -332,25 +328,25 @@ class IntegerEntity(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ An IntegerEntity's child is its token. """
+    """ An Integer's child is its token. """
     yield self.token
 
 
 @dataclass(frozen=True)
-class DateEntity(Entity):
-  token: TokenEntity
+class Date(Entity):
+  token: Token
   bbox: BBox
-  value: Optional[str]
+  value: Optional[str] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'DateEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Date':
     assert isinstance(msg, entity_pb2.Date)
-    token = TokenEntity.from_proto(msg.token)
+    token = Token.from_proto(msg.token)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return DateEntity(token, bbox, value)
+    return Date(token, bbox, value)
 
   def to_proto(self) -> entity_pb2.Date:
     msg = entity_pb2.Date(bbox=self.bbox.to_proto())
@@ -361,25 +357,25 @@ class DateEntity(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A DateEntity's child is its token. """
+    """ A Date's child is its token. """
     yield self.token
 
 
 @dataclass(frozen=True)
-class TimeEntity(Entity):
-  token: TokenEntity
+class Time(Entity):
+  token: Token
   bbox: BBox
-  value: Optional[int]
+  value: Optional[int] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'TimeEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Time':
     assert isinstance(msg, entity_pb2.Time)
-    token = TokenEntity.from_proto(msg.token)
+    token = Token.from_proto(msg.token)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return TimeEntity(token, bbox, value)
+    return Time(token, bbox, value)
 
   def to_proto(self) -> entity_pb2.Time:
     msg = entity_pb2.Time(bbox=self.bbox.to_proto())
@@ -390,22 +386,22 @@ class TimeEntity(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A TimeEntity's child is its token. """
+    """ A Time's child is its token. """
     yield self.token
 
 
 @dataclass(frozen=True)
-class CurrencyEntity(Entity):
-  token: TokenEntity
+class Currency(Entity):
+  token: Token
   bbox: BBox
   # TODO: wrap FixedDecimal
-  value: Optional[Currency_pb2.FixedDecimal]
-  units: Optional[str]
+  value: Optional[Currency_pb2.FixedDecimal] = None
+  units: Optional[str] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'CurrencyEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Currency':
     assert isinstance(msg, entity_pb2.Currency)
-    token = TokenEntity.from_proto(msg.token)
+    token = Token.from_proto(msg.token)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     units = None
     if msg.HasField('units'):
@@ -413,7 +409,7 @@ class CurrencyEntity(Entity):
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return CurrencyEntity(token, bbox, value, units)
+    return Currency(token, bbox, value, units)
 
   def to_proto(self) -> entity_pb2.Currency:
     msg = entity_pb2.Currency(bbox=self.bbox.to_proto())
@@ -426,25 +422,25 @@ class CurrencyEntity(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A CurrencyEntity's child is its token. """
+    """ A Currency's child is its token. """
     yield self.token
 
 
 @dataclass(frozen=True)
-class NameEntity(Entity):
-  name_parts: PhraseEntity
+class Name(Entity):
+  name_parts: Phrase
   bbox: BBox
-  value: Optional[str]
+  value: Optional[str] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'NameEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Name':
     assert isinstance(msg, entity_pb2.Name)
-    name_parts = PhraseEntity.from_proto(msg.name_parts)
+    name_parts = Phrase.from_proto(msg.name_parts)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return NameEntity(name_parts, bbox, value)
+    return Name(name_parts, bbox, value)
 
   def to_proto(self) -> entity_pb2.Name:
     msg = entity_pb2.Name(bbox=self.bbox.to_proto())
@@ -454,26 +450,26 @@ class NameEntity(Entity):
     return msg
 
   @property
-  def children(self) -> Iterable[PhraseEntity]:
-    """ A NameEntity's child is the PhraseEntity of its name parts. """
+  def children(self) -> Iterable[Phrase]:
+    """ A Name's child is the Phrase of its name parts. """
     yield self.name_parts
 
 
 @dataclass(frozen=True)
-class AddressEntity(Entity):
-  lines: List[PhraseEntity]
+class Address(Entity):
+  lines: List[Phrase]
   bbox: BBox
-  value: Optional[str]
+  value: Optional[str] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'AddressEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Address':
     assert isinstance(msg, entity_pb2.Address)
-    lines = [PhraseEntity.from_proto(l) for l in msg.lines]
+    lines = [Phrase.from_proto(l) for l in msg.lines]
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return AddressEntity(lines, bbox, value)
+    return Address(lines, bbox, value)
 
   def to_proto(self) -> entity_pb2.Address:
     msg = entity_pb2.Address(bbox=self.bbox.to_proto())
@@ -483,26 +479,26 @@ class AddressEntity(Entity):
     return msg
 
   @property
-  def children(self) -> Iterable[PhraseEntity]:
-    """ A AddressEntity's children are the PhraseEntities of its line parts. """
+  def children(self) -> Iterable[Phrase]:
+    """ A Address's children are the PhraseEntities of its line parts. """
     yield from self.lines
 
 
 @dataclass(frozen=True)
-class ClusterEntity(Entity):
-  token_span: PhraseEntity
+class Cluster(Entity):
+  token_span: Phrase
   bbox: BBox
-  label: Optional[str]
+  label: Optional[str] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'ClusterEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Cluster':
     assert isinstance(msg, entity_pb2.Cluster)
-    token_span = PhraseEntity.from_proto(msg.token_span)
+    token_span = Phrase.from_proto(msg.token_span)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     label = None
     if msg.HasField('label'):
       label = msg.label
-    return ClusterEntity(token_span, bbox, label)
+    return Cluster(token_span, bbox, label)
 
   def to_proto(self) -> entity_pb2.Cluster:
     msg = entity_pb2.Cluster(bbox=self.bbox.to_proto())
@@ -512,8 +508,8 @@ class ClusterEntity(Entity):
     return msg
 
   @property
-  def children(self) -> Iterable[PhraseEntity]:
-    """ A ClusterEntity's child is the PhraseEntity spanning its tokens. """
+  def children(self) -> Iterable[Phrase]:
+    """ A Cluster's child is the Phrase spanning its tokens. """
     yield self.token_span
 
 
@@ -548,37 +544,37 @@ def proto_to_entity(
   """
   payload_type = msg.WhichOneof('payload')
   if payload_type == 'word':
-    return WordEntity.from_proto(msg.word)
+    return Word.from_proto(msg.word)
   elif payload_type == 'line':
-    return LineEntity.from_proto(msg.line)
+    return Line.from_proto(msg.line)
   elif payload_type == 'paragraph':
-    return ParagraphEntity.from_proto(msg.paragraph)
+    return Paragraph.from_proto(msg.paragraph)
   elif payload_type == 'table_cell':
-    return TableCellEntity.from_proto(msg.table_cell)
+    return TableCell.from_proto(msg.table_cell)
   elif payload_type == 'table_row':
-    return TableRowEntity.from_proto(msg.table_row)
+    return TableRow.from_proto(msg.table_row)
   elif payload_type == 'table':
-    return TableEntity.from_proto(msg.table)
+    return Table.from_proto(msg.table)
   elif payload_type == 'token':
-    return TokenEntity.from_proto(msg.token)
+    return Token.from_proto(msg.token)
   elif payload_type == 'phrase':
-    return PhraseEntity.from_proto(msg.phrase)
+    return Phrase.from_proto(msg.phrase)
   elif payload_type == 'number':
-    return NumberEntity.from_proto(msg.number)
+    return Number.from_proto(msg.number)
   elif payload_type == 'integer':
-    return IntegerEntity.from_proto(msg.integer)
+    return Integer.from_proto(msg.integer)
   elif payload_type == 'date':
-    return DateEntity.from_proto(msg.date)
+    return Date.from_proto(msg.date)
   elif payload_type == 'time':
-    return TimeEntity.from_proto(msg.time)
+    return Time.from_proto(msg.time)
   elif payload_type == 'currency':
-    return CurrencyEntity.from_proto(msg.currency)
+    return Currency.from_proto(msg.currency)
   elif payload_type == 'name':
-    return NameEntity.from_proto(msg.name)
+    return Name.from_proto(msg.name)
   elif payload_type == 'address':
-    return AddressEntity.from_proto(msg.address)
+    return Address.from_proto(msg.address)
   elif payload_type == 'cluster':
-    return ClusterEntity.from_proto(msg.cluster)
+    return Cluster.from_proto(msg.cluster)
   elif payload_type == 'custom':
     custom_type: str = getattr(msg.custom, 'type')
     if entity_registry is not None:
