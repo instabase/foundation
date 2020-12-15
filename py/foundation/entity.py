@@ -51,7 +51,7 @@ class Entity(abc.ABC, Generic[E]):
 
   @property
   @abc.abstractmethod
-  def children(self) -> Iterable[E]:
+  def children(self) -> Iterable['Entity']:
     """Yields all sub-entities of this entity.
 
     See implementing subclass methods for entity-specific definitions.
