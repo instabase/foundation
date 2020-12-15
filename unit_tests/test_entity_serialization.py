@@ -3,8 +3,8 @@ from typing import Iterable
 from unittest import TestCase
 
 from foundation.entity import (Word, Line, Paragraph, TableCell, TableRow,
-                               Table, Token, Phrase, Number, Integer, Date,
-                               Time, Currency, Name, Address, Cluster)
+                               Table, Number, Integer, Date, Time, Currency,
+                               PersonName, Address, Cluster)
 from foundation.geometry import BBox, Point
 from foundation.ocr import InputWord
 from foundation.protos.doc import entity_pb2
@@ -28,7 +28,8 @@ class TestLine(TestCase):
     w1 = Word('hello', unwrap(BBox.spanning((Point(0, 0), Point(5, 1)))))
     w2 = Word('world', unwrap(BBox.spanning((Point(6, 0), Point(11, 1)))))
     words = [w1, w2]
-    bbox = unwrap(BBox.spanning(chain.from_iterable([w.bbox.corners() for w in words])))
+    bbox = unwrap(
+        BBox.spanning(chain.from_iterable([w.bbox.corners() for w in words])))
 
     line = Line(words, bbox)
     pb = line.to_proto()
