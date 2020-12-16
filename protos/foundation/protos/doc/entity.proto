@@ -2,24 +2,24 @@ syntax = "proto2";
 
 package doc;
 
+import "foundation/protos/geometry.proto";
 import "foundation/protos/ocr/types.proto";
 
+/* Union type holds one of these Entity variants. */
 message Entity {
 	oneof payload {
-		OcrWord ocr_word = 1;
+		Word word = 1;
 		Line line = 2;
 		Paragraph paragraph = 3;
 		TableCell table_cell = 4;
 		TableRow table_row = 5;
 		Table table = 6;
-		Token token = 7;
-		Phrase phrase = 8;
 		Number number = 9;
 		Integer integer = 10;
 		Date date = 11;
 		Time time = 12;
 		Currency currency = 13;
-		Name name = 14;
+		PersonName name = 14;
 		Address address = 15;
 		Cluster cluster = 16;
 		GenericEntity custom = 17;
@@ -36,16 +36,20 @@ message GenericEntity {
 	// The 'type' field tells a decoder how to deserialize the 'data' field.
 	required string type = 1;
 	required bytes data = 2;
+	required geometry.BBox bbox = 3;
 }
 
-/* Corresponds to an OCR input word. */
-message OcrWord {
-	required ocr.InputWord word = 1;
+/* Corresponds to an OCR word. */
+message Word {
+	required string text = 1;
+	required geometry.BBox bbox = 2;
+	optional ocr.InputWord origin = 3;
 }
 
 /* A sequence of OCR words. */
 message Line {
-	repeated ocr.InputWord ocr_words = 1;
+	repeated Word words = 1;
+	required geometry.BBox bbox = 2;
 }
 
 /* A sequence of Lines.
@@ -54,6 +58,7 @@ message Line {
 */
 message Paragraph {
 	repeated Line lines = 1;
+	required geometry.BBox bbox = 2;
 }
 
 /* A Cell of a table.
@@ -62,11 +67,13 @@ message Paragraph {
 */
 message TableCell {
 	repeated Entity content = 1;
+	required geometry.BBox bbox = 2;
 }
 
 /* A Row is a sequence of table cells. */
 message TableRow {
 	repeated TableCell cells = 1;
+	required geometry.BBox bbox = 2;
 }
 
 /* A Table is a sequence of rows.
@@ -75,27 +82,10 @@ message TableRow {
 */
 message Table {
 	repeated TableRow rows = 1;
+	required geometry.BBox bbox = 2;
 }
 
 /* ----- Semantic types ----- */
-
-/* A Token is a sequence of OCR words, grouped into a useful semantic unit.
-
-	 Tokens are a semantic type, e.g. a natural-language word like "fire truck".
-
-	 We may also want to handle OCR errors which split natural language
-	 words into multiple OCR rectangles.
- */
-message Token {
-	repeated ocr.InputWord span = 1;
-}
-
-/* A Phrase is a sequence of Tokens, grouped into a useful semantic unit.
-*/
-message Phrase {
-	repeated Token words = 1;
-}
-
 
 /* -------------------------------------------------------------------
 	 These are essentially NER types. It can be useful to distinguish a set of
@@ -108,55 +98,59 @@ message Phrase {
 /* A Number is a real-valued number.
 */
 message Number {
-	required Token token = 1;
-	optional double value = 2;
+	repeated Word span = 1;
+	required geometry.BBox bbox = 2;
+	optional double value = 3;
 }
 
 message Integer {
-	required Token token = 1;
-	optional int64 value = 2;
+	repeated Word span = 1;
+	required geometry.BBox bbox = 2;
+	optional int64 value = 3;
 }
 
 message Date {
-	required Token token = 1;
+	repeated Word span = 1;
+	required geometry.BBox bbox = 2;
 	// Let this value be an ISO8601 formatted date.
 	// TODO: we should settle on an appropriate denotation format here.
-	optional string value = 2;
+	optional string value = 3;
 }
 
 message Time {
-	required Token token = 1;
+	repeated Word span = 1;
+	required geometry.BBox bbox = 2;
 	// Let this value be UNIX time in seconds from the epoch.
 	// TODO: we should settle on an appropriate denotation format here.
-	optional uint64 value = 2;
+	optional uint64 value = 3;
 }
 
 // TODO: do we want a Datetime type?
 
 message Currency {
-	required Token token = 1;
+	repeated Word span = 1;
+	required geometry.BBox bbox = 2;
 	// Fixed-point representation for currency avoids float-rounding issues.
 	// TODO: we should settle on an appropriate denotation format here.
 	message FixedDecimal {
 		required int64 integer_part = 1;
 		required uint32 fractional_part = 2;
 	}
-	optional FixedDecimal value = 2;
+	optional FixedDecimal value = 3;
 	optional string units = 4;
 }
 
-message Name {
-	required Phrase name_parts = 1;
-	optional string value = 2;
+message PersonName {
+	repeated Line name_parts = 1;
+	required geometry.BBox bbox = 2;
+	optional string value = 3;
 }
 
 message Address {
-	// Grouping Phrases, each phrase a "line", into an Address message may be good.
-	// This would distinguish an OCR Line from some other way of grouping Tokens together.
-	// TODO: is sequence of Phrase the right unit type here?
-	repeated Phrase lines = 1;
+	repeated Line lines = 1;
+	required geometry.BBox bbox = 2;
 	// TODO: we should settle on an appropriate denotation format here.
-	optional string value = 2;
+	optional string value = 3;
 }
 
 /* A Cluster associates a Phrase [a sequence of Tokens] with some semantic label.
@@ -164,8 +158,8 @@ message Address {
 	 This type should be useful to NER-like models.
 */
 message Cluster {
-	// TODO: is Phrase the right unit type here?
-	required Phrase token_span = 1;
-	optional string label = 2;
+	repeated Line span = 1;
+	required geometry.BBox bbox = 2;
+	optional string label = 3;
 }
 

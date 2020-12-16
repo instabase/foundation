@@ -1,4 +1,4 @@
-from typing import NoReturn
+from typing import NoReturn, Optional, TypeVar
 
 
 def assert_exhaustive(x: NoReturn) -> NoReturn:
@@ -21,3 +21,14 @@ def assert_exhaustive(x: NoReturn) -> NoReturn:
         assert_exhaustive(x)  # mypy will catch this statically
   """
   raise AssertionError(f'Unhandled type: {type(x).__name__}')
+
+T = TypeVar('T')
+def unwrap(x: Optional[T]) -> T:
+  """ Non-defensively use the value inside an Optional.
+
+  Raises:
+    RuntimeError: If x is None
+  """
+  if x is None:
+    raise RuntimeError('Called unwrap() on a None value')
+  return x

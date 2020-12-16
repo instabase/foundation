@@ -10,16 +10,16 @@ from foundation.protos import geometry_pb2
 from foundation.protos.doc import entity_pb2
 from foundation.protos.doc.entity_pb2 import Currency as Currency_pb2
 
+from .geometry import BBox
 from .ocr import InputWord
-from .typing_utils import assert_exhaustive
+from .typing_utils import assert_exhaustive, unwrap
 """ These are the built-in Entity types supported by Foundation. """
-PbEntityPayloadType = Union[entity_pb2.OcrWord, entity_pb2.Line,
+PbEntityPayloadType = Union[entity_pb2.Word, entity_pb2.Line,
                             entity_pb2.Paragraph, entity_pb2.TableCell,
                             entity_pb2.TableRow, entity_pb2.Table,
-                            entity_pb2.Token, entity_pb2.Phrase,
                             entity_pb2.Number, entity_pb2.Integer,
                             entity_pb2.Date, entity_pb2.Time,
-                            entity_pb2.Currency, entity_pb2.Name,
+                            entity_pb2.Currency, entity_pb2.PersonName,
                             entity_pb2.Address, entity_pb2.Cluster,
                             entity_pb2.GenericEntity]
 
@@ -27,6 +27,7 @@ E = TypeVar('E', bound='Entity')
 
 
 class Entity(abc.ABC, Generic[E]):
+  bbox: BBox
 
   @staticmethod
   @abc.abstractmethod
@@ -62,7 +63,7 @@ class Entity(abc.ABC, Generic[E]):
     """
     ...
 
-  def ocr_words(self) -> Iterable['OcrWordEntity']:
+  def ocr_words(self) -> Iterable['Word']:
     """Yields all OcrWordEntity's among this entity's children.
 
     Can be seen as returning an iterator over the leaves of this
@@ -76,33 +77,33 @@ class Entity(abc.ABC, Generic[E]):
 
 
 @dataclass(frozen=True)
-class OcrWordEntity(Entity):
-  word: InputWord
-
-  @property
-  def origin(self) -> InputWord:
-    """Provenance data.
-
-    Returns the OCR InputWord corresponding to this Entity.
-    """
-    return self.word
+class Word(Entity):
+  text: str
+  bbox: BBox
+  origin: Optional[InputWord] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'OcrWordEntity':
-    assert isinstance(msg, entity_pb2.OcrWord)
-    return OcrWordEntity(InputWord.from_proto(msg.word))
+  def from_proto(msg: PbEntityPayloadType) -> 'Word':
+    assert isinstance(msg, entity_pb2.Word)
+    text = msg.text
+    bbox = unwrap(BBox.from_proto(msg.bbox))  # TODO: what does None mean here?
+    input_word = None
+    if msg.HasField('origin'):
+      input_word = InputWord.from_proto(msg.origin)
+    return Word(text, bbox, input_word)
 
-  def to_proto(self) -> entity_pb2.OcrWord:
-    msg = entity_pb2.OcrWord()
-    msg.word.CopyFrom(self.word.to_proto())
+  def to_proto(self) -> entity_pb2.Word:
+    msg = entity_pb2.Word(text=self.text, bbox=self.bbox.to_proto())
+    if self.origin is not None:
+      msg.origin.CopyFrom(self.origin.to_proto())
     return msg
 
   @property
   def children(self) -> Iterable[E]:
-    """ OcrWordEntity has no children. """
+    """ Word has no children. """
     yield from []
 
-  def ocr_words(self) -> Iterable['OcrWordEntity']:
+  def ocr_words(self) -> Iterable['Word']:
     """ Yields itself.
 
     This provides the base case for Entity.ocr_words.
@@ -111,285 +112,260 @@ class OcrWordEntity(Entity):
 
 
 @dataclass(frozen=True)
-class LineEntity(Entity):
-  _ocr_words: List[OcrWordEntity]
+class Line(Entity):
+  _ocr_words: List[Word]
+  bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'LineEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Line':
     assert isinstance(msg, entity_pb2.Line)
-    ocr_words = [OcrWordEntity(InputWord.from_proto(w)) for w in msg.ocr_words]
-    return LineEntity(ocr_words)
+    bbox = unwrap(BBox.from_proto(msg.bbox))
+    ocr_words = [Word.from_proto(w) for w in msg.words]
+    return Line(ocr_words, bbox)
 
   def to_proto(self) -> entity_pb2.Line:
-    msg = entity_pb2.Line()
-    for w in self._ocr_words:
-      input_word_msg = w.word.to_proto()
-      msg.ocr_words.append(input_word_msg)
+    msg = entity_pb2.Line(bbox=self.bbox.to_proto())
+    msg.words.extend(w.to_proto() for w in self._ocr_words)
     return msg
 
   @property
-  def children(self) -> Iterable[OcrWordEntity]:
-    """ A LineEntity's children are its OCR words. """
+  def children(self) -> Iterable[Word]:
+    """ A Line's children are its OCR words. """
     yield from self._ocr_words
 
 
 @dataclass(frozen=True)
-class ParagraphEntity(Entity):
-  lines: List[LineEntity]
+class Paragraph(Entity):
+  lines: List[Line]
+  bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'ParagraphEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Paragraph':
     assert isinstance(msg, entity_pb2.Paragraph)
-    lines = [LineEntity.from_proto(l) for l in msg.lines]
-    return ParagraphEntity(lines)
+    lines = [Line.from_proto(l) for l in msg.lines]
+    bbox = unwrap(BBox.from_proto(msg.bbox))
+    return Paragraph(lines, bbox)
 
   def to_proto(self) -> entity_pb2.Paragraph:
-    msg = entity_pb2.Paragraph()
+    msg = entity_pb2.Paragraph(bbox=self.bbox.to_proto())
     msg.lines.extend(l.to_proto() for l in self.lines)
     return msg
 
   @property
-  def children(self) -> Iterable[LineEntity]:
-    """ A ParagraphEntity's children are its Lines. """
+  def children(self) -> Iterable[Line]:
+    """ A Paragraph's children are its Lines. """
     yield from self.lines
 
 
 @dataclass(frozen=True)
-class TableCellEntity(Entity):
+class TableCell(Entity):
   content: List[Entity]
+  bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'TableCellEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'TableCell':
     assert isinstance(msg, entity_pb2.TableCell)
     content = [proto_to_entity(e) for e in msg.content]
-    return TableCellEntity(content)
+    bbox = unwrap(BBox.from_proto(msg.bbox))
+    return TableCell(content, bbox)
 
   def to_proto(self) -> entity_pb2.TableCell:
-    msg = entity_pb2.TableCell()
+    msg = entity_pb2.TableCell(bbox=self.bbox.to_proto())
     msg.content.extend(entity_to_proto(e) for e in self.content)
     return msg
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A TableCellEntity's children are its contents. """
+    """ A TableCell's children are its contents. """
     yield from self.content
 
 
 @dataclass(frozen=True)
-class TableRowEntity(Entity):
-  cells: List[TableCellEntity]
+class TableRow(Entity):
+  cells: List[TableCell]
+  bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'TableRowEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'TableRow':
     assert isinstance(msg, entity_pb2.TableRow)
-    cells = [TableCellEntity.from_proto(c) for c in msg.cells]
-    return TableRowEntity(cells)
+    cells = [TableCell.from_proto(c) for c in msg.cells]
+    bbox = unwrap(BBox.from_proto(msg.bbox))
+    return TableRow(cells, bbox)
 
   def to_proto(self) -> entity_pb2.TableRow:
-    msg = entity_pb2.TableRow()
+    msg = entity_pb2.TableRow(bbox=self.bbox.to_proto())
     msg.cells.extend(c.to_proto() for c in self.cells)
     return msg
 
   @property
-  def children(self) -> Iterable[TableCellEntity]:
-    """ A TableRowEntity's children are its cells. """
+  def children(self) -> Iterable[TableCell]:
+    """ A TableRow's children are its cells. """
     yield from self.cells
 
 
 @dataclass(frozen=True)
-class TableEntity(Entity):
-  rows: List[TableRowEntity]
+class Table(Entity):
+  rows: List[TableRow]
+  bbox: BBox
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'TableEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Table':
     assert isinstance(msg, entity_pb2.Table)
-    rows = [TableRowEntity.from_proto(r) for r in msg.rows]
-    return TableEntity(rows)
+    rows = [TableRow.from_proto(r) for r in msg.rows]
+    bbox = unwrap(BBox.from_proto(msg.bbox))
+    return Table(rows, bbox)
 
   def to_proto(self) -> entity_pb2.Table:
-    msg = entity_pb2.Table()
+    msg = entity_pb2.Table(bbox=self.bbox.to_proto())
     msg.rows.extend(r.to_proto() for r in self.rows)
     return msg
 
   @property
-  def children(self) -> Iterable[TableRowEntity]:
+  def children(self) -> Iterable[TableRow]:
     """ A Table's children are its rows. """
     yield from self.rows
 
 
 @dataclass(frozen=True)
-class TokenEntity(Entity):
-  span: List[OcrWordEntity]
+class Number(Entity):
+  span: List[Word]
+  bbox: BBox
+  value: Optional[float] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'TokenEntity':
-    assert isinstance(msg, entity_pb2.Token)
-    span = [OcrWordEntity(InputWord.from_proto(w)) for w in msg.span]
-    return TokenEntity(span)
+  def from_proto(msg: PbEntityPayloadType) -> 'Number':
+    assert isinstance(msg, entity_pb2.Number)
+    span = [Word.from_proto(w) for w in msg.span]
+    bbox = unwrap(BBox.from_proto(msg.bbox))
+    value = None
+    if msg.HasField('value'):
+      value = msg.value
+    return Number(span, bbox, value)
 
-  def to_proto(self) -> entity_pb2.Token:
-    msg = entity_pb2.Token()
-    input_words = (s.word for s in self.span)
-    msg.span.extend(s.to_proto() for s in input_words)
+  def to_proto(self) -> entity_pb2.Number:
+    msg = entity_pb2.Number(bbox=self.bbox.to_proto())
+    msg.span.extend(w.to_proto() for w in self.span)
+    if self.value is not None:
+      msg.value = self.value
     return msg
 
   @property
-  def children(self) -> Iterable[OcrWordEntity]:
-    """ A TokenEntity's children are its span of OcrWordEntities. """
+  def children(self) -> Iterable[Entity]:
+    """ A Number's children are the words it spans. """
     yield from self.span
 
 
 @dataclass(frozen=True)
-class PhraseEntity(Entity):
-  words: List[TokenEntity]
+class Integer(Entity):
+  span: List[Word]
+  bbox: BBox
+  value: Optional[int] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'PhraseEntity':
-    assert isinstance(msg, entity_pb2.Phrase)
-    words = [TokenEntity.from_proto(t) for t in msg.words]
-    return PhraseEntity(words)
-
-  def to_proto(self) -> entity_pb2.Phrase:
-    msg = entity_pb2.Phrase()
-    msg.words.extend(w.to_proto() for w in self.words)
-    return msg
-
-  @property
-  def children(self) -> Iterable[TokenEntity]:
-    """ A PhraseEntity's children are its tokens. """
-    yield from self.words
-
-
-@dataclass(frozen=True)
-class NumberEntity(Entity):
-  token: TokenEntity
-  value: Optional[float]
-
-  @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'NumberEntity':
-    assert isinstance(msg, entity_pb2.Number)
-    token = TokenEntity.from_proto(msg.token)
-    value = None
-    if msg.HasField('value'):
-      value = msg.value
-    return NumberEntity(token, value)
-
-  def to_proto(self) -> entity_pb2.Number:
-    msg = entity_pb2.Number()
-    msg.token.CopyFrom(self.token.to_proto())
-    if self.value is not None:
-      msg.value = self.value
-    return msg
-
-  @property
-  def children(self) -> Iterable[Entity]:
-    """ A NumberEntity's child is its token. """
-    yield self.token
-
-
-@dataclass(frozen=True)
-class IntegerEntity(Entity):
-  token: TokenEntity
-  value: Optional[int]
-
-  @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'IntegerEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Integer':
     assert isinstance(msg, entity_pb2.Integer)
-    token = TokenEntity.from_proto(msg.token)
+    span = [Word.from_proto(w) for w in msg.span]
+    bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return IntegerEntity(token, value)
+    return Integer(span, bbox, value)
 
   def to_proto(self) -> entity_pb2.Integer:
-    msg = entity_pb2.Integer()
-    msg.token.CopyFrom(self.token.to_proto())
+    msg = entity_pb2.Integer(bbox=self.bbox.to_proto())
+    msg.span.extend(w.to_proto() for w in self.span)
     if self.value is not None:
       msg.value = self.value
     return msg
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ An IntegerEntity's child is its token. """
-    yield self.token
+    """ An Integer's children are the words it spans. """
+    yield from self.span
 
 
 @dataclass(frozen=True)
-class DateEntity(Entity):
-  token: TokenEntity
-  value: Optional[str]
+class Date(Entity):
+  span: List[Word]
+  bbox: BBox
+  value: Optional[str] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'DateEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Date':
     assert isinstance(msg, entity_pb2.Date)
-    token = TokenEntity.from_proto(msg.token)
+    span = [Word.from_proto(w) for w in msg.span]
+    bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return DateEntity(token, value)
+    return Date(span, bbox, value)
 
   def to_proto(self) -> entity_pb2.Date:
-    msg = entity_pb2.Date()
-    msg.token.CopyFrom(self.token.to_proto())
+    msg = entity_pb2.Date(bbox=self.bbox.to_proto())
+    msg.span.extend(w.to_proto() for w in self.span)
     if self.value is not None:
       msg.value = self.value
     return msg
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A DateEntity's child is its token. """
-    yield self.token
+    """ A Date's children are the words it spans. """
+    yield from self.span
 
 
 @dataclass(frozen=True)
-class TimeEntity(Entity):
-  token: TokenEntity
-  value: Optional[int]
+class Time(Entity):
+  span: List[Word]
+  bbox: BBox
+  value: Optional[int] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'TimeEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Time':
     assert isinstance(msg, entity_pb2.Time)
-    token = TokenEntity.from_proto(msg.token)
+    span = [Word.from_proto(w) for w in msg.span]
+    bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return TimeEntity(token, value)
+    return Time(span, bbox, value)
 
   def to_proto(self) -> entity_pb2.Time:
-    msg = entity_pb2.Time()
-    msg.token.CopyFrom(self.token.to_proto())
+    msg = entity_pb2.Time(bbox=self.bbox.to_proto())
+    msg.span.extend(w.to_proto() for w in self.span)
     if self.value is not None:
       msg.value = self.value
     return msg
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A TimeEntity's child is its token. """
-    yield self.token
+    """ A Time's children are the words it spans. """
+    yield from self.span
 
 
 @dataclass(frozen=True)
-class CurrencyEntity(Entity):
-  token: TokenEntity
+class Currency(Entity):
+  span: List[Word]
+  bbox: BBox
   # TODO: wrap FixedDecimal
-  value: Optional[Currency_pb2.FixedDecimal]
-  units: Optional[str]
+  value: Optional[Currency_pb2.FixedDecimal] = None
+  units: Optional[str] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'CurrencyEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Currency':
     assert isinstance(msg, entity_pb2.Currency)
-    token = TokenEntity.from_proto(msg.token)
+    span = [Word.from_proto(w) for w in msg.span]
+    bbox = unwrap(BBox.from_proto(msg.bbox))
     units = None
     if msg.HasField('units'):
       units = msg.units
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return CurrencyEntity(token, value, units)
+    return Currency(span, bbox, value, units)
 
   def to_proto(self) -> entity_pb2.Currency:
-    msg = entity_pb2.Currency()
-    msg.token.CopyFrom(self.token.to_proto())
+    msg = entity_pb2.Currency(bbox=self.bbox.to_proto())
+    msg.span.extend(w.to_proto() for w in self.span)
     if self.value is not None:
       msg.value.CopyFrom(self.value)
     if self.units is not None:
@@ -398,89 +374,95 @@ class CurrencyEntity(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A CurrencyEntity's child is its token. """
-    yield self.token
+    """ A Currency's children are the words it spans. """
+    yield from self.span
 
 
 @dataclass(frozen=True)
-class NameEntity(Entity):
-  name_parts: PhraseEntity
-  value: Optional[str]
+class PersonName(Entity):
+  name_parts: List[Line]
+  bbox: BBox
+  value: Optional[str] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'NameEntity':
-    assert isinstance(msg, entity_pb2.Name)
-    name_parts = PhraseEntity.from_proto(msg.name_parts)
+  def from_proto(msg: PbEntityPayloadType) -> 'PersonName':
+    assert isinstance(msg, entity_pb2.PersonName)
+    name_parts = [Line.from_proto(n) for n in msg.name_parts]
+    bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return NameEntity(name_parts, value)
+    return PersonName(name_parts, bbox, value)
 
-  def to_proto(self) -> entity_pb2.Name:
-    msg = entity_pb2.Name()
-    msg.name_parts.CopyFrom(self.name_parts.to_proto())
+  def to_proto(self) -> entity_pb2.PersonName:
+    msg = entity_pb2.PersonName(bbox=self.bbox.to_proto())
+    msg.name_parts.extend(p.to_proto() for p in self.name_parts)
     if self.value is not None:
       msg.value = self.value
     return msg
 
   @property
-  def children(self) -> Iterable[PhraseEntity]:
-    """ A NameEntity's child is the PhraseEntity of its name parts. """
-    yield self.name_parts
+  def children(self) -> Iterable[Line]:
+    """ A PersonName's children are the Lines of its name parts. """
+    yield from self.name_parts
 
 
 @dataclass(frozen=True)
-class AddressEntity(Entity):
-  lines: List[PhraseEntity]
-  value: Optional[str]
+class Address(Entity):
+  lines: List[Line]
+  bbox: BBox
+  value: Optional[str] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'AddressEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Address':
     assert isinstance(msg, entity_pb2.Address)
-    lines = [PhraseEntity.from_proto(l) for l in msg.lines]
+    lines = [Line.from_proto(l) for l in msg.lines]
+    bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return AddressEntity(lines, value)
+    return Address(lines, bbox, value)
 
   def to_proto(self) -> entity_pb2.Address:
-    msg = entity_pb2.Address()
+    msg = entity_pb2.Address(bbox=self.bbox.to_proto())
     msg.lines.extend(l.to_proto() for l in self.lines)
     if self.value is not None:
       msg.value = self.value
     return msg
 
   @property
-  def children(self) -> Iterable[PhraseEntity]:
-    """ A AddressEntity's children are the PhraseEntities of its line parts. """
+  def children(self) -> Iterable[Line]:
+    """ A Address's children are the Lines it's composed of. """
     yield from self.lines
 
 
 @dataclass(frozen=True)
-class ClusterEntity(Entity):
-  token_span: PhraseEntity
-  label: Optional[str]
+class Cluster(Entity):
+  span: List[Line]
+  bbox: BBox
+  label: Optional[str] = None
 
   @staticmethod
-  def from_proto(msg: PbEntityPayloadType) -> 'ClusterEntity':
+  def from_proto(msg: PbEntityPayloadType) -> 'Cluster':
     assert isinstance(msg, entity_pb2.Cluster)
-    token_span = PhraseEntity.from_proto(msg.token_span)
+    span = [Line.from_proto(l) for l in msg.span]
+    bbox = unwrap(BBox.from_proto(msg.bbox))
     label = None
     if msg.HasField('label'):
       label = msg.label
-    return ClusterEntity(token_span, label)
+    return Cluster(span, bbox, label)
 
   def to_proto(self) -> entity_pb2.Cluster:
-    msg = entity_pb2.Cluster()
-    msg.token_span.CopyFrom(self.token_span.to_proto())
+    msg = entity_pb2.Cluster(bbox=self.bbox.to_proto())
+    msg.span.extend(l.to_proto() for l in self.span)
     if self.label is not None:
       msg.label = self.label
     return msg
 
   @property
-  def children(self) -> Iterable[PhraseEntity]:
-    """ A ClusterEntity's child is the PhraseEntity spanning its tokens. """
-    yield self.token_span
+  def children(self) -> Iterable[Line]:
+    """ A Cluster's children are Lines that it spans. """
+    yield from self.span
 
 
 """ Associates a string entity type name to a custom class that inherits
@@ -513,38 +495,34 @@ def proto_to_entity(
                     cased in this function.
   """
   payload_type = msg.WhichOneof('payload')
-  if payload_type == 'ocr_word':
-    return OcrWordEntity.from_proto(msg.ocr_word)
+  if payload_type == 'word':
+    return Word.from_proto(msg.word)
   elif payload_type == 'line':
-    return LineEntity.from_proto(msg.line)
+    return Line.from_proto(msg.line)
   elif payload_type == 'paragraph':
-    return ParagraphEntity.from_proto(msg.paragraph)
+    return Paragraph.from_proto(msg.paragraph)
   elif payload_type == 'table_cell':
-    return TableCellEntity.from_proto(msg.table_cell)
+    return TableCell.from_proto(msg.table_cell)
   elif payload_type == 'table_row':
-    return TableRowEntity.from_proto(msg.table_row)
+    return TableRow.from_proto(msg.table_row)
   elif payload_type == 'table':
-    return TableEntity.from_proto(msg.table)
-  elif payload_type == 'token':
-    return TokenEntity.from_proto(msg.token)
-  elif payload_type == 'phrase':
-    return PhraseEntity.from_proto(msg.phrase)
+    return Table.from_proto(msg.table)
   elif payload_type == 'number':
-    return NumberEntity.from_proto(msg.number)
+    return Number.from_proto(msg.number)
   elif payload_type == 'integer':
-    return IntegerEntity.from_proto(msg.integer)
+    return Integer.from_proto(msg.integer)
   elif payload_type == 'date':
-    return DateEntity.from_proto(msg.date)
+    return Date.from_proto(msg.date)
   elif payload_type == 'time':
-    return TimeEntity.from_proto(msg.time)
+    return Time.from_proto(msg.time)
   elif payload_type == 'currency':
-    return CurrencyEntity.from_proto(msg.currency)
+    return Currency.from_proto(msg.currency)
   elif payload_type == 'name':
-    return NameEntity.from_proto(msg.name)
+    return PersonName.from_proto(msg.name)
   elif payload_type == 'address':
-    return AddressEntity.from_proto(msg.address)
+    return Address.from_proto(msg.address)
   elif payload_type == 'cluster':
-    return ClusterEntity.from_proto(msg.cluster)
+    return Cluster.from_proto(msg.cluster)
   elif payload_type == 'custom':
     custom_type: str = getattr(msg.custom, 'type')
     if entity_registry is not None:
@@ -573,8 +551,8 @@ def entity_to_proto(entity: Entity) -> entity_pb2.Entity:
                     cased in this function.
   """
   payload = entity.to_proto()
-  if isinstance(payload, entity_pb2.OcrWord):
-    return entity_pb2.Entity(ocr_word=payload)
+  if isinstance(payload, entity_pb2.Word):
+    return entity_pb2.Entity(word=payload)
   elif isinstance(payload, entity_pb2.Line):
     return entity_pb2.Entity(line=payload)
   elif isinstance(payload, entity_pb2.Paragraph):
@@ -585,10 +563,6 @@ def entity_to_proto(entity: Entity) -> entity_pb2.Entity:
     return entity_pb2.Entity(table_row=payload)
   elif isinstance(payload, entity_pb2.Table):
     return entity_pb2.Entity(table=payload)
-  elif isinstance(payload, entity_pb2.Token):
-    return entity_pb2.Entity(token=payload)
-  elif isinstance(payload, entity_pb2.Phrase):
-    return entity_pb2.Entity(phrase=payload)
   elif isinstance(payload, entity_pb2.Number):
     return entity_pb2.Entity(number=payload)
   elif isinstance(payload, entity_pb2.Integer):
@@ -599,7 +573,7 @@ def entity_to_proto(entity: Entity) -> entity_pb2.Entity:
     return entity_pb2.Entity(time=payload)
   elif isinstance(payload, entity_pb2.Currency):
     return entity_pb2.Entity(currency=payload)
-  elif isinstance(payload, entity_pb2.Name):
+  elif isinstance(payload, entity_pb2.PersonName):
     return entity_pb2.Entity(name=payload)
   elif isinstance(payload, entity_pb2.Address):
     return entity_pb2.Entity(address=payload)
