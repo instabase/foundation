@@ -14,15 +14,16 @@ message Entity {
 		TableCell table_cell = 4;
 		TableRow table_row = 5;
 		Table table = 6;
-		Number number = 9;
-		Integer integer = 10;
-		Date date = 11;
-		Time time = 12;
-		Currency currency = 13;
-		PersonName name = 14;
-		Address address = 15;
-		Cluster cluster = 16;
-		GenericEntity custom = 17;
+		Number number = 7;
+		Integer integer = 8;
+		Date date = 9;
+		Time time = 10;
+		Currency currency = 11;
+		PersonName name = 12;
+		Address address = 13;
+		Cluster cluster = 14;
+		Page page = 15;
+		GenericEntity custom = 16;
 	}
 }
 
@@ -163,3 +164,16 @@ message Cluster {
 	optional string label = 3;
 }
 
+/* A Page is represented as another Entity type.
+
+	 Its bounding box is its dimensions, translated by its offset within the
+	 document. For example, a document with 3 pages, each 50x100, "stacking"
+	 pages on top of each other would put page 2's bbox as:
+	     top_left: (0, 100), bottom_right: (50, 200)
+*/
+message Page {
+	// 1-indexed page number within the document
+	required int64 index = 1;
+	// Page bounding box within a document
+	required geometry.BBox bbox = 2;
+}
