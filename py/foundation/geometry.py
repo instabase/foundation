@@ -238,6 +238,17 @@ class BBox:
     return BBox(ix, iy)
 
   @staticmethod
+  def union(bs: Iterable['BBox']) -> Optional['BBox']:
+    """Returns the smallest bbox containing all bs (their union).
+
+    Returns:
+      None if bs is an empty iterator.
+    """
+    b = BBox.spanning(
+      chain.from_iterable([b.corners() for b in bs]))
+    return b
+
+  @staticmethod
   def distance(b1: 'BBox', b2: 'BBox') -> float:
     ix = Interval(min(b1.ix.a, b2.ix.a), max(b1.ix.b, b2.ix.b))
     iy = Interval(min(b1.iy.a, b2.iy.a), max(b1.iy.b, b2.iy.b))

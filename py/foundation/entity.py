@@ -23,10 +23,8 @@ PbEntityPayloadType = Union[entity_pb2.Word, entity_pb2.Line,
                             entity_pb2.Address, entity_pb2.Cluster,
                             entity_pb2.GenericEntity]
 
-E = TypeVar('E', bound='Entity')
 
-
-class Entity(abc.ABC, Generic[E]):
+class Entity(abc.ABC):
   bbox: BBox
 
   @staticmethod
@@ -83,6 +81,13 @@ class Word(Entity):
   origin: Optional[InputWord] = None
 
   @staticmethod
+  def from_inputword(origin: InputWord) -> Optional['Word']:
+    text = origin.text
+    if text is None:
+      return None
+    return Word(text, origin.bounding_box, origin)
+
+  @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Word':
     assert isinstance(msg, entity_pb2.Word)
     text = msg.text
@@ -99,7 +104,7 @@ class Word(Entity):
     return msg
 
   @property
-  def children(self) -> Iterable[E]:
+  def children(self) -> Iterable[Entity]:
     """ Word has no children. """
     yield from []
 
