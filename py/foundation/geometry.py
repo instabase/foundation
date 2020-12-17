@@ -238,10 +238,14 @@ class BBox:
     return BBox(ix, iy)
 
   @staticmethod
-  def union(bs: Iterable['BBox']) -> 'BBox':
+  def union(bs: Iterable['BBox']) -> Optional['BBox']:
+    """Returns the smallest bbox containing all bs (their union).
+
+    Returns:
+      None if bs is an empty iterator.
+    """
     b = BBox.spanning(
       chain.from_iterable([b.corners() for b in bs]))
-    assert b is not None
     return b
 
   @staticmethod

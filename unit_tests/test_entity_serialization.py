@@ -29,7 +29,7 @@ class TestLine(TestCase):
     w2 = Word('world', unwrap(BBox.spanning((Point(6, 0), Point(11, 1)))))
 
     words = [w1, w2]
-    line = Line(words, BBox.union(w.bbox for w in words))
+    line = Line(words, unwrap(BBox.union(w.bbox for w in words)))
 
     pb = line.to_proto()
     assert line == Line.from_proto(pb)
