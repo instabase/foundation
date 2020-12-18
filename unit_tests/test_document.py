@@ -6,16 +6,22 @@ from foundation.geometry import BBox, Point
 
 from foundation.typing_utils import unwrap
 
+
 class TestDoc(TestCase):
 
-  def test_construct(self) -> None:
+  def test_bbox(self) -> None:
     w1 = Word('hello', unwrap(BBox.spanning((Point(0, 0), Point(5, 1)))))
     w2 = Word('world', unwrap(BBox.spanning((Point(6, 0), Point(11, 1)))))
+    p1 = Page(1, unwrap(BBox.spanning((Point(0, 0), Point(11, 1)))))
 
     words = (w1, w2)
     doc = Document.from_entities(words)
 
     assert doc.bbox == unwrap(BBox.union(w.bbox for w in words))
+    assert doc.bbox == p1.bbox
+
+    doc = doc.with_entities((p1,))
+    assert doc.bbox == p1.bbox
 
   def test_constructwith(self) -> None:
     w1 = Word('hello', unwrap(BBox.spanning((Point(0, 0), Point(5, 1)))))
