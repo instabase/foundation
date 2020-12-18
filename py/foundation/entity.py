@@ -21,7 +21,7 @@ PbEntityPayloadType = Union[entity_pb2.Word, entity_pb2.Line,
                             entity_pb2.Date, entity_pb2.Time,
                             entity_pb2.Currency, entity_pb2.PersonName,
                             entity_pb2.Address, entity_pb2.Cluster,
-                            entity_pb2.GenericEntity]
+                            entity_pb2.Page, entity_pb2.GenericEntity]
 
 
 class Entity(abc.ABC):
@@ -72,6 +72,32 @@ class Entity(abc.ABC):
     STRONGLY RECOMMENDED not to override this.
     """
     yield from chain.from_iterable(e.ocr_words() for e in self.children)
+
+
+@dataclass(frozen=True)
+class Page(Entity):
+  """ A Page is defined by an image region, or region in a document. """
+  index: int
+  bbox: BBox
+
+  @staticmethod
+  def from_proto(msg: PbEntityPayloadType) -> 'Page':
+    assert isinstance(msg, entity_pb2.Page)
+    index = msg.index
+    bbox = unwrap(BBox.from_proto(msg.bbox))
+    return Page(index, bbox)
+
+  def to_proto(self) -> entity_pb2.Page:
+    msg = entity_pb2.Page(index=self.index, bbox=self.bbox.to_proto())
+    return msg
+
+  @property
+  def children(self) -> Iterable['Entity']:
+    """A page has no children.
+
+    It is simply a region.
+    """
+    yield from []
 
 
 @dataclass(frozen=True)
@@ -528,6 +554,8 @@ def proto_to_entity(
     return Address.from_proto(msg.address)
   elif payload_type == 'cluster':
     return Cluster.from_proto(msg.cluster)
+  elif payload_type == 'page':
+    return Page.from_proto(msg.page)
   elif payload_type == 'custom':
     custom_type: str = getattr(msg.custom, 'type')
     if entity_registry is not None:
@@ -584,6 +612,8 @@ def entity_to_proto(entity: Entity) -> entity_pb2.Entity:
     return entity_pb2.Entity(address=payload)
   elif isinstance(payload, entity_pb2.Cluster):
     return entity_pb2.Entity(cluster=payload)
+  elif isinstance(payload, entity_pb2.Page):
+    return entity_pb2.Entity(page=payload)
   elif isinstance(payload, entity_pb2.GenericEntity):
     return entity_pb2.Entity(custom=payload)
 
