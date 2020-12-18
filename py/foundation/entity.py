@@ -76,6 +76,7 @@ class Entity(abc.ABC):
 
 @dataclass(frozen=True)
 class Page(Entity):
+  """ A Page is defined by an image region, or region in a document. """
   index: int
   bbox: BBox
 
@@ -94,8 +95,7 @@ class Page(Entity):
   def children(self) -> Iterable['Entity']:
     """A page has no children.
 
-    In downstream applications, it can be useful to associate pages with those
-    entities which are contained within a page.
+    It is simply a region.
     """
     yield from []
 
