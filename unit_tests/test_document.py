@@ -8,12 +8,21 @@ from foundation.typing_utils import unwrap
 
 class TestDoc(TestCase):
 
+  def test_construct(self) -> None:
+    w1 = Word('hello', unwrap(BBox.spanning((Point(0, 0), Point(5, 1)))))
+    w2 = Word('world', unwrap(BBox.spanning((Point(6, 0), Point(11, 1)))))
+
+    words = (w1, w2)
+    doc = Document.from_entities(words)
+
+    assert doc.bbox == unwrap(BBox.union(w.bbox for w in words))
+
   def test_constructwith(self) -> None:
     w1 = Word('hello', unwrap(BBox.spanning((Point(0, 0), Point(5, 1)))))
     w2 = Word('world', unwrap(BBox.spanning((Point(6, 0), Point(11, 1)))))
 
     words = (w1, w2)
-    doc_words = Document(words)
+    doc_words = Document.from_entities(words)
 
     line = Line(words, unwrap(BBox.union(w.bbox for w in words)))
     doc = doc_words.with_entities((line,))
@@ -26,7 +35,7 @@ class TestDoc(TestCase):
 
     p1 = Page(1, unwrap(BBox.spanning((Point(0, 0), Point(11, 1)))))
 
-    doc = Document((w1, w2, p1))
+    doc = Document.from_entities((w1, w2, p1))
 
     assert set(doc.filter_entities(Page)) == set((p1,))
     assert set(doc.filter_entities(Word)) == set((w1, w2))
