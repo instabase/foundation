@@ -8,11 +8,13 @@ REPO_ROOT="$( git rev-parse --show-toplevel )"
 
 FND_PYTHONPATH=$REPO_ROOT/py
 export PYTHONPATH="$PYTHONPATH:$FND_PYTHONPATH"
+export MYPYPATH="$PYTHONPATH"
 
 UNITTEST_DIR="$REPO_ROOT/unit_tests/"
 
 echo "Checking mypy"
 python3 -m mypy $FND_PYTHONPATH/foundation
+python3 -m mypy $UNITTEST_DIR/
 echo "Ok mypy"
 
 echo "Checking unit tests"

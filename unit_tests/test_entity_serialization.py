@@ -28,7 +28,7 @@ class TestLine(TestCase):
     w1 = Word('hello', unwrap(BBox.spanning((Point(0, 0), Point(5, 1)))))
     w2 = Word('world', unwrap(BBox.spanning((Point(6, 0), Point(11, 1)))))
 
-    words = [w1, w2]
+    words = (w1, w2)
     line = Line(words, unwrap(BBox.union(w.bbox for w in words)))
 
     pb = line.to_proto()

@@ -3,8 +3,8 @@
 import abc
 from dataclasses import dataclass
 from itertools import chain
-from typing import (Dict, Generic, Iterable, List, Optional, Type, TypeVar,
-                    Union)
+from typing import (Dict, Generic, Iterable, Optional, Tuple, Type,
+                    TypeVar, Union)
 
 from foundation.protos import geometry_pb2
 from foundation.protos.doc import entity_pb2
@@ -144,14 +144,14 @@ class Word(Entity):
 
 @dataclass(frozen=True)
 class Line(Entity):
-  _ocr_words: List[Word]
+  _ocr_words: Tuple[Word, ...]
   bbox: BBox
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Line':
     assert isinstance(msg, entity_pb2.Line)
     bbox = unwrap(BBox.from_proto(msg.bbox))
-    ocr_words = [Word.from_proto(w) for w in msg.words]
+    ocr_words = tuple(Word.from_proto(w) for w in msg.words)
     return Line(ocr_words, bbox)
 
   def to_proto(self) -> entity_pb2.Line:
@@ -167,13 +167,13 @@ class Line(Entity):
 
 @dataclass(frozen=True)
 class Paragraph(Entity):
-  lines: List[Line]
+  lines: Tuple[Line, ...]
   bbox: BBox
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Paragraph':
     assert isinstance(msg, entity_pb2.Paragraph)
-    lines = [Line.from_proto(l) for l in msg.lines]
+    lines = tuple(Line.from_proto(l) for l in msg.lines)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     return Paragraph(lines, bbox)
 
@@ -190,13 +190,13 @@ class Paragraph(Entity):
 
 @dataclass(frozen=True)
 class TableCell(Entity):
-  content: List[Entity]
+  content: Tuple[Entity, ...]
   bbox: BBox
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'TableCell':
     assert isinstance(msg, entity_pb2.TableCell)
-    content = [proto_to_entity(e) for e in msg.content]
+    content = tuple(proto_to_entity(e) for e in msg.content)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     return TableCell(content, bbox)
 
@@ -213,13 +213,13 @@ class TableCell(Entity):
 
 @dataclass(frozen=True)
 class TableRow(Entity):
-  cells: List[TableCell]
+  cells: Tuple[TableCell, ...]
   bbox: BBox
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'TableRow':
     assert isinstance(msg, entity_pb2.TableRow)
-    cells = [TableCell.from_proto(c) for c in msg.cells]
+    cells = tuple(TableCell.from_proto(c) for c in msg.cells)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     return TableRow(cells, bbox)
 
@@ -236,13 +236,13 @@ class TableRow(Entity):
 
 @dataclass(frozen=True)
 class Table(Entity):
-  rows: List[TableRow]
+  rows: Tuple[TableRow, ...]
   bbox: BBox
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Table':
     assert isinstance(msg, entity_pb2.Table)
-    rows = [TableRow.from_proto(r) for r in msg.rows]
+    rows = tuple(TableRow.from_proto(r) for r in msg.rows)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     return Table(rows, bbox)
 
@@ -259,14 +259,14 @@ class Table(Entity):
 
 @dataclass(frozen=True)
 class Number(Entity):
-  span: List[Word]
+  span: Tuple[Word, ...]
   bbox: BBox
   value: Optional[float] = None
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Number':
     assert isinstance(msg, entity_pb2.Number)
-    span = [Word.from_proto(w) for w in msg.span]
+    span = tuple(Word.from_proto(w) for w in msg.span)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
@@ -288,14 +288,14 @@ class Number(Entity):
 
 @dataclass(frozen=True)
 class Integer(Entity):
-  span: List[Word]
+  span: Tuple[Word, ...]
   bbox: BBox
   value: Optional[int] = None
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Integer':
     assert isinstance(msg, entity_pb2.Integer)
-    span = [Word.from_proto(w) for w in msg.span]
+    span = tuple(Word.from_proto(w) for w in msg.span)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
@@ -317,14 +317,14 @@ class Integer(Entity):
 
 @dataclass(frozen=True)
 class Date(Entity):
-  span: List[Word]
+  span: Tuple[Word, ...]
   bbox: BBox
   value: Optional[str] = None
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Date':
     assert isinstance(msg, entity_pb2.Date)
-    span = [Word.from_proto(w) for w in msg.span]
+    span = tuple(Word.from_proto(w) for w in msg.span)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
@@ -346,14 +346,14 @@ class Date(Entity):
 
 @dataclass(frozen=True)
 class Time(Entity):
-  span: List[Word]
+  span: Tuple[Word, ...]
   bbox: BBox
   value: Optional[int] = None
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Time':
     assert isinstance(msg, entity_pb2.Time)
-    span = [Word.from_proto(w) for w in msg.span]
+    span = tuple(Word.from_proto(w) for w in msg.span)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
@@ -375,7 +375,7 @@ class Time(Entity):
 
 @dataclass(frozen=True)
 class Currency(Entity):
-  span: List[Word]
+  span: Tuple[Word, ...]
   bbox: BBox
   # TODO: wrap FixedDecimal
   value: Optional[Currency_pb2.FixedDecimal] = None
@@ -384,7 +384,7 @@ class Currency(Entity):
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Currency':
     assert isinstance(msg, entity_pb2.Currency)
-    span = [Word.from_proto(w) for w in msg.span]
+    span = tuple(Word.from_proto(w) for w in msg.span)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     units = None
     if msg.HasField('units'):
@@ -411,14 +411,14 @@ class Currency(Entity):
 
 @dataclass(frozen=True)
 class PersonName(Entity):
-  name_parts: List[Line]
+  name_parts: Tuple[Line, ...]
   bbox: BBox
   value: Optional[str] = None
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'PersonName':
     assert isinstance(msg, entity_pb2.PersonName)
-    name_parts = [Line.from_proto(n) for n in msg.name_parts]
+    name_parts = tuple(Line.from_proto(n) for n in msg.name_parts)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
@@ -440,14 +440,14 @@ class PersonName(Entity):
 
 @dataclass(frozen=True)
 class Address(Entity):
-  lines: List[Line]
+  lines: Tuple[Line, ...]
   bbox: BBox
   value: Optional[str] = None
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Address':
     assert isinstance(msg, entity_pb2.Address)
-    lines = [Line.from_proto(l) for l in msg.lines]
+    lines = tuple(Line.from_proto(l) for l in msg.lines)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     value = None
     if msg.HasField('value'):
@@ -469,14 +469,14 @@ class Address(Entity):
 
 @dataclass(frozen=True)
 class Cluster(Entity):
-  span: List[Line]
+  span: Tuple[Line, ...]
   bbox: BBox
   label: Optional[str] = None
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Cluster':
     assert isinstance(msg, entity_pb2.Cluster)
-    span = [Line.from_proto(l) for l in msg.span]
+    span = tuple(Line.from_proto(l) for l in msg.span)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     label = None
     if msg.HasField('label'):
