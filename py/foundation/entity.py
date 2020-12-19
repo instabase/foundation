@@ -48,6 +48,9 @@ class Entity(abc.ABC):
     """
     ...
 
+  def text(self) -> Optional[str]:
+    return None
+
   @property
   @abc.abstractmethod
   def children(self) -> Iterable['Entity']:
@@ -102,16 +105,13 @@ class Page(Entity):
 
 @dataclass(frozen=True)
 class Word(Entity):
-  text: str
+  _text: Optional[str]
   bbox: BBox
   origin: Optional[InputWord] = None
 
   @staticmethod
   def from_inputword(origin: InputWord) -> Optional['Word']:
-    text = origin.text
-    if text is None:
-      return None
-    return Word(text, origin.bounding_box, origin)
+    return Word(origin.text, origin.bounding_box, origin)
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Word':
@@ -124,7 +124,7 @@ class Word(Entity):
     return Word(text, bbox, input_word)
 
   def to_proto(self) -> entity_pb2.Word:
-    msg = entity_pb2.Word(text=self.text, bbox=self.bbox.to_proto())
+    msg = entity_pb2.Word(text=self._text, bbox=self.bbox.to_proto())
     if self.origin is not None:
       msg.origin.CopyFrom(self.origin.to_proto())
     return msg
@@ -133,6 +133,9 @@ class Word(Entity):
   def children(self) -> Iterable[Entity]:
     """ Word has no children. """
     yield from []
+
+  def text(self) -> Optional[str]:
+    return self._text
 
   def ocr_words(self) -> Iterable['Word']:
     """ Yields itself.
@@ -159,6 +162,10 @@ class Line(Entity):
     msg.words.extend(w.to_proto() for w in self._ocr_words)
     return msg
 
+  def text(self) -> Optional[str]:
+    texts = (w.text() for w in self._ocr_words)
+    return ' '.join(t for t in texts if t is not None)
+
   @property
   def children(self) -> Iterable[Word]:
     """ A Line's children are its OCR words. """
@@ -181,6 +188,10 @@ class Paragraph(Entity):
     msg = entity_pb2.Paragraph(bbox=self.bbox.to_proto())
     msg.lines.extend(l.to_proto() for l in self.lines)
     return msg
+
+  def text(self) -> Optional[str]:
+    texts = (w.text() for w in self.lines)
+    return '\n'.join(t for t in texts if t is not None)
 
   @property
   def children(self) -> Iterable[Line]:
@@ -205,6 +216,8 @@ class TableCell(Entity):
     msg.content.extend(entity_to_proto(e) for e in self.content)
     return msg
 
+  # TODO: define text?
+
   @property
   def children(self) -> Iterable[Entity]:
     """ A TableCell's children are its contents. """
@@ -228,6 +241,8 @@ class TableRow(Entity):
     msg.cells.extend(c.to_proto() for c in self.cells)
     return msg
 
+  # TODO: define text?
+
   @property
   def children(self) -> Iterable[TableCell]:
     """ A TableRow's children are its cells. """
@@ -250,6 +265,8 @@ class Table(Entity):
     msg = entity_pb2.Table(bbox=self.bbox.to_proto())
     msg.rows.extend(r.to_proto() for r in self.rows)
     return msg
+
+  # TODO: define text?
 
   @property
   def children(self) -> Iterable[TableRow]:
@@ -280,6 +297,10 @@ class Number(Entity):
       msg.value = self.value
     return msg
 
+  def text(self) -> Optional[str]:
+    texts = (w.text() for w in self.span)
+    return ' '.join(t for t in texts if t is not None)
+
   @property
   def children(self) -> Iterable[Entity]:
     """ A Number's children are the words it spans. """
@@ -308,6 +329,10 @@ class Integer(Entity):
     if self.value is not None:
       msg.value = self.value
     return msg
+
+  def text(self) -> Optional[str]:
+    texts = (w.text() for w in self.span)
+    return ' '.join(t for t in texts if t is not None)
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -338,6 +363,10 @@ class Date(Entity):
       msg.value = self.value
     return msg
 
+  def text(self) -> Optional[str]:
+    texts = (w.text() for w in self.span)
+    return ' '.join(t for t in texts if t is not None)
+
   @property
   def children(self) -> Iterable[Entity]:
     """ A Date's children are the words it spans. """
@@ -366,6 +395,10 @@ class Time(Entity):
     if self.value is not None:
       msg.value = self.value
     return msg
+
+  def text(self) -> Optional[str]:
+    texts = (w.text() for w in self.span)
+    return ' '.join(t for t in texts if t is not None)
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -403,6 +436,10 @@ class Currency(Entity):
       msg.units = self.units
     return msg
 
+  def text(self) -> Optional[str]:
+    texts = (w.text() for w in self.span)
+    return ' '.join(t for t in texts if t is not None)
+
   @property
   def children(self) -> Iterable[Entity]:
     """ A Currency's children are the words it spans. """
@@ -431,6 +468,10 @@ class PersonName(Entity):
     if self.value is not None:
       msg.value = self.value
     return msg
+
+  def text(self) -> Optional[str]:
+    texts = (w.text() for w in self.name_parts)
+    return ' '.join(t for t in texts if t is not None)
 
   @property
   def children(self) -> Iterable[Line]:
@@ -461,6 +502,10 @@ class Address(Entity):
       msg.value = self.value
     return msg
 
+  def text(self) -> Optional[str]:
+    texts = (w.text() for w in self.lines)
+    return '\n'.join(t for t in texts if t is not None)
+
   @property
   def children(self) -> Iterable[Line]:
     """ A Address's children are the Lines it's composed of. """
@@ -489,6 +534,10 @@ class Cluster(Entity):
     if self.label is not None:
       msg.label = self.label
     return msg
+
+  def text(self) -> Optional[str]:
+    texts = (w.text() for w in self.span)
+    return '\n'.join(t for t in texts if t is not None)
 
   @property
   def children(self) -> Iterable[Line]:

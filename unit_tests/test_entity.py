@@ -34,5 +34,13 @@ class TestLine(TestCase):
     pb = line.to_proto()
     assert line == Line.from_proto(pb)
 
+  def test_text(self) -> None:
+    w1 = Word('hello', unwrap(BBox.spanning((Point(0, 0), Point(5, 1)))))
+    w2 = Word('world', unwrap(BBox.spanning((Point(6, 0), Point(11, 1)))))
+
+    words = (w1, w2)
+    line = Line(words, unwrap(BBox.union(w.bbox for w in words)))
+
+    assert line.text() == 'hello world'
 
 # TODO: Full test coverage. Let's finish stabilizing Entity types first.
