@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n!foundation/protos/ocr/types.proto\x12\x03ocr\x1a foundation/protos/geometry.proto\"\xbd\x01\n\tInputWord\x12$\n\x0c\x62ounding_box\x18\x01 \x02(\x0b\x32\x0e.geometry.BBox\x12\x0c\n\x04text\x18\x02 \x01(\t\x12\'\n\nconfidence\x18\x06 \x01(\x0b\x32\x13.ocr.WordConfidence\x12\x13\n\x0bline_height\x18\x07 \x01(\x02\x12\x12\n\nword_width\x18\x08 \x01(\x02\x12\x12\n\nchar_width\x18\t \x01(\x02\x12\x16\n\x0erotation_angle\x18\n \x01(\x02\"p\n\x0eWordConfidence\x12\x17\n\x0fword_confidence\x18\x01 \x01(\x01\x12\x16\n\x0elow_confidence\x18\x02 \x01(\x08\x12-\n\x10\x63har_confidences\x18\x03 \x03(\x0b\x32\x13.ocr.CharConfidence\"4\n\x0e\x43harConfidence\x12\x12\n\npercentage\x18\x01 \x02(\x01\x12\x0e\n\x06unsure\x18\x02 \x01(\x08'
+  serialized_pb=b'\n!foundation/protos/ocr/types.proto\x12\x03ocr\x1a foundation/protos/geometry.proto\"\xbd\x01\n\tInputWord\x12$\n\x0c\x62ounding_box\x18\x01 \x02(\x0b\x32\x0e.geometry.BBox\x12\x0c\n\x04text\x18\x02 \x02(\t\x12\'\n\nconfidence\x18\x06 \x01(\x0b\x32\x13.ocr.WordConfidence\x12\x13\n\x0bline_height\x18\x07 \x01(\x02\x12\x12\n\nword_width\x18\x08 \x01(\x02\x12\x12\n\nchar_width\x18\t \x01(\x02\x12\x16\n\x0erotation_angle\x18\n \x01(\x02\"p\n\x0eWordConfidence\x12\x17\n\x0fword_confidence\x18\x01 \x01(\x01\x12\x16\n\x0elow_confidence\x18\x02 \x01(\x08\x12-\n\x10\x63har_confidences\x18\x03 \x03(\x0b\x32\x13.ocr.CharConfidence\"4\n\x0e\x43harConfidence\x12\x12\n\npercentage\x18\x01 \x02(\x01\x12\x0e\n\x06unsure\x18\x02 \x01(\x08'
   ,
   dependencies=[foundation_dot_protos_dot_geometry__pb2.DESCRIPTOR,])
 
@@ -44,7 +44,7 @@ _INPUTWORD = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='text', full_name='ocr.InputWord.text', index=1,
-      number=2, type=9, cpp_type=9, label=1,
+      number=2, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
