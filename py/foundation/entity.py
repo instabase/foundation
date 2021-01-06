@@ -105,12 +105,12 @@ class Page(Entity):
 
 @dataclass(frozen=True)
 class Word(Entity):
-  _text: Optional[str]
+  _text: str
   bbox: BBox
   origin: Optional[InputWord] = None
 
   @staticmethod
-  def from_inputword(origin: InputWord) -> Optional['Word']:
+  def from_inputword(origin: InputWord) -> 'Word':
     return Word(origin.text, origin.bounding_box, origin)
 
   @staticmethod

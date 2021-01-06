@@ -64,7 +64,7 @@ class WordConfidence:
 @dataclass(frozen=True)
 class InputWord:
   bounding_box: BBox
-  text: Optional[str]
+  text: str
   confidence: Optional[WordConfidence]
 
   char_width: Optional[float]
@@ -75,9 +75,7 @@ class InputWord:
     bbox = BBox.from_proto(msg.bounding_box)
     assert bbox is not None  # TODO: how do we handle this?
 
-    text = None
-    if msg.HasField('text'):
-      text = msg.text
+    text = msg.text
     confidence = None
     if msg.HasField('confidence'):
       confidence = WordConfidence.from_proto(msg.confidence)
@@ -87,6 +85,7 @@ class InputWord:
     rotation_angle = None
     if msg.HasField('rotation_angle'):
       rotation_angle = msg.rotation_angle
+
     return InputWord(bbox, text, confidence, char_width, rotation_angle)
 
   def to_proto(self) -> types_pb2.InputWord:
