@@ -153,10 +153,15 @@ class Word(Entity):
 class Line(Entity):
   """ A horizontal line of text.
 
-	 In most cases, this would originate from an OCR line.
+  In most cases, this would originate from an OCR line.
    """
   _words: Tuple[Word, ...]
   bbox: BBox
+
+  @staticmethod
+  def from_phrase(p: 'Phrase') -> 'Line':
+    """ Cast/reinterpret a Phrase as a Line. """
+    return Line(tuple(p.words()), p.bbox)
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Line':
