@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\"foundation/protos/doc/entity.proto\x12\x03\x64oc\x1a foundation/protos/geometry.proto\x1a!foundation/protos/ocr/types.proto\"\x92\x04\n\x06\x45ntity\x12\x19\n\x04word\x18\x01 \x01(\x0b\x32\t.doc.WordH\x00\x12\x19\n\x04line\x18\x02 \x01(\x0b\x32\t.doc.LineH\x00\x12#\n\tparagraph\x18\x03 \x01(\x0b\x32\x0e.doc.ParagraphH\x00\x12$\n\ntable_cell\x18\x04 \x01(\x0b\x32\x0e.doc.TableCellH\x00\x12\"\n\ttable_row\x18\x05 \x01(\x0b\x32\r.doc.TableRowH\x00\x12\x1b\n\x05table\x18\x06 \x01(\x0b\x32\n.doc.TableH\x00\x12\x1d\n\x06number\x18\x07 \x01(\x0b\x32\x0b.doc.NumberH\x00\x12\x1f\n\x07integer\x18\x08 \x01(\x0b\x32\x0c.doc.IntegerH\x00\x12\x19\n\x04\x64\x61te\x18\t \x01(\x0b\x32\t.doc.DateH\x00\x12\x19\n\x04time\x18\n \x01(\x0b\x32\t.doc.TimeH\x00\x12!\n\x08\x63urrency\x18\x0b \x01(\x0b\x32\r.doc.CurrencyH\x00\x12\x1f\n\x04name\x18\x0c \x01(\x0b\x32\x0f.doc.PersonNameH\x00\x12\x1f\n\x07\x61\x64\x64ress\x18\r \x01(\x0b\x32\x0c.doc.AddressH\x00\x12\x1f\n\x07\x63luster\x18\x0e \x01(\x0b\x32\x0c.doc.ClusterH\x00\x12\x19\n\x04page\x18\x0f \x01(\x0b\x32\t.doc.PageH\x00\x12$\n\x06\x63ustom\x18\x10 \x01(\x0b\x32\x12.doc.GenericEntityH\x00\x42\t\n\x07payload\"I\n\rGenericEntity\x12\x0c\n\x04type\x18\x01 \x02(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x02(\x0c\x12\x1c\n\x04\x62\x62ox\x18\x03 \x02(\x0b\x32\x0e.geometry.BBox\"R\n\x04Word\x12\x0c\n\x04text\x18\x01 \x02(\t\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\x1e\n\x06origin\x18\x03 \x01(\x0b\x32\x0e.ocr.InputWord\">\n\x04Line\x12\x18\n\x05words\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"C\n\tParagraph\x12\x18\n\x05lines\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"G\n\tTableCell\x12\x1c\n\x07\x63ontent\x18\x01 \x03(\x0b\x32\x0b.doc.Entity\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"G\n\x08TableRow\x12\x1d\n\x05\x63\x65lls\x18\x01 \x03(\x0b\x32\x0e.doc.TableCell\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"B\n\x05Table\x12\x1b\n\x04rows\x18\x01 \x03(\x0b\x32\r.doc.TableRow\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"N\n\x06Number\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x01\"O\n\x07Integer\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x03\"L\n\x04\x44\x61te\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\"L\n\x04Time\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x04\"\xba\x01\n\x08\x43urrency\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12)\n\x05value\x18\x03 \x01(\x0b\x32\x1a.doc.Currency.FixedDecimal\x12\r\n\x05units\x18\x04 \x01(\t\x1a=\n\x0c\x46ixedDecimal\x12\x14\n\x0cinteger_part\x18\x01 \x02(\x03\x12\x17\n\x0f\x66ractional_part\x18\x02 \x02(\r\"X\n\nPersonName\x12\x1d\n\nname_parts\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\"P\n\x07\x41\x64\x64ress\x12\x18\n\x05lines\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\"O\n\x07\x43luster\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05label\x18\x03 \x01(\t\"3\n\x04Page\x12\r\n\x05index\x18\x01 \x02(\x03\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox'
+  serialized_pb=b'\n\"foundation/protos/doc/entity.proto\x12\x03\x64oc\x1a foundation/protos/geometry.proto\x1a!foundation/protos/ocr/types.proto\"\xb1\x04\n\x06\x45ntity\x12\x19\n\x04word\x18\x01 \x01(\x0b\x32\t.doc.WordH\x00\x12\x19\n\x04line\x18\x02 \x01(\x0b\x32\t.doc.LineH\x00\x12#\n\tparagraph\x18\x03 \x01(\x0b\x32\x0e.doc.ParagraphH\x00\x12$\n\ntable_cell\x18\x04 \x01(\x0b\x32\x0e.doc.TableCellH\x00\x12\"\n\ttable_row\x18\x05 \x01(\x0b\x32\r.doc.TableRowH\x00\x12\x1b\n\x05table\x18\x06 \x01(\x0b\x32\n.doc.TableH\x00\x12\x1d\n\x06number\x18\x07 \x01(\x0b\x32\x0b.doc.NumberH\x00\x12\x1f\n\x07integer\x18\x08 \x01(\x0b\x32\x0c.doc.IntegerH\x00\x12\x19\n\x04\x64\x61te\x18\t \x01(\x0b\x32\t.doc.DateH\x00\x12\x19\n\x04time\x18\n \x01(\x0b\x32\t.doc.TimeH\x00\x12!\n\x08\x63urrency\x18\x0b \x01(\x0b\x32\r.doc.CurrencyH\x00\x12\x1f\n\x04name\x18\x0c \x01(\x0b\x32\x0f.doc.PersonNameH\x00\x12\x1f\n\x07\x61\x64\x64ress\x18\r \x01(\x0b\x32\x0c.doc.AddressH\x00\x12\x1f\n\x07\x63luster\x18\x0e \x01(\x0b\x32\x0c.doc.ClusterH\x00\x12\x19\n\x04page\x18\x0f \x01(\x0b\x32\t.doc.PageH\x00\x12\x1d\n\x06phrase\x18\x10 \x01(\x0b\x32\x0b.doc.PhraseH\x00\x12$\n\x06\x63ustom\x18\x11 \x01(\x0b\x32\x12.doc.GenericEntityH\x00\x42\t\n\x07payload\"I\n\rGenericEntity\x12\x0c\n\x04type\x18\x01 \x02(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x02(\x0c\x12\x1c\n\x04\x62\x62ox\x18\x03 \x02(\x0b\x32\x0e.geometry.BBox\"R\n\x04Word\x12\x0c\n\x04text\x18\x01 \x02(\t\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\x1e\n\x06origin\x18\x03 \x01(\x0b\x32\x0e.ocr.InputWord\">\n\x04Line\x12\x18\n\x05words\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"C\n\tParagraph\x12\x18\n\x05lines\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"G\n\tTableCell\x12\x1c\n\x07\x63ontent\x18\x01 \x03(\x0b\x32\x0b.doc.Entity\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"G\n\x08TableRow\x12\x1d\n\x05\x63\x65lls\x18\x01 \x03(\x0b\x32\x0e.doc.TableCell\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"B\n\x05Table\x12\x1b\n\x04rows\x18\x01 \x03(\x0b\x32\r.doc.TableRow\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"N\n\x06Number\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x01\"O\n\x07Integer\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x03\"L\n\x04\x44\x61te\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\"L\n\x04Time\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x04\"\xba\x01\n\x08\x43urrency\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12)\n\x05value\x18\x03 \x01(\x0b\x32\x1a.doc.Currency.FixedDecimal\x12\r\n\x05units\x18\x04 \x01(\t\x1a=\n\x0c\x46ixedDecimal\x12\x14\n\x0cinteger_part\x18\x01 \x02(\x03\x12\x17\n\x0f\x66ractional_part\x18\x02 \x02(\r\"X\n\nPersonName\x12\x1d\n\nname_parts\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\"P\n\x07\x41\x64\x64ress\x12\x18\n\x05lines\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\"O\n\x07\x43luster\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05label\x18\x03 \x01(\t\"3\n\x04Page\x12\r\n\x05index\x18\x01 \x02(\x03\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"@\n\x06Phrase\x12\x18\n\x05words\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox'
   ,
   dependencies=[foundation_dot_protos_dot_geometry__pb2.DESCRIPTOR,foundation_dot_protos_dot_ocr_dot_types__pb2.DESCRIPTOR,])
 
@@ -142,8 +142,15 @@ _ENTITY = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='custom', full_name='doc.Entity.custom', index=15,
+      name='phrase', full_name='doc.Entity.phrase', index=15,
       number=16, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='custom', full_name='doc.Entity.custom', index=16,
+      number=17, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -166,7 +173,7 @@ _ENTITY = _descriptor.Descriptor(
     fields=[]),
   ],
   serialized_start=113,
-  serialized_end=643,
+  serialized_end=674,
 )
 
 
@@ -211,8 +218,8 @@ _GENERICENTITY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=645,
-  serialized_end=718,
+  serialized_start=676,
+  serialized_end=749,
 )
 
 
@@ -257,8 +264,8 @@ _WORD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=720,
-  serialized_end=802,
+  serialized_start=751,
+  serialized_end=833,
 )
 
 
@@ -296,8 +303,8 @@ _LINE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=804,
-  serialized_end=866,
+  serialized_start=835,
+  serialized_end=897,
 )
 
 
@@ -335,8 +342,8 @@ _PARAGRAPH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=868,
-  serialized_end=935,
+  serialized_start=899,
+  serialized_end=966,
 )
 
 
@@ -374,8 +381,8 @@ _TABLECELL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=937,
-  serialized_end=1008,
+  serialized_start=968,
+  serialized_end=1039,
 )
 
 
@@ -413,8 +420,8 @@ _TABLEROW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1010,
-  serialized_end=1081,
+  serialized_start=1041,
+  serialized_end=1112,
 )
 
 
@@ -452,8 +459,8 @@ _TABLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1083,
-  serialized_end=1149,
+  serialized_start=1114,
+  serialized_end=1180,
 )
 
 
@@ -498,8 +505,8 @@ _NUMBER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1151,
-  serialized_end=1229,
+  serialized_start=1182,
+  serialized_end=1260,
 )
 
 
@@ -544,8 +551,8 @@ _INTEGER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1231,
-  serialized_end=1310,
+  serialized_start=1262,
+  serialized_end=1341,
 )
 
 
@@ -590,8 +597,8 @@ _DATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1312,
-  serialized_end=1388,
+  serialized_start=1343,
+  serialized_end=1419,
 )
 
 
@@ -636,8 +643,8 @@ _TIME = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1390,
-  serialized_end=1466,
+  serialized_start=1421,
+  serialized_end=1497,
 )
 
 
@@ -675,8 +682,8 @@ _CURRENCY_FIXEDDECIMAL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1594,
-  serialized_end=1655,
+  serialized_start=1625,
+  serialized_end=1686,
 )
 
 _CURRENCY = _descriptor.Descriptor(
@@ -727,8 +734,8 @@ _CURRENCY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1469,
-  serialized_end=1655,
+  serialized_start=1500,
+  serialized_end=1686,
 )
 
 
@@ -773,8 +780,8 @@ _PERSONNAME = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1657,
-  serialized_end=1745,
+  serialized_start=1688,
+  serialized_end=1776,
 )
 
 
@@ -819,8 +826,8 @@ _ADDRESS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1747,
-  serialized_end=1827,
+  serialized_start=1778,
+  serialized_end=1858,
 )
 
 
@@ -865,8 +872,8 @@ _CLUSTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1829,
-  serialized_end=1908,
+  serialized_start=1860,
+  serialized_end=1939,
 )
 
 
@@ -904,8 +911,47 @@ _PAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1910,
-  serialized_end=1961,
+  serialized_start=1941,
+  serialized_end=1992,
+)
+
+
+_PHRASE = _descriptor.Descriptor(
+  name='Phrase',
+  full_name='doc.Phrase',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='words', full_name='doc.Phrase.words', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='bbox', full_name='doc.Phrase.bbox', index=1,
+      number=2, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1994,
+  serialized_end=2058,
 )
 
 _ENTITY.fields_by_name['word'].message_type = _WORD
@@ -923,6 +969,7 @@ _ENTITY.fields_by_name['name'].message_type = _PERSONNAME
 _ENTITY.fields_by_name['address'].message_type = _ADDRESS
 _ENTITY.fields_by_name['cluster'].message_type = _CLUSTER
 _ENTITY.fields_by_name['page'].message_type = _PAGE
+_ENTITY.fields_by_name['phrase'].message_type = _PHRASE
 _ENTITY.fields_by_name['custom'].message_type = _GENERICENTITY
 _ENTITY.oneofs_by_name['payload'].fields.append(
   _ENTITY.fields_by_name['word'])
@@ -970,6 +1017,9 @@ _ENTITY.oneofs_by_name['payload'].fields.append(
   _ENTITY.fields_by_name['page'])
 _ENTITY.fields_by_name['page'].containing_oneof = _ENTITY.oneofs_by_name['payload']
 _ENTITY.oneofs_by_name['payload'].fields.append(
+  _ENTITY.fields_by_name['phrase'])
+_ENTITY.fields_by_name['phrase'].containing_oneof = _ENTITY.oneofs_by_name['payload']
+_ENTITY.oneofs_by_name['payload'].fields.append(
   _ENTITY.fields_by_name['custom'])
 _ENTITY.fields_by_name['custom'].containing_oneof = _ENTITY.oneofs_by_name['payload']
 _GENERICENTITY.fields_by_name['bbox'].message_type = foundation_dot_protos_dot_geometry__pb2._BBOX
@@ -1004,6 +1054,8 @@ _ADDRESS.fields_by_name['bbox'].message_type = foundation_dot_protos_dot_geometr
 _CLUSTER.fields_by_name['span'].message_type = _LINE
 _CLUSTER.fields_by_name['bbox'].message_type = foundation_dot_protos_dot_geometry__pb2._BBOX
 _PAGE.fields_by_name['bbox'].message_type = foundation_dot_protos_dot_geometry__pb2._BBOX
+_PHRASE.fields_by_name['words'].message_type = _WORD
+_PHRASE.fields_by_name['bbox'].message_type = foundation_dot_protos_dot_geometry__pb2._BBOX
 DESCRIPTOR.message_types_by_name['Entity'] = _ENTITY
 DESCRIPTOR.message_types_by_name['GenericEntity'] = _GENERICENTITY
 DESCRIPTOR.message_types_by_name['Word'] = _WORD
@@ -1021,6 +1073,7 @@ DESCRIPTOR.message_types_by_name['PersonName'] = _PERSONNAME
 DESCRIPTOR.message_types_by_name['Address'] = _ADDRESS
 DESCRIPTOR.message_types_by_name['Cluster'] = _CLUSTER
 DESCRIPTOR.message_types_by_name['Page'] = _PAGE
+DESCRIPTOR.message_types_by_name['Phrase'] = _PHRASE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Entity = _reflection.GeneratedProtocolMessageType('Entity', (_message.Message,), {
@@ -1149,6 +1202,13 @@ Page = _reflection.GeneratedProtocolMessageType('Page', (_message.Message,), {
   # @@protoc_insertion_point(class_scope:doc.Page)
   })
 _sym_db.RegisterMessage(Page)
+
+Phrase = _reflection.GeneratedProtocolMessageType('Phrase', (_message.Message,), {
+  'DESCRIPTOR' : _PHRASE,
+  '__module__' : 'foundation.protos.doc.entity_pb2'
+  # @@protoc_insertion_point(class_scope:doc.Phrase)
+  })
+_sym_db.RegisterMessage(Phrase)
 
 
 # @@protoc_insertion_point(module_scope)
