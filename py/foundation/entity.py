@@ -194,26 +194,19 @@ class Phrase(Entity):
   bbox: BBox
 
   @staticmethod
-  def _text_from_words(words: Iterable[Word]) -> Optional[str]:
-    texts = [w.text for w in words if w.text is not None]
-    if texts:
-      return ' '.join(texts)
-    return None
-
-  @staticmethod
   def from_line(l: Line) -> 'Phrase':
     """ Cast/reinterpret a Line as a Phrase. """
     words = tuple(l.words())
-    text = Phrase._text_from_words(words)
-    return Phrase(text or '', words, l.bbox)
+    text = ' '.join(w.text for w in words)
+    return Phrase(text, words, l.bbox)
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Phrase':
     assert isinstance(msg, entity_pb2.Phrase)
     bbox = unwrap(BBox.from_proto(msg.bbox))
     words = tuple(Word.from_proto(w) for w in msg.words)
-    text = Phrase._text_from_words(words)
-    return Phrase(text or '', words, bbox)
+    text = ' '.join(w.text for w in words)
+    return Phrase(text, words, bbox)
 
   def to_proto(self) -> entity_pb2.Phrase:
     msg = entity_pb2.Phrase(bbox=self.bbox.to_proto())
