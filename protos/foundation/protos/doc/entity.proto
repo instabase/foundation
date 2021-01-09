@@ -23,7 +23,8 @@ message Entity {
 		Address address = 13;
 		Cluster cluster = 14;
 		Page page = 15;
-		GenericEntity custom = 16;
+		Phrase phrase = 16;
+		GenericEntity custom = 17;
 	}
 }
 
@@ -47,7 +48,10 @@ message Word {
 	optional ocr.InputWord origin = 3;
 }
 
-/* A sequence of OCR words. */
+/* A horizontal line of text.
+
+	 In most cases, this would originate from an OCR line.
+ */
 message Line {
 	repeated Word words = 1;
 	required geometry.BBox bbox = 2;
@@ -178,5 +182,18 @@ message Page {
 	// 1-indexed page number within the document
 	required int64 index = 1;
 	// Page bounding box within a document
+	required geometry.BBox bbox = 2;
+}
+
+/* A sequence of words contiguous on the same line.
+
+	 E.g. the following mock document contains two phrases,
+	 but one Line:
+
+	     Here is a phrase                Another phrase
+
+ */
+message Phrase {
+	repeated Word words = 1;
 	required geometry.BBox bbox = 2;
 }

@@ -21,7 +21,8 @@ PbEntityPayloadType = Union[entity_pb2.Word, entity_pb2.Line,
                             entity_pb2.Date, entity_pb2.Time,
                             entity_pb2.Currency, entity_pb2.PersonName,
                             entity_pb2.Address, entity_pb2.Cluster,
-                            entity_pb2.Page, entity_pb2.GenericEntity]
+                            entity_pb2.Page, entity_pb2.Phrase,
+                            entity_pb2.GenericEntity]
 
 
 class Entity(abc.ABC):
@@ -57,26 +58,32 @@ class Entity(abc.ABC):
     Can be seen as returning the adjacent entities in a document's Entity
     DAG.
 
-    This method CANNOT call ocr_words().
+    This method CANNOT call words().
     """
     ...
 
-  def ocr_words(self) -> Iterable['Word']:
-    """Yields all OcrWordEntity's among this entity's children.
+  def words(self) -> Iterable['Word']:
+    """Yields all Word entities among this entity's children.
 
     Can be seen as returning an iterator over the leaves of this
     Entity's DAG.
 
-    If this Entity is a WORD, yields itself.
+    If this Entity is a Word, yields itself.
 
     STRONGLY RECOMMENDED not to override this.
     """
-    yield from chain.from_iterable(e.ocr_words() for e in self.children)
+    yield from chain.from_iterable(e.words() for e in self.children)
 
 
 @dataclass(frozen=True)
 class Page(Entity):
-  """ A Page is defined by an image region, or region in a document. """
+  """ A Page is defined by an image region, or region in a document.
+
+  Its bounding box is its dimensions, translated by its offset within the
+  document. For example, a document with 3 pages, each 50x100, "stacking"
+  pages on top of each other would put page 2's bbox as:
+      top_left: (0, 100), bottom_right: (50, 200)
+  """
   index: int
   bbox: BBox
 
@@ -134,35 +141,81 @@ class Word(Entity):
     """ Word has no children. """
     yield from []
 
-  def ocr_words(self) -> Iterable['Word']:
+  def words(self) -> Iterable['Word']:
     """ Yields itself.
 
-    This provides the base case for Entity.ocr_words.
+    This provides the base case for Entity.words.
     """
     yield self
 
 
 @dataclass(frozen=True)
 class Line(Entity):
-  _ocr_words: Tuple[Word, ...]
+  """ A horizontal line of text.
+
+  In most cases, this would originate from an OCR line.
+   """
+  _words: Tuple[Word, ...]
   bbox: BBox
+
+  @staticmethod
+  def from_phrase(p: 'Phrase') -> 'Line':
+    """ Cast/reinterpret a Phrase as a Line. """
+    return Line(tuple(p.words()), p.bbox)
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Line':
     assert isinstance(msg, entity_pb2.Line)
     bbox = unwrap(BBox.from_proto(msg.bbox))
-    ocr_words = tuple(Word.from_proto(w) for w in msg.words)
-    return Line(ocr_words, bbox)
+    words = tuple(Word.from_proto(w) for w in msg.words)
+    return Line(words, bbox)
 
   def to_proto(self) -> entity_pb2.Line:
     msg = entity_pb2.Line(bbox=self.bbox.to_proto())
-    msg.words.extend(w.to_proto() for w in self._ocr_words)
+    msg.words.extend(w.to_proto() for w in self._words)
     return msg
 
   @property
   def children(self) -> Iterable[Word]:
     """ A Line's children are its OCR words. """
-    yield from self._ocr_words
+    yield from self._words
+
+
+@dataclass(frozen=True)
+class Phrase(Entity):
+  """ A sequence of words contiguous on the same line.
+
+  E.g. the following mock document contains two phrases, but one Line:
+
+      Here is a phrase                Another phrase
+  """
+  text: str
+  _words: Tuple[Word, ...]
+  bbox: BBox
+
+  @staticmethod
+  def from_line(l: Line) -> 'Phrase':
+    """ Cast/reinterpret a Line as a Phrase. """
+    words = tuple(l.words())
+    text = ' '.join(w.text for w in words)
+    return Phrase(text, words, l.bbox)
+
+  @staticmethod
+  def from_proto(msg: PbEntityPayloadType) -> 'Phrase':
+    assert isinstance(msg, entity_pb2.Phrase)
+    bbox = unwrap(BBox.from_proto(msg.bbox))
+    words = tuple(Word.from_proto(w) for w in msg.words)
+    text = ' '.join(w.text for w in words)
+    return Phrase(text, words, bbox)
+
+  def to_proto(self) -> entity_pb2.Phrase:
+    msg = entity_pb2.Phrase(bbox=self.bbox.to_proto())
+    msg.words.extend(w.to_proto() for w in self._words)
+    return msg
+
+  @property
+  def children(self) -> Iterable[Word]:
+    yield from self._words
 
 
 @dataclass(frozen=True)
@@ -574,6 +627,8 @@ def proto_to_entity(
     return Cluster.from_proto(msg.cluster)
   elif payload_type == 'page':
     return Page.from_proto(msg.page)
+  elif payload_type == 'phrase':
+    return Phrase.from_proto(msg.phrase)
   elif payload_type == 'custom':
     custom_type: str = getattr(msg.custom, 'type')
     if entity_registry is not None:
@@ -632,6 +687,8 @@ def entity_to_proto(entity: Entity) -> entity_pb2.Entity:
     return entity_pb2.Entity(cluster=payload)
   elif isinstance(payload, entity_pb2.Page):
     return entity_pb2.Entity(page=payload)
+  elif isinstance(payload, entity_pb2.Phrase):
+    return entity_pb2.Entity(phrase=payload)
   elif isinstance(payload, entity_pb2.GenericEntity):
     return entity_pb2.Entity(custom=payload)
 
