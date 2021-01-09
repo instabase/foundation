@@ -373,6 +373,7 @@ class Date(Entity):
   span: Tuple[Word, ...]
   bbox: BBox
   value: Optional[str] = None
+  likeness_score: Optional[float] = None
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Date':
@@ -382,13 +383,18 @@ class Date(Entity):
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return Date(span, bbox, value)
+    likeness_score = None
+    if msg.HasField('likeness_score'):
+      likeness_score = msg.likeness_score
+    return Date(span, bbox, value, likeness_score)
 
   def to_proto(self) -> entity_pb2.Date:
     msg = entity_pb2.Date(bbox=self.bbox.to_proto())
     msg.span.extend(w.to_proto() for w in self.span)
     if self.value is not None:
       msg.value = self.value
+    if self.likeness_score is not None:
+      msg.likeness_score = self.likeness_score
     return msg
 
   @property
@@ -402,6 +408,7 @@ class Time(Entity):
   span: Tuple[Word, ...]
   bbox: BBox
   value: Optional[int] = None
+  likeness_score: Optional[float] = None
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Time':
@@ -411,13 +418,18 @@ class Time(Entity):
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return Time(span, bbox, value)
+    likeness_score = None
+    if msg.HasField('likeness_score'):
+      likeness_score = msg.likeness_score
+    return Time(span, bbox, value, likeness_score)
 
   def to_proto(self) -> entity_pb2.Time:
     msg = entity_pb2.Time(bbox=self.bbox.to_proto())
     msg.span.extend(w.to_proto() for w in self.span)
     if self.value is not None:
       msg.value = self.value
+    if self.likeness_score is not None:
+      msg.likeness_score = self.likeness_score
     return msg
 
   @property
@@ -433,6 +445,7 @@ class Currency(Entity):
   # TODO: wrap FixedDecimal
   value: Optional[Currency_pb2.FixedDecimal] = None
   units: Optional[str] = None
+  likeness_score: Optional[float] = None
 
   @staticmethod
   def from_proto(msg: PbEntityPayloadType) -> 'Currency':
@@ -445,7 +458,10 @@ class Currency(Entity):
     value = None
     if msg.HasField('value'):
       value = msg.value
-    return Currency(span, bbox, value, units)
+    likeness_score = None
+    if msg.HasField('likeness_score'):
+      likeness_score = msg.likeness_score
+    return Currency(span, bbox, value, units, likeness_score)
 
   def to_proto(self) -> entity_pb2.Currency:
     msg = entity_pb2.Currency(bbox=self.bbox.to_proto())
@@ -454,6 +470,8 @@ class Currency(Entity):
       msg.value.CopyFrom(self.value)
     if self.units is not None:
       msg.units = self.units
+    if self.likeness_score is not None:
+      msg.likeness_score = self.likeness_score
     return msg
 
   @property

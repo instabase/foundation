@@ -120,6 +120,7 @@ message Date {
 	// Let this value be an ISO8601 formatted date.
 	// TODO: we should settle on an appropriate denotation format here.
 	optional string value = 3;
+	optional double likeness_score = 4;
 }
 
 message Time {
@@ -128,6 +129,7 @@ message Time {
 	// Let this value be UNIX time in seconds from the epoch.
 	// TODO: we should settle on an appropriate denotation format here.
 	optional uint64 value = 3;
+	optional double likeness_score = 4;
 }
 
 // TODO: do we want a Datetime type?
@@ -143,6 +145,7 @@ message Currency {
 	}
 	optional FixedDecimal value = 3;
 	optional string units = 4;
+	optional double likeness_score = 5;
 }
 
 message PersonName {

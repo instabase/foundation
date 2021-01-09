@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\"foundation/protos/doc/entity.proto\x12\x03\x64oc\x1a foundation/protos/geometry.proto\x1a!foundation/protos/ocr/types.proto\"\xb1\x04\n\x06\x45ntity\x12\x19\n\x04word\x18\x01 \x01(\x0b\x32\t.doc.WordH\x00\x12\x19\n\x04line\x18\x02 \x01(\x0b\x32\t.doc.LineH\x00\x12#\n\tparagraph\x18\x03 \x01(\x0b\x32\x0e.doc.ParagraphH\x00\x12$\n\ntable_cell\x18\x04 \x01(\x0b\x32\x0e.doc.TableCellH\x00\x12\"\n\ttable_row\x18\x05 \x01(\x0b\x32\r.doc.TableRowH\x00\x12\x1b\n\x05table\x18\x06 \x01(\x0b\x32\n.doc.TableH\x00\x12\x1d\n\x06number\x18\x07 \x01(\x0b\x32\x0b.doc.NumberH\x00\x12\x1f\n\x07integer\x18\x08 \x01(\x0b\x32\x0c.doc.IntegerH\x00\x12\x19\n\x04\x64\x61te\x18\t \x01(\x0b\x32\t.doc.DateH\x00\x12\x19\n\x04time\x18\n \x01(\x0b\x32\t.doc.TimeH\x00\x12!\n\x08\x63urrency\x18\x0b \x01(\x0b\x32\r.doc.CurrencyH\x00\x12\x1f\n\x04name\x18\x0c \x01(\x0b\x32\x0f.doc.PersonNameH\x00\x12\x1f\n\x07\x61\x64\x64ress\x18\r \x01(\x0b\x32\x0c.doc.AddressH\x00\x12\x1f\n\x07\x63luster\x18\x0e \x01(\x0b\x32\x0c.doc.ClusterH\x00\x12\x19\n\x04page\x18\x0f \x01(\x0b\x32\t.doc.PageH\x00\x12\x1d\n\x06phrase\x18\x10 \x01(\x0b\x32\x0b.doc.PhraseH\x00\x12$\n\x06\x63ustom\x18\x11 \x01(\x0b\x32\x12.doc.GenericEntityH\x00\x42\t\n\x07payload\"I\n\rGenericEntity\x12\x0c\n\x04type\x18\x01 \x02(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x02(\x0c\x12\x1c\n\x04\x62\x62ox\x18\x03 \x02(\x0b\x32\x0e.geometry.BBox\"R\n\x04Word\x12\x0c\n\x04text\x18\x01 \x02(\t\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\x1e\n\x06origin\x18\x03 \x01(\x0b\x32\x0e.ocr.InputWord\">\n\x04Line\x12\x18\n\x05words\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"C\n\tParagraph\x12\x18\n\x05lines\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"G\n\tTableCell\x12\x1c\n\x07\x63ontent\x18\x01 \x03(\x0b\x32\x0b.doc.Entity\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"G\n\x08TableRow\x12\x1d\n\x05\x63\x65lls\x18\x01 \x03(\x0b\x32\x0e.doc.TableCell\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"B\n\x05Table\x12\x1b\n\x04rows\x18\x01 \x03(\x0b\x32\r.doc.TableRow\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"N\n\x06Number\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x01\"O\n\x07Integer\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x03\"L\n\x04\x44\x61te\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\"L\n\x04Time\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x04\"\xba\x01\n\x08\x43urrency\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12)\n\x05value\x18\x03 \x01(\x0b\x32\x1a.doc.Currency.FixedDecimal\x12\r\n\x05units\x18\x04 \x01(\t\x1a=\n\x0c\x46ixedDecimal\x12\x14\n\x0cinteger_part\x18\x01 \x02(\x03\x12\x17\n\x0f\x66ractional_part\x18\x02 \x02(\r\"X\n\nPersonName\x12\x1d\n\nname_parts\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\"P\n\x07\x41\x64\x64ress\x12\x18\n\x05lines\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\"O\n\x07\x43luster\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05label\x18\x03 \x01(\t\"3\n\x04Page\x12\r\n\x05index\x18\x01 \x02(\x03\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"@\n\x06Phrase\x12\x18\n\x05words\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox'
+  serialized_pb=b'\n\"foundation/protos/doc/entity.proto\x12\x03\x64oc\x1a foundation/protos/geometry.proto\x1a!foundation/protos/ocr/types.proto\"\xb1\x04\n\x06\x45ntity\x12\x19\n\x04word\x18\x01 \x01(\x0b\x32\t.doc.WordH\x00\x12\x19\n\x04line\x18\x02 \x01(\x0b\x32\t.doc.LineH\x00\x12#\n\tparagraph\x18\x03 \x01(\x0b\x32\x0e.doc.ParagraphH\x00\x12$\n\ntable_cell\x18\x04 \x01(\x0b\x32\x0e.doc.TableCellH\x00\x12\"\n\ttable_row\x18\x05 \x01(\x0b\x32\r.doc.TableRowH\x00\x12\x1b\n\x05table\x18\x06 \x01(\x0b\x32\n.doc.TableH\x00\x12\x1d\n\x06number\x18\x07 \x01(\x0b\x32\x0b.doc.NumberH\x00\x12\x1f\n\x07integer\x18\x08 \x01(\x0b\x32\x0c.doc.IntegerH\x00\x12\x19\n\x04\x64\x61te\x18\t \x01(\x0b\x32\t.doc.DateH\x00\x12\x19\n\x04time\x18\n \x01(\x0b\x32\t.doc.TimeH\x00\x12!\n\x08\x63urrency\x18\x0b \x01(\x0b\x32\r.doc.CurrencyH\x00\x12\x1f\n\x04name\x18\x0c \x01(\x0b\x32\x0f.doc.PersonNameH\x00\x12\x1f\n\x07\x61\x64\x64ress\x18\r \x01(\x0b\x32\x0c.doc.AddressH\x00\x12\x1f\n\x07\x63luster\x18\x0e \x01(\x0b\x32\x0c.doc.ClusterH\x00\x12\x19\n\x04page\x18\x0f \x01(\x0b\x32\t.doc.PageH\x00\x12\x1d\n\x06phrase\x18\x10 \x01(\x0b\x32\x0b.doc.PhraseH\x00\x12$\n\x06\x63ustom\x18\x11 \x01(\x0b\x32\x12.doc.GenericEntityH\x00\x42\t\n\x07payload\"I\n\rGenericEntity\x12\x0c\n\x04type\x18\x01 \x02(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x02(\x0c\x12\x1c\n\x04\x62\x62ox\x18\x03 \x02(\x0b\x32\x0e.geometry.BBox\"R\n\x04Word\x12\x0c\n\x04text\x18\x01 \x02(\t\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\x1e\n\x06origin\x18\x03 \x01(\x0b\x32\x0e.ocr.InputWord\">\n\x04Line\x12\x18\n\x05words\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"C\n\tParagraph\x12\x18\n\x05lines\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"G\n\tTableCell\x12\x1c\n\x07\x63ontent\x18\x01 \x03(\x0b\x32\x0b.doc.Entity\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"G\n\x08TableRow\x12\x1d\n\x05\x63\x65lls\x18\x01 \x03(\x0b\x32\x0e.doc.TableCell\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"B\n\x05Table\x12\x1b\n\x04rows\x18\x01 \x03(\x0b\x32\r.doc.TableRow\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"N\n\x06Number\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x01\"O\n\x07Integer\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x03\"d\n\x04\x44\x61te\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\x12\x16\n\x0elikeness_score\x18\x04 \x01(\x01\"d\n\x04Time\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\x04\x12\x16\n\x0elikeness_score\x18\x04 \x01(\x01\"\xd2\x01\n\x08\x43urrency\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12)\n\x05value\x18\x03 \x01(\x0b\x32\x1a.doc.Currency.FixedDecimal\x12\r\n\x05units\x18\x04 \x01(\t\x12\x16\n\x0elikeness_score\x18\x05 \x01(\x01\x1a=\n\x0c\x46ixedDecimal\x12\x14\n\x0cinteger_part\x18\x01 \x02(\x03\x12\x17\n\x0f\x66ractional_part\x18\x02 \x02(\r\"X\n\nPersonName\x12\x1d\n\nname_parts\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\"P\n\x07\x41\x64\x64ress\x12\x18\n\x05lines\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05value\x18\x03 \x01(\t\"O\n\x07\x43luster\x12\x17\n\x04span\x18\x01 \x03(\x0b\x32\t.doc.Line\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\x12\r\n\x05label\x18\x03 \x01(\t\"3\n\x04Page\x12\r\n\x05index\x18\x01 \x02(\x03\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox\"@\n\x06Phrase\x12\x18\n\x05words\x18\x01 \x03(\x0b\x32\t.doc.Word\x12\x1c\n\x04\x62\x62ox\x18\x02 \x02(\x0b\x32\x0e.geometry.BBox'
   ,
   dependencies=[foundation_dot_protos_dot_geometry__pb2.DESCRIPTOR,foundation_dot_protos_dot_ocr_dot_types__pb2.DESCRIPTOR,])
 
@@ -585,6 +585,13 @@ _DATE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='likeness_score', full_name='doc.Date.likeness_score', index=3,
+      number=4, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -598,7 +605,7 @@ _DATE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1343,
-  serialized_end=1419,
+  serialized_end=1443,
 )
 
 
@@ -631,6 +638,13 @@ _TIME = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='likeness_score', full_name='doc.Time.likeness_score', index=3,
+      number=4, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -643,8 +657,8 @@ _TIME = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1421,
-  serialized_end=1497,
+  serialized_start=1445,
+  serialized_end=1545,
 )
 
 
@@ -682,8 +696,8 @@ _CURRENCY_FIXEDDECIMAL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1625,
-  serialized_end=1686,
+  serialized_start=1697,
+  serialized_end=1758,
 )
 
 _CURRENCY = _descriptor.Descriptor(
@@ -722,6 +736,13 @@ _CURRENCY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='likeness_score', full_name='doc.Currency.likeness_score', index=4,
+      number=5, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -734,8 +755,8 @@ _CURRENCY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1500,
-  serialized_end=1686,
+  serialized_start=1548,
+  serialized_end=1758,
 )
 
 
@@ -780,8 +801,8 @@ _PERSONNAME = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1688,
-  serialized_end=1776,
+  serialized_start=1760,
+  serialized_end=1848,
 )
 
 
@@ -826,8 +847,8 @@ _ADDRESS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1778,
-  serialized_end=1858,
+  serialized_start=1850,
+  serialized_end=1930,
 )
 
 
@@ -872,8 +893,8 @@ _CLUSTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1860,
-  serialized_end=1939,
+  serialized_start=1932,
+  serialized_end=2011,
 )
 
 
@@ -911,8 +932,8 @@ _PAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1941,
-  serialized_end=1992,
+  serialized_start=2013,
+  serialized_end=2064,
 )
 
 
@@ -950,8 +971,8 @@ _PHRASE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1994,
-  serialized_end=2058,
+  serialized_start=2066,
+  serialized_end=2130,
 )
 
 _ENTITY.fields_by_name['word'].message_type = _WORD
