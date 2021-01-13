@@ -8,7 +8,6 @@ from typing import (Dict, Generic, Iterable, Optional, Tuple, Type,
 
 from foundation.protos import geometry_pb2
 from foundation.protos.doc import entity_pb2
-from foundation.protos.doc.entity_pb2 import Currency as Currency_pb2
 
 from .geometry import BBox
 from .ocr import InputWord
@@ -442,8 +441,7 @@ class Time(Entity):
 class Currency(Entity):
   span: Tuple[Word, ...]
   bbox: BBox
-  # TODO: wrap FixedDecimal
-  value: Optional[Currency_pb2.FixedDecimal] = None
+  value: Optional[str] = None
   units: Optional[str] = None
   likeness_score: Optional[float] = None
 
@@ -467,7 +465,7 @@ class Currency(Entity):
     msg = entity_pb2.Currency(bbox=self.bbox.to_proto())
     msg.span.extend(w.to_proto() for w in self.span)
     if self.value is not None:
-      msg.value.CopyFrom(self.value)
+      msg.value = self.value
     if self.units is not None:
       msg.units = self.units
     if self.likeness_score is not None:
