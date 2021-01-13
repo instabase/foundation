@@ -137,13 +137,9 @@ message Time {
 message Currency {
 	repeated Word span = 1;
 	required geometry.BBox bbox = 2;
-	// Fixed-point representation for currency avoids float-rounding issues.
-	// TODO: we should settle on an appropriate denotation format here.
-	message FixedDecimal {
-		required int64 integer_part = 1;
-		required uint32 fractional_part = 2;
-	}
-	optional FixedDecimal value = 3;
+	// TODO: string is a bad denotation type,
+	//       we may want a fixed-decimal representation here.
+	optional string value = 3;
 	optional string units = 4;
 	optional double likeness_score = 5;
 }

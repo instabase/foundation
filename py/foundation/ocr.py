@@ -1,7 +1,7 @@
 """ OCR types wrappers. """
 
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import Optional, Tuple
 
 from foundation.protos.ocr import types_pb2
 
@@ -32,7 +32,7 @@ class CharConfidence:
 class WordConfidence:
   word_confidence: Optional[float]
   low_confidence: Optional[bool]
-  char_confidences: Optional[List[CharConfidence]]
+  char_confidences: Optional[Tuple[CharConfidence, ...]]
 
   @staticmethod
   def from_proto(msg: types_pb2.WordConfidence) -> 'WordConfidence':
@@ -44,9 +44,9 @@ class WordConfidence:
       low_confidence = msg.low_confidence
     char_confidences = None
     if len(msg.char_confidences) > 0:
-      char_confidences = [
+      char_confidences = tuple(
           CharConfidence.from_proto(c) for c in msg.char_confidences
-      ]
+      )
     return WordConfidence(word_confidence, low_confidence, char_confidences)
 
   def to_proto(self) -> types_pb2.WordConfidence:
