@@ -113,10 +113,8 @@ class Word(Entity):
   origin: Optional[InputWord] = None
 
   @staticmethod
-  def from_inputword(origin: InputWord) -> Optional['Word']:
-    text = origin.text
-    if text is None:
-      return None
+  def from_inputword(origin: InputWord) -> 'Word':
+    text = origin.text or ''
     return Word(text, origin.bounding_box, origin)
 
   @staticmethod
