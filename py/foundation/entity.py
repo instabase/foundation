@@ -21,7 +21,7 @@ PbEntityPayloadType = Union[entity_pb2.Word, entity_pb2.Line,
                             entity_pb2.Currency, entity_pb2.PersonName,
                             entity_pb2.Address, entity_pb2.Cluster,
                             entity_pb2.Page, entity_pb2.Phrase,
-                            entity_pb2.GenericEntity]
+                            entity_pb2.GenericEntity, entity_pb2.NamedEntity]
 
 
 class Entity(abc.ABC):
@@ -563,6 +563,41 @@ class Cluster(Entity):
     yield from self.span
 
 
+@dataclass(frozen=True)
+class NamedEntity(Entity):
+  span: Tuple[Word, ...]
+  bbox: BBox
+  value: Optional[str] = None
+  label: Optional[str] = None
+
+  @staticmethod
+  def from_proto(msg: PbEntityPayloadType) -> 'NamedEntity':
+    assert isinstance(msg, entity_pb2.NamedEntity)
+    span = tuple(Word.from_proto(w) for w in msg.span)
+    bbox = unwrap(BBox.from_proto(msg.bbox))
+    label = None
+    if msg.HasField('label'):
+      label = msg.label
+    value = None
+    if msg.HasField('value'):
+      value = msg.value
+    return NamedEntity(span, bbox, value, label)
+
+  def to_proto(self) -> entity_pb2.NamedEntity:
+    msg = entity_pb2.NamedEntity(bbox=self.bbox.to_proto())
+    msg.span.extend(w.to_proto() for w in self.span)
+    if self.value is not None:
+      msg.value = self.value
+    if self.label is not None:
+      msg.label = self.label
+    return msg
+
+  @property
+  def children(self) -> Iterable[Entity]:
+    """ An entities children are the words it spans. """
+    yield from self.span
+
+
 """ Associates a string entity type name to a custom class that inherits
     from Entity.
 """
@@ -619,6 +654,8 @@ def proto_to_entity(
     return PersonName.from_proto(msg.name)
   elif payload_type == 'address':
     return Address.from_proto(msg.address)
+  elif payload_type == 'named_entity':
+    return NamedEntity.from_proto(msg.named_entity)
   elif payload_type == 'cluster':
     return Cluster.from_proto(msg.cluster)
   elif payload_type == 'page':
@@ -679,6 +716,8 @@ def entity_to_proto(entity: Entity) -> entity_pb2.Entity:
     return entity_pb2.Entity(name=payload)
   elif isinstance(payload, entity_pb2.Address):
     return entity_pb2.Entity(address=payload)
+  elif isinstance(payload, entity_pb2.NamedEntity):
+    return entity_pb2.Entity(named_entity=payload)
   elif isinstance(payload, entity_pb2.Cluster):
     return entity_pb2.Entity(cluster=payload)
   elif isinstance(payload, entity_pb2.Page):

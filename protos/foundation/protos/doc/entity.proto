@@ -25,6 +25,7 @@ message Entity {
 		Page page = 15;
 		Phrase phrase = 16;
 		GenericEntity custom = 17;
+		NamedEntity named_entity = 18;
 	}
 }
 
@@ -155,6 +156,14 @@ message Address {
 	required geometry.BBox bbox = 2;
 	// TODO: we should settle on an appropriate denotation format here.
 	optional string value = 3;
+}
+
+// A somewhat generic entity returned by typical named entity recognition engines.
+message NamedEntity {
+	repeated Word span = 1;
+	required geometry.BBox bbox = 2;
+	optional string value = 3;
+	optional string label = 4;
 }
 
 /* A Cluster associates a Phrase [a sequence of Tokens] with some semantic label.
