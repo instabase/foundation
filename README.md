@@ -30,3 +30,12 @@ make generate-stubs
 ```
 
 The stubs will be written to a `stubs` folder in the root project directory.
+
+## Changelog
+
+### v0.0.2
+- Change some type definitions to be more flexible
+- Additional types
+
+### v0.0.1
+- Basic types and serialization/deserialization
