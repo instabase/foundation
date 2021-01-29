@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from itertools import chain
 from math import sqrt
-from typing import FrozenSet, Generator, Iterable, Optional
+from typing import Dict, FrozenSet, Generator, Iterable, Optional
 
 from foundation.protos.geometry_pb2 import BBox as PBBBox, Interval as PBInterval, Point as PBPoint
 
