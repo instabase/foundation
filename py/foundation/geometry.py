@@ -104,6 +104,12 @@ class Interval:
         'of an empty list of intervals')
     return Interval.build(max(I.a for I in Is), min(I.b for I in Is))
 
+  def dump(self) -> Dict:
+    return {
+      'a': self.a,
+      'b': self.b,
+    }
+
 
 @dataclass(frozen=True)
 class Point:
@@ -255,3 +261,9 @@ class BBox:
     inner_width = max(0, ix.length - b1.ix.length - b2.ix.length)
     inner_height = max(0, iy.length - b1.iy.length - b2.iy.length)
     return sqrt(inner_width**2 + inner_height**2)
+
+  def dump(self) -> Dict:
+    return {
+      'ix': self.ix.dump(),
+      'iy': self.iy.dump(),
+    }
