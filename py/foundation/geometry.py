@@ -5,8 +5,6 @@ from itertools import chain
 from math import sqrt
 from typing import Dict, FrozenSet, Generator, Iterable, Optional
 
-from foundation.protos.geometry_pb2 import BBox as PBBBox, Interval as PBInterval, Point as PBPoint
-
 
 @dataclass(frozen=True)
 class Interval:
@@ -74,13 +72,6 @@ class Interval:
     return Interval(a, b) if a <= b else None
 
   @staticmethod
-  def from_proto(proto: PBInterval) -> Optional['Interval']:
-    return Interval.build(proto.a, proto.b)
-
-  def to_proto(self) -> PBInterval:
-    return PBInterval(a=self.a, b=self.b)
-
-  @staticmethod
   def spanning(xs: Iterable[float]) -> 'Interval':
     xs = tuple(xs)
     if not xs:
@@ -138,13 +129,6 @@ class Point:
   @staticmethod
   def max_y(points: Iterable['Point']) -> float:
     return max(p.y for p in points)
-
-  @staticmethod
-  def from_proto(proto: PBPoint) -> 'Point':
-    return Point(proto.x, proto.y)
-
-  def to_proto(self) -> PBPoint:
-    return PBPoint(x=self.x, y=self.y)
 
 
 @dataclass(frozen=True)
@@ -211,17 +195,6 @@ class BBox:
   @staticmethod
   def build(ix: Optional[Interval], iy: Optional[Interval]) -> Optional['BBox']:
     return BBox(ix, iy) if ix is not None and iy is not None else None
-
-  @staticmethod
-  def from_proto(proto: PBBBox) -> Optional['BBox']:
-    return BBox.build(
-      Interval.from_proto(proto.ix),
-      Interval.from_proto(proto.iy))
-
-  def to_proto(self) -> PBBBox:
-    return PBBBox(
-      ix=PBInterval(a=self.ix.a, b=self.ix.b),
-      iy=PBInterval(a=self.iy.a, b=self.iy.b))
 
   @staticmethod
   def spanning(ps: Iterable[Point]) -> Optional['BBox']:
