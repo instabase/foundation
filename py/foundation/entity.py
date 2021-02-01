@@ -125,8 +125,12 @@ class Phrase(Entity):
 
       Here is a phrase                Another phrase
   """
-  text: str
+  _text: str
   _words: Tuple[Word, ...]
+
+  @property
+  def text(self) -> str:
+    return self._text
 
   @staticmethod
   def from_line(line: Line) -> 'Phrase':
