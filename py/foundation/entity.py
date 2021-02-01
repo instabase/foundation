@@ -14,6 +14,10 @@ class Entity:
   bbox: BBox
 
   @property
+  def text(self) -> str:
+    raise NotImplementedError
+
+  @property
   def children(self) -> Iterable['Entity']:
     """Yields all sub-entities of this entity.
 
@@ -23,7 +27,7 @@ class Entity:
 
     This method CANNOT call words().
     """
-    ...
+    raise NotImplementedError
 
   def words(self) -> Iterable['Word']:
     """Yields all Word entities among this entity's children.
@@ -50,6 +54,11 @@ class Page(Entity):
   index: int
 
   @property
+  def text(self) -> str:
+    # FIXME: Revisit this concept for a page.
+    return ''
+
+  @property
   def children(self) -> Iterable['Entity']:
     """A page has no children.
 
@@ -60,8 +69,12 @@ class Page(Entity):
 
 @dataclass(frozen=True)
 class Word(Entity):
-  text: str
+  _text: str
   origin: Optional[InputWord] = None
+
+  @property
+  def text(self) -> str:
+    return self._text
 
   @staticmethod
   def from_inputword(origin: InputWord) -> 'Word':
@@ -89,10 +102,14 @@ class Line(Entity):
    """
   _words: Tuple[Word, ...]
 
+  @property
+  def text(self) -> str:
+    return ' '.join(word.text for word in self._words)
+
   @staticmethod
-  def from_phrase(p: 'Phrase') -> 'Line':
+  def from_phrase(phrase: 'Phrase') -> 'Line':
     """ Cast/reinterpret a Phrase as a Line. """
-    return Line(p.bbox, tuple(p.words()))
+    return Line(phrase.bbox, tuple(phrase.words()))
 
   @property
   def children(self) -> Iterable[Word]:
@@ -112,11 +129,11 @@ class Phrase(Entity):
   _words: Tuple[Word, ...]
 
   @staticmethod
-  def from_line(l: Line) -> 'Phrase':
+  def from_line(line: Line) -> 'Phrase':
     """ Cast/reinterpret a Line as a Phrase. """
-    words = tuple(l.words())
-    text = ' '.join(w.text for w in words)
-    return Phrase(l.bbox, text, words)
+    words = tuple(line.words())
+    text = ' '.join(word.text for word in words)
+    return Phrase(line.bbox, text, words)
 
   @property
   def children(self) -> Iterable[Word]:
@@ -126,6 +143,10 @@ class Phrase(Entity):
 @dataclass(frozen=True)
 class Paragraph(Entity):
   lines: Tuple[Line, ...]
+
+  @property
+  def text(self) -> str:
+    return '\n'.join(line.text for line in self.lines)
 
   @property
   def children(self) -> Iterable[Line]:
@@ -138,6 +159,10 @@ class TableCell(Entity):
   content: Tuple[Entity, ...]
 
   @property
+  def text(self) -> str:
+    return ' '.join(entity.text for entity in self.content)
+
+  @property
   def children(self) -> Iterable[Entity]:
     """ A TableCell's children are its contents. """
     yield from self.content
@@ -148,6 +173,10 @@ class TableRow(Entity):
   cells: Tuple[TableCell, ...]
 
   @property
+  def text(self) -> str:
+    return ' '.join(cell.text for cell in self.cells)
+
+  @property
   def children(self) -> Iterable[TableCell]:
     """ A TableRow's children are its cells. """
     yield from self.cells
@@ -156,6 +185,10 @@ class TableRow(Entity):
 @dataclass(frozen=True)
 class Table(Entity):
   rows: Tuple[TableRow, ...]
+
+  @property
+  def text(self) -> str:
+    return '\n'.join(row.text for row in self.rows)
 
   @property
   def children(self) -> Iterable[TableRow]:
@@ -169,6 +202,10 @@ class Number(Entity):
   value: Optional[float] = None
 
   @property
+  def text(self) -> str:
+    return str(self.value) if self.value else ''
+
+  @property
   def children(self) -> Iterable[Entity]:
     """ A Number's children are the words it spans. """
     yield from self.span
@@ -178,6 +215,10 @@ class Number(Entity):
 class Integer(Entity):
   span: Tuple[Word, ...]
   value: Optional[int] = None
+
+  @property
+  def text(self) -> str:
+    return str(self.value) if self.value else ''
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -192,6 +233,10 @@ class Date(Entity):
   likeness_score: Optional[float] = None
 
   @property
+  def text(self) -> str:
+    return self.value if self.value else ''
+
+  @property
   def children(self) -> Iterable[Entity]:
     """ A Date's children are the words it spans. """
     yield from self.span
@@ -202,6 +247,10 @@ class Time(Entity):
   span: Tuple[Word, ...]
   value: Optional[int] = None
   likeness_score: Optional[float] = None
+
+  @property
+  def text(self) -> str:
+    return str(self.value) if self.value else ''
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -217,6 +266,10 @@ class Currency(Entity):
   likeness_score: Optional[float] = None
 
   @property
+  def text(self) -> str:
+    return self.value if self.value else ''
+
+  @property
   def children(self) -> Iterable[Entity]:
     """ A Currency's children are the words it spans. """
     yield from self.span
@@ -226,6 +279,10 @@ class Currency(Entity):
 class PersonName(Entity):
   name_parts: Tuple[Line, ...]
   value: Optional[str] = None
+
+  @property
+  def text(self) -> str:
+    return self.value if self.value else ''
 
   @property
   def children(self) -> Iterable[Line]:
@@ -239,6 +296,10 @@ class Address(Entity):
   value: Optional[str] = None
 
   @property
+  def text(self) -> str:
+    return self.value if self.value else ''
+
+  @property
   def children(self) -> Iterable[Line]:
     """ A Address's children are the Lines it's composed of. """
     yield from self.lines
@@ -248,6 +309,10 @@ class Address(Entity):
 class Cluster(Entity):
   span: Tuple[Line, ...]
   label: Optional[str] = None
+
+  @property
+  def text(self) -> str:
+    return '\n'.join(line.text for line in self.span)
 
   @property
   def children(self) -> Iterable[Line]:
@@ -260,6 +325,10 @@ class NamedEntity(Entity):
   span: Tuple[Word, ...]
   value: Optional[str] = None
   label: Optional[str] = None
+
+  @property
+  def text(self) -> str:
+    return self.value if self.value else ''
 
   @property
   def children(self) -> Iterable[Entity]:
