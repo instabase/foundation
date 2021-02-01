@@ -1,6 +1,5 @@
 """ Entity wrappers. """
 
-import abc
 from dataclasses import dataclass
 from itertools import chain
 from typing import Dict, Generic, Iterable, Optional, Tuple, Type, TypeVar, Union
@@ -10,11 +9,11 @@ from .ocr import InputWord
 from .typing_utils import assert_exhaustive, unwrap
 
 
-class Entity(abc.ABC):
+@dataclass(frozen=True)
+class Entity:
   bbox: BBox
 
   @property
-  @abc.abstractmethod
   def children(self) -> Iterable['Entity']:
     """Yields all sub-entities of this entity.
 
@@ -49,7 +48,6 @@ class Page(Entity):
       top_left: (0, 100), bottom_right: (50, 200)
   """
   index: int
-  bbox: BBox
 
   @property
   def children(self) -> Iterable['Entity']:
@@ -63,13 +61,12 @@ class Page(Entity):
 @dataclass(frozen=True)
 class Word(Entity):
   text: str
-  bbox: BBox
   origin: Optional[InputWord] = None
 
   @staticmethod
   def from_inputword(origin: InputWord) -> 'Word':
     text = origin.text or ''
-    return Word(text, origin.bounding_box, origin)
+    return Word(origin.bounding_box, text, origin)
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -91,12 +88,11 @@ class Line(Entity):
   In most cases, this would originate from an OCR line.
    """
   _words: Tuple[Word, ...]
-  bbox: BBox
 
   @staticmethod
   def from_phrase(p: 'Phrase') -> 'Line':
     """ Cast/reinterpret a Phrase as a Line. """
-    return Line(tuple(p.words()), p.bbox)
+    return Line(p.bbox, tuple(p.words()))
 
   @property
   def children(self) -> Iterable[Word]:
@@ -114,14 +110,13 @@ class Phrase(Entity):
   """
   text: str
   _words: Tuple[Word, ...]
-  bbox: BBox
 
   @staticmethod
   def from_line(l: Line) -> 'Phrase':
     """ Cast/reinterpret a Line as a Phrase. """
     words = tuple(l.words())
     text = ' '.join(w.text for w in words)
-    return Phrase(text, words, l.bbox)
+    return Phrase(l.bbox, text, words)
 
   @property
   def children(self) -> Iterable[Word]:
@@ -131,7 +126,6 @@ class Phrase(Entity):
 @dataclass(frozen=True)
 class Paragraph(Entity):
   lines: Tuple[Line, ...]
-  bbox: BBox
 
   @property
   def children(self) -> Iterable[Line]:
@@ -142,7 +136,6 @@ class Paragraph(Entity):
 @dataclass(frozen=True)
 class TableCell(Entity):
   content: Tuple[Entity, ...]
-  bbox: BBox
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -153,7 +146,6 @@ class TableCell(Entity):
 @dataclass(frozen=True)
 class TableRow(Entity):
   cells: Tuple[TableCell, ...]
-  bbox: BBox
 
   @property
   def children(self) -> Iterable[TableCell]:
@@ -164,7 +156,6 @@ class TableRow(Entity):
 @dataclass(frozen=True)
 class Table(Entity):
   rows: Tuple[TableRow, ...]
-  bbox: BBox
 
   @property
   def children(self) -> Iterable[TableRow]:
@@ -175,7 +166,6 @@ class Table(Entity):
 @dataclass(frozen=True)
 class Number(Entity):
   span: Tuple[Word, ...]
-  bbox: BBox
   value: Optional[float] = None
 
   @property
@@ -187,7 +177,6 @@ class Number(Entity):
 @dataclass(frozen=True)
 class Integer(Entity):
   span: Tuple[Word, ...]
-  bbox: BBox
   value: Optional[int] = None
 
   @property
@@ -199,7 +188,6 @@ class Integer(Entity):
 @dataclass(frozen=True)
 class Date(Entity):
   span: Tuple[Word, ...]
-  bbox: BBox
   value: Optional[str] = None
   likeness_score: Optional[float] = None
 
@@ -212,7 +200,6 @@ class Date(Entity):
 @dataclass(frozen=True)
 class Time(Entity):
   span: Tuple[Word, ...]
-  bbox: BBox
   value: Optional[int] = None
   likeness_score: Optional[float] = None
 
@@ -225,7 +212,6 @@ class Time(Entity):
 @dataclass(frozen=True)
 class Currency(Entity):
   span: Tuple[Word, ...]
-  bbox: BBox
   value: Optional[str] = None
   units: Optional[str] = None
   likeness_score: Optional[float] = None
@@ -239,7 +225,6 @@ class Currency(Entity):
 @dataclass(frozen=True)
 class PersonName(Entity):
   name_parts: Tuple[Line, ...]
-  bbox: BBox
   value: Optional[str] = None
 
   @property
@@ -251,7 +236,6 @@ class PersonName(Entity):
 @dataclass(frozen=True)
 class Address(Entity):
   lines: Tuple[Line, ...]
-  bbox: BBox
   value: Optional[str] = None
 
   @property
@@ -263,7 +247,6 @@ class Address(Entity):
 @dataclass(frozen=True)
 class Cluster(Entity):
   span: Tuple[Line, ...]
-  bbox: BBox
   label: Optional[str] = None
 
   @property
@@ -275,7 +258,6 @@ class Cluster(Entity):
 @dataclass(frozen=True)
 class NamedEntity(Entity):
   span: Tuple[Word, ...]
-  bbox: BBox
   value: Optional[str] = None
   label: Optional[str] = None
 
