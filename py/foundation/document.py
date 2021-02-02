@@ -1,12 +1,16 @@
 """ Foundation document structures. """
 
-from dataclasses import dataclass, field
+import json
+
+from dataclasses import asdict, dataclass, field
 from itertools import chain
+from pathlib import Path
 from typing import Dict, Tuple, Iterable, Type, TypeVar
 
 from .entity import *
 from .geometry import BBox
 from .typing_utils import unwrap
+from ._instantiate import _instantiate
 
 E = TypeVar('E', bound=Entity)
 
@@ -51,3 +55,27 @@ class Document:
 
   def filter_entities(self, entity_type: Type[E]) -> Iterable[E]:
     yield from (e for e in self.entities if isinstance(e, entity_type))
+
+
+def load_fnd_doc_from_json(blob: Dict) -> Document:
+  forward_ref_resolver = {
+    'BBox': BBox,
+    'Entity': Entity,
+  }
+  # return validate(_instantiate(Document, blob, forward_ref_resolver))
+  return _instantiate(Document, blob, forward_ref_resolver)
+
+
+def load_document(path: Path) -> Document:
+  with path.open() as f:
+    return load_fnd_doc_from_json(json.load(f))
+
+
+def dump_to_json(root: Document) -> str:
+  # return json.dumps(asdict(validate(root)), indent=2, sort_keys=True)
+  return json.dumps(asdict(root), indent=2, sort_keys=True)
+
+
+def save_document(root: Document, path: Path) -> None:
+  with path.open('w') as f:
+    f.write(dump_to_json(root) + '\n')
