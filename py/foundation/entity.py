@@ -311,16 +311,16 @@ class Address(Entity):
 
 @dataclass(frozen=True)
 class Cluster(Entity):
-  span: Tuple[Line, ...]
+  span: Tuple[Phrase, ...]
   label: Optional[str] = None
 
   @property
   def text(self) -> str:
-    return '\n'.join(line.text for line in self.span)
+    return '\n'.join(phrase.text for phrase in self.phrases)
 
   @property
   def children(self) -> Iterable[Line]:
-    """ A Cluster's children are Lines that it spans. """
+    """ A Cluster's children are Phrases that it spans. """
     yield from self.span
 
 

@@ -12,6 +12,7 @@ from .geometry import BBox
 from .typing_utils import unwrap
 from ._instantiate import _instantiate
 
+
 E = TypeVar('E', bound=Entity)
 
 
