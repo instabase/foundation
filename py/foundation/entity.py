@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from itertools import chain
 from typing import Dict, Generic, Iterable, Optional, Tuple, Type, TypeVar, Union
 
+from .document import Document
 from .geometry import BBox
 from .ocr import InputWord
 from .typing_utils import assert_exhaustive, unwrap
@@ -40,6 +41,11 @@ class Entity:
     STRONGLY RECOMMENDED not to override this.
     """
     yield from chain.from_iterable(e.words() for e in self.children)
+
+  # ....tbd how/where. maybe will live in BP..
+  @property
+  def page(self) -> Page:
+    raise NotImplementedError
 
 
 @dataclass(frozen=True)
@@ -127,6 +133,7 @@ class Phrase(Entity):
   """
   _text: str
   _words: Tuple[Word, ...]
+  maximality_score: Optional[float]
 
   @property
   def text(self) -> str:
@@ -137,11 +144,59 @@ class Phrase(Entity):
     """ Cast/reinterpret a Line as a Phrase. """
     words = tuple(line.words())
     text = ' '.join(word.text for word in words)
-    return Phrase(line.bbox, text, words)
+    return Phrase(line.bbox, text, words, 1)
 
   @property
   def children(self) -> Iterable[Word]:
     yield from self._words
+
+
+@dataclass(frozen=True)
+class Cluster(Entity):
+  lines: Tuple[Phrase, ...]
+  label: Optional[str] = None
+
+  @property
+  def text(self) -> str:
+    return '\n'.join(line.text for line in self.lines)
+
+  @property
+  def children(self) -> Iterable[Phrase]:
+    """ A Cluster's children are Phrases that it spans. """
+    yield from self.lines
+
+
+@dataclass(frozen=True)
+class Date(Entity):
+  span: Tuple[Word, ...]
+  value: Optional[str] = None
+  likeness_score: Optional[float] = None
+
+  @property
+  def text(self) -> str:
+    return self.value if self.value else ''
+
+  @property
+  def children(self) -> Iterable[Entity]:
+    """ A Date's children are the words it spans. """
+    yield from self.span
+
+
+@dataclass(frozen=True)
+class Currency(Entity):
+  span: Tuple[Word, ...]
+  value: Optional[str] = None
+  units: Optional[str] = None
+  likeness_score: Optional[float] = None
+
+  @property
+  def text(self) -> str:
+    return self.value if self.value else ''
+
+  @property
+  def children(self) -> Iterable[Entity]:
+    """ A Currency's children are the words it spans. """
+    yield from self.span
 
 
 @dataclass(frozen=True)
@@ -231,22 +286,6 @@ class Integer(Entity):
 
 
 @dataclass(frozen=True)
-class Date(Entity):
-  span: Tuple[Word, ...]
-  value: Optional[str] = None
-  likeness_score: Optional[float] = None
-
-  @property
-  def text(self) -> str:
-    return self.value if self.value else ''
-
-  @property
-  def children(self) -> Iterable[Entity]:
-    """ A Date's children are the words it spans. """
-    yield from self.span
-
-
-@dataclass(frozen=True)
 class Time(Entity):
   span: Tuple[Word, ...]
   value: Optional[int] = None
@@ -259,23 +298,6 @@ class Time(Entity):
   @property
   def children(self) -> Iterable[Entity]:
     """ A Time's children are the words it spans. """
-    yield from self.span
-
-
-@dataclass(frozen=True)
-class Currency(Entity):
-  span: Tuple[Word, ...]
-  value: Optional[str] = None
-  units: Optional[str] = None
-  likeness_score: Optional[float] = None
-
-  @property
-  def text(self) -> str:
-    return self.value if self.value else ''
-
-  @property
-  def children(self) -> Iterable[Entity]:
-    """ A Currency's children are the words it spans. """
     yield from self.span
 
 
@@ -307,21 +329,6 @@ class Address(Entity):
   def children(self) -> Iterable[Line]:
     """ A Address's children are the Lines it's composed of. """
     yield from self.lines
-
-
-@dataclass(frozen=True)
-class Cluster(Entity):
-  span: Tuple[Phrase, ...]
-  label: Optional[str] = None
-
-  @property
-  def text(self) -> str:
-    return '\n'.join(phrase.text for phrase in self.phrases)
-
-  @property
-  def children(self) -> Iterable[Line]:
-    """ A Cluster's children are Phrases that it spans. """
-    yield from self.span
 
 
 @dataclass(frozen=True)
