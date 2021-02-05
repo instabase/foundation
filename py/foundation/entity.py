@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from itertools import chain
 from typing import Dict, Generic, Iterable, Optional, Tuple, Type, TypeVar, Union
 
-from .document import Document
 from .geometry import BBox
 from .ocr import InputWord
 from .typing_utils import assert_exhaustive, unwrap
@@ -44,7 +43,7 @@ class Entity:
 
   # ....tbd how/where. maybe will live in BP..
   @property
-  def page(self) -> Page:
+  def page(self) -> 'Page':
     raise NotImplementedError
 
 
@@ -83,9 +82,9 @@ class Word(Entity):
     return self._text
 
   @staticmethod
-  def from_inputword(origin: InputWord) -> 'Word':
+  def from_input_word(origin: InputWord) -> 'Word':
     text = origin.text or ''
-    return Word(origin.bounding_box, text, origin)
+    return Word(origin.bbox, text, origin)
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -151,6 +150,7 @@ class Phrase(Entity):
     yield from self._words
 
 
+# TODO: This should maybe be renamed multiline cluster
 @dataclass(frozen=True)
 class Cluster(Entity):
   lines: Tuple[Phrase, ...]
