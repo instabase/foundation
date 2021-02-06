@@ -22,15 +22,16 @@ class Document:
   """A Foundation Document is a collection of Entities of varying type.
   """
   bbox: BBox
-  entities: List[Entity] = field(default_factory=list)
+  entities: Tuple[Entity, ...] = field(default_factory=tuple)
   name: Optional[str] = None
 
   @staticmethod
-  def from_entities(entities: Iterable[Entity]) -> 'Document':
+  def from_entities(
+    entities: Iterable[Entity], name: Optional[str] = None) -> 'Document':
     """Construct a Document with bbox from entities."""
-    entities = list(entities)
+    entities = tuple(entities)
     bbox = unwrap(BBox.union(e.bbox for e in entities))
-    return Document(bbox, entities)
+    return Document(bbox, entities, name)
 
   def with_entities(self, entities: Iterable[Entity]) -> 'Document':
     """Returns a copy of this Document with given entities added. """

@@ -17,6 +17,9 @@ class Entity:
   def text(self) -> str:
     raise NotImplementedError
 
+  def height(self) -> float:
+    return self.bbox.height
+
   @property
   def children(self) -> Iterable['Entity']:
     """Yields all sub-entities of this entity.
@@ -41,11 +44,6 @@ class Entity:
     """
     yield from chain.from_iterable(e.words() for e in self.children)
 
-  # ....tbd how/where. maybe will live in BP..
-  @property
-  def page(self) -> 'Page':
-    raise NotImplementedError
-
 
 @dataclass(frozen=True)
 class Page(Entity):
@@ -57,6 +55,7 @@ class Page(Entity):
       top_left: (0, 100), bottom_right: (50, 200)
   """
   index: int
+  type: str = 'Page'
 
   @property
   def text(self) -> str:
@@ -76,6 +75,7 @@ class Page(Entity):
 class Word(Entity):
   _text: str
   origin: Optional[InputWord] = None
+  type: str = 'Word'
 
   @property
   def text(self) -> str:
@@ -106,6 +106,7 @@ class Line(Entity):
   In most cases, this would originate from an OCR line.
    """
   _words: Tuple[Word, ...]
+  type: str = 'Line'
 
   @property
   def text(self) -> str:
@@ -133,6 +134,7 @@ class Phrase(Entity):
   _text: str
   _words: Tuple[Word, ...]
   maximality_score: Optional[float]
+  type: str = 'Phrase'
 
   @property
   def text(self) -> str:
@@ -155,6 +157,7 @@ class Phrase(Entity):
 class Cluster(Entity):
   lines: Tuple[Phrase, ...]
   label: Optional[str] = None
+  type: str = 'Cluster'
 
   @property
   def text(self) -> str:
@@ -171,6 +174,7 @@ class Date(Entity):
   span: Tuple[Word, ...]
   value: Optional[str] = None
   likeness_score: Optional[float] = None
+  type: str = 'Date'
 
   @property
   def text(self) -> str:
@@ -188,6 +192,7 @@ class Currency(Entity):
   value: Optional[str] = None
   units: Optional[str] = None
   likeness_score: Optional[float] = None
+  type: str = 'Currency'
 
   @property
   def text(self) -> str:
@@ -202,6 +207,7 @@ class Currency(Entity):
 @dataclass(frozen=True)
 class Paragraph(Entity):
   lines: Tuple[Line, ...]
+  type: str = 'Paragraph'
 
   @property
   def text(self) -> str:
@@ -216,6 +222,7 @@ class Paragraph(Entity):
 @dataclass(frozen=True)
 class TableCell(Entity):
   content: Tuple[Entity, ...]
+  type: str = 'TableCell'
 
   @property
   def text(self) -> str:
@@ -230,6 +237,7 @@ class TableCell(Entity):
 @dataclass(frozen=True)
 class TableRow(Entity):
   cells: Tuple[TableCell, ...]
+  type: str = 'TableRow'
 
   @property
   def text(self) -> str:
@@ -244,6 +252,7 @@ class TableRow(Entity):
 @dataclass(frozen=True)
 class Table(Entity):
   rows: Tuple[TableRow, ...]
+  type: str = 'Table'
 
   @property
   def text(self) -> str:
@@ -259,6 +268,7 @@ class Table(Entity):
 class Number(Entity):
   span: Tuple[Word, ...]
   value: Optional[float] = None
+  type: str = 'Number'
 
   @property
   def text(self) -> str:
@@ -274,6 +284,7 @@ class Number(Entity):
 class Integer(Entity):
   span: Tuple[Word, ...]
   value: Optional[int] = None
+  type: str = 'Number'
 
   @property
   def text(self) -> str:
@@ -290,6 +301,7 @@ class Time(Entity):
   span: Tuple[Word, ...]
   value: Optional[int] = None
   likeness_score: Optional[float] = None
+  type: str = 'Time'
 
   @property
   def text(self) -> str:
@@ -305,6 +317,7 @@ class Time(Entity):
 class PersonName(Entity):
   name_parts: Tuple[Line, ...]
   value: Optional[str] = None
+  type: str = 'PersonName'
 
   @property
   def text(self) -> str:
@@ -320,6 +333,7 @@ class PersonName(Entity):
 class Address(Entity):
   lines: Tuple[Line, ...]
   value: Optional[str] = None
+  type: str = 'Address'
 
   @property
   def text(self) -> str:
@@ -336,6 +350,7 @@ class NamedEntity(Entity):
   span: Tuple[Word, ...]
   value: Optional[str] = None
   label: Optional[str] = None
+  type: str = 'NamedEntity'
 
   @property
   def text(self) -> str:
