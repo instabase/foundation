@@ -317,6 +317,7 @@ class Time(Entity):
 class PersonName(Entity):
   name_parts: Tuple[Line, ...]
   value: Optional[str] = None
+  likeness_score: Optional[float] = None
   type: str = 'PersonName'
 
   @property
@@ -333,6 +334,7 @@ class PersonName(Entity):
 class Address(Entity):
   lines: Tuple[Line, ...]
   value: Optional[str] = None
+  likeness_score: Optional[float] = None
   type: str = 'Address'
 
   @property
