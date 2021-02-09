@@ -133,7 +133,6 @@ class Phrase(Entity):
   """
   _text: str
   _words: Tuple[Word, ...]
-  maximality_score: Optional[float]
   type: str = 'Phrase'
 
   @property
@@ -145,7 +144,7 @@ class Phrase(Entity):
     """ Cast/reinterpret a Line as a Phrase. """
     words = tuple(line.words())
     text = ' '.join(word.text for word in words)
-    return Phrase(line.bbox, text, words, 1)
+    return Phrase(line.bbox, text, words)
 
   @property
   def children(self) -> Iterable[Word]:
