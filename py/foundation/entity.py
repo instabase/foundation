@@ -368,3 +368,23 @@ class NamedEntity(Entity):
     from Entity.
 """
 CustomEntityRegistry = Dict[str, Type[Entity]]
+
+entity_registry = {
+  'Page': Page,
+  'Word': Word,
+  'Line': Line,
+  'Phrase': Phrase,
+  'Cluster': Cluster,
+  'Date': Date,
+  'Currency': Currency,
+  'Paragraph': Paragraph,
+  'TableCell': TableCell,
+  'TableRow': TableRow,
+  'Table': Table,
+  'Number': Number,
+  'Integer': Integer,
+  'Time': Time,
+  'PersonName': PersonName,
+  'Address': Address,
+  'NamedEntity': NamedEntity,
+}

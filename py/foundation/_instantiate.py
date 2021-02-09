@@ -3,6 +3,8 @@
 import dataclasses
 import typing
 
+from .entity import Entity, entity_registry
+
 
 T = typing.TypeVar('T')
 
@@ -78,6 +80,8 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
     assert False
 
   if dataclasses.is_dataclass(t):
+    if t == Entity:
+      t = entity_registry[v['type']]
     if not isinstance(v, dict):
       raise RuntimeError('dataclasses must be instantiated from dicts; '
         f'error instantiating {t} from {v}')
