@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from itertools import chain
-from typing import Dict, Generic, Iterable, Optional, Tuple, Type, TypeVar, Union
+from typing import Dict, Generic, Iterable, Optional, Tuple, Type
 
 from .geometry import BBox
 from .ocr import InputWord
@@ -135,6 +135,14 @@ class Phrase(Entity):
     words = tuple(line.words())
     text = ' '.join(word.text for word in words)
     return Phrase(line.bbox, text, words)
+
+  @staticmethod
+  def from_words(words: Tuple[Word, ...]) -> 'Phrase':
+    if not all(isinstance(word, Word) for word in words):
+      raise ValueError('Phrase must be built from Words')
+    bbox = unwrap(BBox.union(word.bbox for word in words))
+    text = ' '.join(word.text for word in words)
+    return Phrase(bbox, text, words)
 
   @property
   def children(self) -> Iterable[Word]:
