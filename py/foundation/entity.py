@@ -1,4 +1,4 @@
-""" Entity wrappers. """
+"""Entity wrappers."""
 
 from dataclasses import dataclass
 from itertools import chain
@@ -42,12 +42,12 @@ class Entity:
 
     STRONGLY RECOMMENDED not to override this.
     """
-    yield from chain.from_iterable(e.words() for e in self.children)
+    yield from chain.from_iterable(E.words() for E in self.children)
 
 
 @dataclass(frozen=True)
 class Page(Entity):
-  """ A Page is defined by an image region, or region in a document.
+  """A Page is defined by an image region, or region in a document.
 
   Its bounding box is its dimensions, translated by its offset within the
   document. For example, a document with 3 pages, each 50x100, "stacking"
@@ -56,11 +56,6 @@ class Page(Entity):
   """
   index: int
   type: str = 'Page'
-
-  @property
-  def text(self) -> str:
-    # FIXME: Revisit this concept for a page.
-    return ''
 
   @property
   def children(self) -> Iterable['Entity']:
@@ -88,11 +83,11 @@ class Word(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ Word has no children. """
+    """Words have no children."""
     yield from []
 
   def words(self) -> Iterable['Word']:
-    """ Yields itself.
+    """Yields itself.
 
     This provides the base case for Entity.words.
     """
@@ -101,10 +96,10 @@ class Word(Entity):
 
 @dataclass(frozen=True)
 class Line(Entity):
-  """ A horizontal line of text.
+  """A horizontal line of text.
 
   In most cases, this would originate from an OCR line.
-   """
+  """
   _words: Tuple[Word, ...]
   type: str = 'Line'
 
@@ -114,23 +109,18 @@ class Line(Entity):
 
   @staticmethod
   def from_phrase(phrase: 'Phrase') -> 'Line':
-    """ Cast/reinterpret a Phrase as a Line. """
+    """Cast/reinterpret a Phrase as a Line."""
     return Line(phrase.bbox, tuple(phrase.words()))
 
   @property
   def children(self) -> Iterable[Word]:
-    """ A Line's children are its OCR words. """
+    """A Line's children are its OCR words."""
     yield from self._words
 
 
 @dataclass(frozen=True)
 class Phrase(Entity):
-  """ A sequence of words contiguous on the same line.
-
-  E.g. the following mock document contains two phrases, but one Line:
-
-      Here is a phrase                Another phrase
-  """
+  """A sequence of words contiguous on the same line."""
   _text: str
   _words: Tuple[Word, ...]
   type: str = 'Phrase'
@@ -141,7 +131,7 @@ class Phrase(Entity):
 
   @staticmethod
   def from_line(line: Line) -> 'Phrase':
-    """ Cast/reinterpret a Line as a Phrase. """
+    """Cast/reinterpret a Line as a Phrase."""
     words = tuple(line.words())
     text = ' '.join(word.text for word in words)
     return Phrase(line.bbox, text, words)
@@ -151,7 +141,6 @@ class Phrase(Entity):
     yield from self._words
 
 
-# TODO: This should maybe be renamed multiline cluster
 @dataclass(frozen=True)
 class Cluster(Entity):
   lines: Tuple[Phrase, ...]
@@ -164,7 +153,7 @@ class Cluster(Entity):
 
   @property
   def children(self) -> Iterable[Phrase]:
-    """ A Cluster's children are Phrases that it spans. """
+    """A Cluster's children are Phrases that it spans."""
     yield from self.lines
 
 
@@ -181,7 +170,7 @@ class Date(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A Date's children are the words it spans. """
+    """A Date's children are the words it spans."""
     yield from self.span
 
 
@@ -199,7 +188,7 @@ class Currency(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A Currency's children are the words it spans. """
+    """A Currency's children are the words it spans."""
     yield from self.span
 
 
@@ -214,7 +203,7 @@ class Paragraph(Entity):
 
   @property
   def children(self) -> Iterable[Line]:
-    """ A Paragraph's children are its Lines. """
+    """A Paragraph's children are its Lines."""
     yield from self.lines
 
 
@@ -229,7 +218,7 @@ class TableCell(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A TableCell's children are its contents. """
+    """A TableCell's children are its contents."""
     yield from self.content
 
 
@@ -244,7 +233,7 @@ class TableRow(Entity):
 
   @property
   def children(self) -> Iterable[TableCell]:
-    """ A TableRow's children are its cells. """
+    """A TableRow's children are its cells."""
     yield from self.cells
 
 
@@ -259,7 +248,7 @@ class Table(Entity):
 
   @property
   def children(self) -> Iterable[TableRow]:
-    """ A Table's children are its rows. """
+    """A Table's children are its rows."""
     yield from self.rows
 
 
@@ -275,7 +264,7 @@ class Number(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A Number's children are the words it spans. """
+    """A Number's children are the words it spans."""
     yield from self.span
 
 
@@ -291,7 +280,7 @@ class Integer(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ An Integer's children are the words it spans. """
+    """An Integer's children are the words it spans."""
     yield from self.span
 
 
@@ -308,7 +297,7 @@ class Time(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ A Time's children are the words it spans. """
+    """A Time's children are the words it spans."""
     yield from self.span
 
 
@@ -325,7 +314,7 @@ class PersonName(Entity):
 
   @property
   def children(self) -> Iterable[Line]:
-    """ A PersonName's children are the Lines of its name parts. """
+    """A PersonName's children are the Lines of its name parts."""
     yield from self.name_parts
 
 
@@ -342,7 +331,7 @@ class Address(Entity):
 
   @property
   def children(self) -> Iterable[Line]:
-    """ A Address's children are the Lines it's composed of. """
+    """An Address's children are the Lines it's composed of."""
     yield from self.lines
 
 
@@ -359,31 +348,32 @@ class NamedEntity(Entity):
 
   @property
   def children(self) -> Iterable[Entity]:
-    """ An entities children are the words it spans. """
+    """An entities children are the words it spans."""
     yield from self.span
 
 
-""" Associates a string entity type name to a custom class that inherits
-    from Entity.
+"""
+Associates a string entity type name to a custom class that inherits from
+Entity.
 """
 CustomEntityRegistry = Dict[str, Type[Entity]]
 
 entity_registry = {
-  'Page': Page,
-  'Word': Word,
-  'Line': Line,
-  'Phrase': Phrase,
+  'Address': Address,
   'Cluster': Cluster,
-  'Date': Date,
   'Currency': Currency,
+  'Date': Date,
+  'Integer': Integer,
+  'Line': Line,
+  'NamedEntity': NamedEntity,
+  'Number': Number,
+  'Page': Page,
   'Paragraph': Paragraph,
+  'PersonName': PersonName,
+  'Phrase': Phrase,
+  'Table': Table,
   'TableCell': TableCell,
   'TableRow': TableRow,
-  'Table': Table,
-  'Number': Number,
-  'Integer': Integer,
   'Time': Time,
-  'PersonName': PersonName,
-  'Address': Address,
-  'NamedEntity': NamedEntity,
+  'Word': Word,
 }

@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass, field
 from functools import lru_cache
 from itertools import chain
 from pathlib import Path
-from typing import Dict, Iterable, List, Type, TypeVar
+from typing import Dict, Iterable, Type, TypeVar
 
 from .entity import *
 from .geometry import BBox
@@ -19,8 +19,7 @@ E = TypeVar('E', bound=Entity)
 
 @dataclass(frozen=True)
 class Document:
-  """A Foundation Document is a collection of Entities of varying type.
-  """
+  """A Foundation Document is a collection of Entities of varying type."""
   bbox: BBox
   entities: Tuple[Entity, ...] = field(default_factory=tuple)
   name: Optional[str] = None
@@ -28,13 +27,13 @@ class Document:
   @staticmethod
   def from_entities(
     entities: Iterable[Entity], name: Optional[str] = None) -> 'Document':
-    """Construct a Document with bbox from entities."""
+    """Construct a Document from entities."""
     entities = tuple(entities)
     bbox = unwrap(BBox.union(e.bbox for e in entities))
     return Document(bbox, entities, name)
 
   def with_entities(self, entities: Iterable[Entity]) -> 'Document':
-    """Returns a copy of this Document with given entities added. """
+    """Returns a copy of this Document with given entities added."""
     return Document.from_entities(tuple(chain(self.entities, entities)))
 
   def filter_entities(self, entity_type: Type[E]) -> Iterable[E]:
@@ -47,14 +46,8 @@ class Document:
         for E in self.entities)))
 
 
-# Work in progress
 def load_fnd_doc_from_json(blob: Dict) -> Document:
-  forward_ref_resolver = {
-    'BBox': BBox,
-    'Entity': Entity,
-  }
-  # return validate(_instantiate(Document, blob, forward_ref_resolver))
-  return _instantiate(Document, blob, forward_ref_resolver)
+  return _instantiate(Document, blob, None)
 
 
 def load_document(path: Path) -> Document:
@@ -63,7 +56,6 @@ def load_document(path: Path) -> Document:
 
 
 def dump_to_json(root: Document) -> str:
-  # return json.dumps(asdict(validate(root)), indent=2, sort_keys=True)
   return json.dumps(asdict(root), indent=2, sort_keys=True)
 
 

@@ -23,9 +23,9 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
   own copy, too.
 
   Args:
-    t: A float, int, string, dict, dataclass, or list, or one of the above
-      wrapped in `Optional`. If this is a dataclass, then its attributes must
-      also be one of these types. Default values for dataclass members are
+    t: A float, int, string, dict, dataclass, tuple, or list, or one of the
+      above wrapped in `Optional`. If this is a dataclass, then its attributes
+      must also be one of these types. Default values for dataclass members are
       allowed. If this is a list, then it must be a `List[T]`, where `T` is one
       of the above types. If this is a dict, then it must be a `Dict[K, T]`,
       where `K` is an int, float, or str, and `T` is one of the above types.
@@ -89,10 +89,15 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
     return t(**{key: _instantiate(types[key], value, FRR) # type: ignore
                 for key, value in v.items()})
 
-  # This is not right. >>>>:(
-  elif get_origin(t) == list or get_origin(t) == tuple:
+  elif get_origin(t) == list:
     if not isinstance(v, list):
       raise RuntimeError('lists must be instantiated from lists; '
+        f'error instantiating {t} from {v}')
+    return list(_instantiate(get_args(t)[0], entry, FRR) for entry in v) # type: ignore
+
+  elif get_origin(t) == tuple:
+    if not isinstance(v, list):
+      raise RuntimeError('tuples must be instantiated from lists; '
         f'error instantiating {t} from {v}')
     return tuple(_instantiate(get_args(t)[0], entry, FRR) for entry in v) # type: ignore
 
