@@ -1,6 +1,6 @@
 """Entity types."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from itertools import chain
 from typing import Dict, Generic, Iterable, Optional, Tuple, Type
 
@@ -12,10 +12,6 @@ from .typing_utils import assert_exhaustive, unwrap
 @dataclass(frozen=True)
 class Entity:
   bbox: BBox
-
-  @property
-  def text(self) -> str:
-    raise NotImplementedError
 
   def height(self) -> float:
     return self.bbox.height
@@ -44,6 +40,11 @@ class Entity:
     """
     yield from chain.from_iterable(E.words() for E in self.children)
 
+  @property
+  def entity_text(self) -> Optional[str]:
+    entity_fields = (field.name for field in fields(self))
+    return self.text if 'text' in entity_fields else None # type: ignore # how to??
+
 
 @dataclass(frozen=True)
 class Page(Entity):
@@ -68,13 +69,9 @@ class Page(Entity):
 
 @dataclass(frozen=True)
 class Word(Entity):
-  _text: str
+  text: str
   origin: Optional[InputWord] = None
   type: str = 'Word'
-
-  @property
-  def text(self) -> str:
-    return self._text
 
   @staticmethod
   def from_input_word(origin: InputWord) -> 'Word':
@@ -100,17 +97,14 @@ class Line(Entity):
 
   In most cases, this would originate from an OCR line.
   """
+  text: str
   _words: Tuple[Word, ...]
   type: str = 'Line'
-
-  @property
-  def text(self) -> str:
-    return ' '.join(word.text for word in self._words)
 
   @staticmethod
   def from_phrase(phrase: 'Phrase') -> 'Line':
     """Cast/reinterpret a Phrase as a Line."""
-    return Line(phrase.bbox, tuple(phrase.words()))
+    return Line(phrase.bbox, phrase.text, tuple(phrase.words()))
 
   @property
   def children(self) -> Iterable[Word]:
@@ -121,13 +115,9 @@ class Line(Entity):
 @dataclass(frozen=True)
 class Phrase(Entity):
   """A sequence of words contiguous on the same line."""
-  _text: str
+  text: str
   _words: Tuple[Word, ...]
   type: str = 'Phrase'
-
-  @property
-  def text(self) -> str:
-    return self._text
 
   @staticmethod
   def from_line(line: Line) -> 'Phrase':
@@ -151,13 +141,16 @@ class Phrase(Entity):
 
 @dataclass(frozen=True)
 class Cluster(Entity):
+  text: str
   lines: Tuple[Phrase, ...]
   label: Optional[str] = None
   type: str = 'Cluster'
 
-  @property
-  def text(self) -> str:
-    return '\n'.join(line.text for line in self.lines)
+  @staticmethod
+  def from_phrases(phrases: Tuple[Phrase, ...]) -> 'Cluster':
+    text = '\n'.join(phrase.text for phrase in phrases)
+    bbox = unwrap(BBox.union(phrase.bbox for phrase in phrases))
+    return Cluster(bbox, text, phrases)
 
   @property
   def children(self) -> Iterable[Phrase]:
@@ -167,14 +160,10 @@ class Cluster(Entity):
 
 @dataclass(frozen=True)
 class Date(Entity):
+  text: str
   span: Tuple[Word, ...]
-  value: Optional[str] = None
   likeness_score: Optional[float] = None
   type: str = 'Date'
-
-  @property
-  def text(self) -> str:
-    return self.value if self.value else ''
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -184,15 +173,11 @@ class Date(Entity):
 
 @dataclass(frozen=True)
 class Currency(Entity):
+  text: str
   span: Tuple[Word, ...]
-  value: Optional[str] = None
   units: Optional[str] = None
   likeness_score: Optional[float] = None
   type: str = 'Currency'
-
-  @property
-  def text(self) -> str:
-    return self.value if self.value else ''
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -202,12 +187,15 @@ class Currency(Entity):
 
 @dataclass(frozen=True)
 class Paragraph(Entity):
+  text: str
   lines: Tuple[Line, ...]
   type: str = 'Paragraph'
 
-  @property
-  def text(self) -> str:
-    return '\n'.join(line.text for line in self.lines)
+  @staticmethod
+  def from_lines(lines: Tuple[Line, ...]) -> 'Paragraph':
+    text = '\n'.join(line.text for line in lines)
+    bbox = unwrap(BBox.union(line.bbox for line in lines))
+    return Paragraph(bbox, text, lines)
 
   @property
   def children(self) -> Iterable[Line]:
@@ -221,10 +209,6 @@ class TableCell(Entity):
   type: str = 'TableCell'
 
   @property
-  def text(self) -> str:
-    return ' '.join(entity.text for entity in self.content)
-
-  @property
   def children(self) -> Iterable[Entity]:
     """A TableCell's children are its contents."""
     yield from self.content
@@ -236,10 +220,6 @@ class TableRow(Entity):
   type: str = 'TableRow'
 
   @property
-  def text(self) -> str:
-    return ' '.join(cell.text for cell in self.cells)
-
-  @property
   def children(self) -> Iterable[TableCell]:
     """A TableRow's children are its cells."""
     yield from self.cells
@@ -249,10 +229,6 @@ class TableRow(Entity):
 class Table(Entity):
   rows: Tuple[TableRow, ...]
   type: str = 'Table'
-
-  @property
-  def text(self) -> str:
-    return '\n'.join(row.text for row in self.rows)
 
   @property
   def children(self) -> Iterable[TableRow]:
@@ -311,14 +287,10 @@ class Time(Entity):
 
 @dataclass(frozen=True)
 class PersonName(Entity):
+  text: str
   name_parts: Tuple[Line, ...]
-  value: Optional[str] = None
   likeness_score: Optional[float] = None
   type: str = 'PersonName'
-
-  @property
-  def text(self) -> str:
-    return self.value if self.value else ''
 
   @property
   def children(self) -> Iterable[Line]:
@@ -328,14 +300,10 @@ class PersonName(Entity):
 
 @dataclass(frozen=True)
 class Address(Entity):
+  text: str
   lines: Tuple[Line, ...]
-  value: Optional[str] = None
   likeness_score: Optional[float] = None
   type: str = 'Address'
-
-  @property
-  def text(self) -> str:
-    return self.value if self.value else ''
 
   @property
   def children(self) -> Iterable[Line]:
@@ -345,14 +313,11 @@ class Address(Entity):
 
 @dataclass(frozen=True)
 class NamedEntity(Entity):
+  text: str
   span: Tuple[Word, ...]
   value: Optional[str] = None
   label: Optional[str] = None
   type: str = 'NamedEntity'
-
-  @property
-  def text(self) -> str:
-    return self.value if self.value else ''
 
   @property
   def children(self) -> Iterable[Entity]:
