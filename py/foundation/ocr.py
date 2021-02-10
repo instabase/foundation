@@ -41,7 +41,7 @@ class InputWord:
 
   @staticmethod
   def median_word_height(words: Iterable['InputWord']) -> float:
-    L = sorted(words, key=InputWord.height)
+    L = sorted(words, key=lambda W: W.height)
     if not L:
       return 0
     n = len(L)

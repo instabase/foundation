@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Dict, Optional, Iterable, Tuple, Type, TypeVar
 
 from ._instantiate import _instantiate
-from .entity import Entity
+from .entity import Entity, entity_registry
 from .geometry import BBox
 from .ocr import InputWord
 from .typing_utils import unwrap
@@ -50,7 +50,7 @@ class Document:
 
 
 def load_fnd_doc_from_json(blob: Dict) -> Document:
-  return _instantiate(Document, blob, None)
+  return _instantiate(Document, blob, entity_registry)
 
 
 def load_document(path: Path) -> Document:

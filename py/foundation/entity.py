@@ -5,7 +5,6 @@ from dataclasses import asdict, dataclass, fields
 from itertools import chain
 from typing import Dict, Generic, Iterable, Optional, Tuple, Type
 
-from ._instantiate import _instantiate
 from .geometry import BBox
 from .ocr import InputWord
 from .typing_utils import assert_exhaustive, unwrap
@@ -334,14 +333,6 @@ class NamedEntity(Entity):
     yield from self.words
 
 
-def load_entity_from_json(blob: Dict) -> Entity:
-  return _instantiate(Entity, blob, None)
-
-
-def dump_to_json(entity: Entity) -> str:
-  return json.dumps(asdict(entity), indent=2, sort_keys=True)
-
-
 """
 Associates a string entity type name to a custom class that inherits from
 Entity.
@@ -367,3 +358,11 @@ entity_registry = {
   'Time': Time,
   'Word': Word,
 }
+
+
+def load_entity_from_json(blob: Dict) -> Entity:
+  return _instantiate(Entity, blob, entity_registry)
+
+
+def dump_to_json(entity: Entity) -> str:
+  return json.dumps(asdict(entity), indent=2, sort_keys=True)

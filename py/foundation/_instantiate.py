@@ -3,14 +3,12 @@
 import dataclasses
 import typing
 
-from .entity import Entity, entity_registry
-
 
 T = typing.TypeVar('T')
 
 
 def _instantiate(t: typing.Type[T], v: typing.Any,
-                 forward_ref_resolver:
+                 ref_resolver:
                    typing.Optional[
                      typing.Dict[str, typing.Type]] = None) -> T:
   """Map a raw dict to a tree of dataclasses.
@@ -30,9 +28,9 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
       of the above types. If this is a dict, then it must be a `Dict[K, T]`,
       where `K` is an int, float, or str, and `T` is one of the above types.
     v: A float, int, string, dict, list, or `None`.
-    forward_ref_resolver: If any dataclasses have types which are forward
-      references, this dictionary must be provided, mapping each
-      forward-referenced type to its actual class type.
+    ref_resolver: If any dataclasses have types which are forward references,
+      this dictionary must be provided, mapping each forward-referenced type to
+      its actual class type.
 
   Example code:
     @dataclass
@@ -54,7 +52,7 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
     with `name='42'` in the resulting `MyDataclass` instance.
   """
 
-  FRR = forward_ref_resolver
+  RR = ref_resolver
 
   # These are provided in `typing` in Python 3.8.
   def get_args(t: typing.Type) -> typing.Tuple[type, ...]:
@@ -80,29 +78,33 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
     assert False
 
   if dataclasses.is_dataclass(t):
-    if t == Entity:
-      t = entity_registry[v['type']]
+    # FIXME: This shouldn't be special-cased for Entity.
+    if t.__name__ == 'Entity':
+      if RR is None or v['type'] not in RR:
+        raise RuntimeError('entity registry is missing Entity type '
+                          f'{v["type"]}')
+      t = RR[v['type']]
     if not isinstance(v, dict):
       raise RuntimeError('dataclasses must be instantiated from dicts; '
         f'error instantiating {t} from {v}')
     types = {field.name: field.type for field in dataclasses.fields(t)}
-    return t(**{key: _instantiate(types[key], value, FRR) # type: ignore
+    return t(**{key: _instantiate(types[key], value, RR) # type: ignore
                 for key, value in v.items()})
 
   elif get_origin(t) == list:
     if not isinstance(v, list):
       raise RuntimeError('lists must be instantiated from lists; '
         f'error instantiating {t} from {v}')
-    return list(_instantiate(get_args(t)[0], entry, FRR) for entry in v) # type: ignore
+    return list(_instantiate(get_args(t)[0], entry, RR) for entry in v) # type: ignore
 
   elif get_origin(t) == tuple:
     if not isinstance(v, list):
       raise RuntimeError('tuples must be instantiated from lists; '
         f'error instantiating {t} from {v}')
-    return tuple(_instantiate(get_args(t)[0], entry, FRR) for entry in v) # type: ignore
+    return tuple(_instantiate(get_args(t)[0], entry, RR) for entry in v) # type: ignore
 
   elif is_optional(t):
-    return None if v is None else _instantiate(get_optional_arg(t), v, FRR) # type: ignore
+    return None if v is None else _instantiate(get_optional_arg(t), v, RR) # type: ignore
 
   elif get_origin(t) == dict:
     if not isinstance(v, dict):
@@ -116,15 +118,15 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
       key_type, value_type = get_args(t) # type: ignore
       if not key_type in {int, float, str}:
         raise RuntimeError(f'invalid key type in dict: {key_type} in {t}')
-      return dict(**{key_type(key): _instantiate(value_type, value, FRR) # type: ignore
+      return dict(**{key_type(key): _instantiate(value_type, value, RR) # type: ignore
                      for key, value in v.items()})
     else:
       return v # type: ignore
 
   elif isinstance(t, typing.ForwardRef):
     t_name = get_forward_arg(t)
-    if FRR and t_name in FRR:
-      return _instantiate(FRR[t_name], v, FRR)
+    if RR and t_name in RR:
+      return _instantiate(RR[t_name], v, RR)
     else:
       raise RuntimeError(
         'you need to provide _instantiate with a dictionary to resolve '
