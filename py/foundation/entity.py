@@ -107,13 +107,6 @@ class Phrase(Entity):
   type: str = 'Phrase'
 
   @staticmethod
-  def from_line(line: 'Line') -> 'Phrase':
-    """Cast/reinterpret a Line as a Phrase."""
-    words = tuple(line.words)
-    text = ' '.join(word.text for word in words)
-    return Phrase(line.bbox, text, words, 1)
-
-  @staticmethod
   def from_words(words: Tuple[Word, ...], score: Optional[float] = None) \
       -> 'Phrase':
     if not all(isinstance(word, Word) for word in words):
@@ -171,45 +164,6 @@ class Currency(Entity):
   def children(self) -> Iterable[Entity]:
     """A Currency's children are the words it spans."""
     yield from self.words
-
-
-@dataclass(frozen=True)
-class Line(Entity):
-  """A horizontal line of text spanning a page.
-
-  In most cases, this would originate from an OCR line.
-  """
-  text: str
-  words: Tuple[Word, ...]
-  type: str = 'Line'
-
-  @staticmethod
-  def from_phrase(phrase: 'Phrase') -> 'Line':
-    """Cast/reinterpret a Phrase as a Line."""
-    return Line(phrase.bbox, phrase.text, tuple(phrase.words))
-
-  @property
-  def children(self) -> Iterable[Word]:
-    """A Line's children are its OCR words."""
-    yield from self.words
-
-
-@dataclass(frozen=True)
-class Paragraph(Entity):
-  text: str
-  lines: Tuple[Line, ...]
-  type: str = 'Paragraph'
-
-  @staticmethod
-  def from_lines(lines: Tuple[Line, ...]) -> 'Paragraph':
-    text = '\n'.join(line.text for line in lines)
-    bbox = unwrap(BBox.union(line.bbox for line in lines))
-    return Paragraph(bbox, text, lines)
-
-  @property
-  def children(self) -> Iterable[Line]:
-    """A Paragraph's children are its Lines."""
-    yield from self.lines
 
 
 @dataclass(frozen=True)
@@ -340,17 +294,16 @@ Entity.
 """
 CustomEntityRegistry = Dict[str, Type[Entity]]
 
+
 entity_registry = {
   'Address': Address,
   'Cluster': Cluster,
   'Currency': Currency,
   'Date': Date,
   'Integer': Integer,
-  'Line': Line,
   'NamedEntity': NamedEntity,
   'Number': Number,
   'Page': Page,
-  'Paragraph': Paragraph,
   'PersonName': PersonName,
   'Phrase': Phrase,
   'Table': Table,
