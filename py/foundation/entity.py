@@ -28,7 +28,7 @@ class Entity:
     """
     raise NotImplementedError
 
-  def words(self) -> Iterable['Word']:
+  def entity_words(self) -> Iterable['Word']:
     """Yields all Word entities among this entity's children.
 
     Can be seen as returning an iterator over the leaves of this
@@ -38,7 +38,7 @@ class Entity:
 
     STRONGLY RECOMMENDED not to override this.
     """
-    yield from chain.from_iterable(E.words() for E in self.children)
+    yield from chain.from_iterable(E.entity_words() for E in self.children)
 
   @property
   def entity_text(self) -> Optional[str]:
@@ -83,7 +83,7 @@ class Word(Entity):
     """Words have no children."""
     yield from []
 
-  def words(self) -> Iterable['Word']:
+  def entity_words(self) -> Iterable['Word']:
     """Yields itself.
 
     This provides the base case for Entity.words.
@@ -92,51 +92,32 @@ class Word(Entity):
 
 
 @dataclass(frozen=True)
-class Line(Entity):
-  """A horizontal line of text.
-
-  In most cases, this would originate from an OCR line.
-  """
-  text: str
-  _words: Tuple[Word, ...]
-  type: str = 'Line'
-
-  @staticmethod
-  def from_phrase(phrase: 'Phrase') -> 'Line':
-    """Cast/reinterpret a Phrase as a Line."""
-    return Line(phrase.bbox, phrase.text, tuple(phrase.words()))
-
-  @property
-  def children(self) -> Iterable[Word]:
-    """A Line's children are its OCR words."""
-    yield from self._words
-
-
-@dataclass(frozen=True)
 class Phrase(Entity):
   """A sequence of words contiguous on the same line."""
   text: str
-  _words: Tuple[Word, ...]
+  words: Tuple[Word, ...]
+  maximality_score: Optional[float] = None
   type: str = 'Phrase'
 
   @staticmethod
-  def from_line(line: Line) -> 'Phrase':
+  def from_line(line: 'Line') -> 'Phrase':
     """Cast/reinterpret a Line as a Phrase."""
-    words = tuple(line.words())
+    words = tuple(line.words)
     text = ' '.join(word.text for word in words)
-    return Phrase(line.bbox, text, words)
+    return Phrase(line.bbox, text, words, 1)
 
   @staticmethod
-  def from_words(words: Tuple[Word, ...]) -> 'Phrase':
+  def from_words(words: Tuple[Word, ...], score: Optional[float] = None) \
+      -> 'Phrase':
     if not all(isinstance(word, Word) for word in words):
       raise ValueError('Phrase must be built from Words')
     bbox = unwrap(BBox.union(word.bbox for word in words))
     text = ' '.join(word.text for word in words)
-    return Phrase(bbox, text, words)
+    return Phrase(bbox, text, words, score)
 
   @property
   def children(self) -> Iterable[Word]:
-    yield from self._words
+    yield from self.words
 
 
 @dataclass(frozen=True)
@@ -161,20 +142,20 @@ class Cluster(Entity):
 @dataclass(frozen=True)
 class Date(Entity):
   text: str
-  span: Tuple[Word, ...]
+  words: Tuple[Word, ...]
   likeness_score: Optional[float] = None
   type: str = 'Date'
 
   @property
   def children(self) -> Iterable[Entity]:
     """A Date's children are the words it spans."""
-    yield from self.span
+    yield from self.words
 
 
 @dataclass(frozen=True)
 class Currency(Entity):
   text: str
-  span: Tuple[Word, ...]
+  words: Tuple[Word, ...]
   units: Optional[str] = None
   likeness_score: Optional[float] = None
   type: str = 'Currency'
@@ -182,7 +163,28 @@ class Currency(Entity):
   @property
   def children(self) -> Iterable[Entity]:
     """A Currency's children are the words it spans."""
-    yield from self.span
+    yield from self.words
+
+
+@dataclass(frozen=True)
+class Line(Entity):
+  """A horizontal line of text spanning a page.
+
+  In most cases, this would originate from an OCR line.
+  """
+  text: str
+  words: Tuple[Word, ...]
+  type: str = 'Line'
+
+  @staticmethod
+  def from_phrase(phrase: 'Phrase') -> 'Line':
+    """Cast/reinterpret a Phrase as a Line."""
+    return Line(phrase.bbox, phrase.text, tuple(phrase.words))
+
+  @property
+  def children(self) -> Iterable[Word]:
+    """A Line's children are its OCR words."""
+    yield from self.words
 
 
 @dataclass(frozen=True)
@@ -238,7 +240,7 @@ class Table(Entity):
 
 @dataclass(frozen=True)
 class Number(Entity):
-  span: Tuple[Word, ...]
+  words: Tuple[Word, ...]
   value: Optional[float] = None
   type: str = 'Number'
 
@@ -249,12 +251,12 @@ class Number(Entity):
   @property
   def children(self) -> Iterable[Entity]:
     """A Number's children are the words it spans."""
-    yield from self.span
+    yield from self.words
 
 
 @dataclass(frozen=True)
 class Integer(Entity):
-  span: Tuple[Word, ...]
+  words: Tuple[Word, ...]
   value: Optional[int] = None
   type: str = 'Number'
 
@@ -265,12 +267,12 @@ class Integer(Entity):
   @property
   def children(self) -> Iterable[Entity]:
     """An Integer's children are the words it spans."""
-    yield from self.span
+    yield from self.words
 
 
 @dataclass(frozen=True)
 class Time(Entity):
-  span: Tuple[Word, ...]
+  words: Tuple[Word, ...]
   value: Optional[int] = None
   likeness_score: Optional[float] = None
   type: str = 'Time'
@@ -282,39 +284,39 @@ class Time(Entity):
   @property
   def children(self) -> Iterable[Entity]:
     """A Time's children are the words it spans."""
-    yield from self.span
+    yield from self.words
 
 
 @dataclass(frozen=True)
 class PersonName(Entity):
   text: str
-  name_parts: Tuple[Line, ...]
+  name_parts: Tuple[Phrase, ...]
   likeness_score: Optional[float] = None
   type: str = 'PersonName'
 
   @property
-  def children(self) -> Iterable[Line]:
-    """A PersonName's children are the Lines of its name parts."""
+  def children(self) -> Iterable[Phrase]:
+    """A PersonName's children are the Phrases of its name parts."""
     yield from self.name_parts
 
 
 @dataclass(frozen=True)
 class Address(Entity):
   text: str
-  lines: Tuple[Line, ...]
+  lines: Tuple[Phrase, ...]
   likeness_score: Optional[float] = None
   type: str = 'Address'
 
   @property
-  def children(self) -> Iterable[Line]:
-    """An Address's children are the Lines it's composed of."""
+  def children(self) -> Iterable[Phrase]:
+    """An Address's children are the Phrases it's composed of."""
     yield from self.lines
 
 
 @dataclass(frozen=True)
 class NamedEntity(Entity):
   text: str
-  span: Tuple[Word, ...]
+  words: Tuple[Word, ...]
   value: Optional[str] = None
   label: Optional[str] = None
   type: str = 'NamedEntity'
@@ -322,7 +324,7 @@ class NamedEntity(Entity):
   @property
   def children(self) -> Iterable[Entity]:
     """An entities children are the words it spans."""
-    yield from self.span
+    yield from self.words
 
 
 """

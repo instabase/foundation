@@ -45,7 +45,7 @@ class Document:
   @lru_cache(maxsize=None)
   def median_line_height(self) -> float:
     return InputWord.median_word_height(word.origin for word in filter( # type: ignore
-      lambda W: W.origin is not None, chain.from_iterable(E.words()
+      lambda W: W.origin is not None, chain.from_iterable(E.entity_words()
         for E in self.entities)))
 
 
