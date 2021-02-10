@@ -13,8 +13,13 @@ from .typing_utils import assert_exhaustive, unwrap
 class Entity:
   bbox: BBox
 
+  @property
   def height(self) -> float:
     return self.bbox.height
+
+  @property
+  def width(self) -> float:
+    return self.bbox.width
 
   @property
   def children(self) -> Iterable['Entity']:
