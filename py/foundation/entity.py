@@ -12,7 +12,6 @@ from .typing_utils import assert_exhaustive, unwrap
 @dataclass(frozen=True)
 class Entity:
   bbox: BBox
-  type: str = 'Entity'
 
   @property
   def text(self) -> str:
