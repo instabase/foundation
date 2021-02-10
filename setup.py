@@ -1,4 +1,4 @@
-from setuptools import find_packages, setup
+from setuptools import find_packages, setup # type: ignore
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -23,8 +23,6 @@ setup(
     install_requires=[
         'mypy==0.790',
         'mypy-extensions==0.4.3',
-        'mypy-protobuf==1.23',
-        'protobuf==3.14.0',
         'six==1.15.0',
         'typed-ast==1.4.1',
         'typing-extensions==3.7.4.3',

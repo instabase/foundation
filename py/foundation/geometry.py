@@ -3,9 +3,7 @@
 from dataclasses import dataclass
 from itertools import chain
 from math import sqrt
-from typing import FrozenSet, Generator, Iterable, Optional
-
-from foundation.protos.geometry_pb2 import BBox as PBBBox, Interval as PBInterval, Point as PBPoint
+from typing import Dict, FrozenSet, Generator, Iterable, Optional
 
 
 @dataclass(frozen=True)
@@ -74,13 +72,6 @@ class Interval:
     return Interval(a, b) if a <= b else None
 
   @staticmethod
-  def from_proto(proto: PBInterval) -> Optional['Interval']:
-    return Interval.build(proto.a, proto.b)
-
-  def to_proto(self) -> PBInterval:
-    return PBInterval(a=self.a, b=self.b)
-
-  @staticmethod
   def spanning(xs: Iterable[float]) -> 'Interval':
     xs = tuple(xs)
     if not xs:
@@ -103,6 +94,12 @@ class Interval:
       raise RuntimeError('cannot take the intersection '
         'of an empty list of intervals')
     return Interval.build(max(I.a for I in Is), min(I.b for I in Is))
+
+  def dump(self) -> Dict:
+    return {
+      'a': self.a,
+      'b': self.b,
+    }
 
 
 @dataclass(frozen=True)
@@ -132,13 +129,6 @@ class Point:
   @staticmethod
   def max_y(points: Iterable['Point']) -> float:
     return max(p.y for p in points)
-
-  @staticmethod
-  def from_proto(proto: PBPoint) -> 'Point':
-    return Point(proto.x, proto.y)
-
-  def to_proto(self) -> PBPoint:
-    return PBPoint(x=self.x, y=self.y)
 
 
 @dataclass(frozen=True)
@@ -207,17 +197,6 @@ class BBox:
     return BBox(ix, iy) if ix is not None and iy is not None else None
 
   @staticmethod
-  def from_proto(proto: PBBBox) -> Optional['BBox']:
-    return BBox.build(
-      Interval.from_proto(proto.ix),
-      Interval.from_proto(proto.iy))
-
-  def to_proto(self) -> PBBBox:
-    return PBBBox(
-      ix=PBInterval(a=self.ix.a, b=self.ix.b),
-      iy=PBInterval(a=self.iy.a, b=self.iy.b))
-
-  @staticmethod
   def spanning(ps: Iterable[Point]) -> Optional['BBox']:
     ps = tuple(ps)
     if not ps:
@@ -255,3 +234,9 @@ class BBox:
     inner_width = max(0, ix.length - b1.ix.length - b2.ix.length)
     inner_height = max(0, iy.length - b1.iy.length - b2.iy.length)
     return sqrt(inner_width**2 + inner_height**2)
+
+  def dump(self) -> Dict:
+    return {
+      'ix': self.ix.dump(),
+      'iy': self.iy.dump(),
+    }
