@@ -1,9 +1,11 @@
 """Entity types."""
+import json
 
-from dataclasses import dataclass, fields
+from dataclasses import asdict, dataclass, fields
 from itertools import chain
 from typing import Dict, Generic, Iterable, Optional, Tuple, Type
 
+from ._instantiate import _instantiate
 from .geometry import BBox
 from .ocr import InputWord
 from .typing_utils import assert_exhaustive, unwrap
@@ -330,6 +332,14 @@ class NamedEntity(Entity):
   def children(self) -> Iterable[Entity]:
     """An entities children are the words it spans."""
     yield from self.words
+
+
+def load_entity_from_json(blob: Dict) -> Entity:
+  return _instantiate(Entity, blob, None)
+
+
+def dump_to_json(entity: Entity) -> str:
+  return json.dumps(asdict(entity), indent=2, sort_keys=True)
 
 
 """

@@ -8,11 +8,11 @@ from itertools import chain
 from pathlib import Path
 from typing import Dict, Optional, Iterable, Tuple, Type, TypeVar
 
+from ._instantiate import _instantiate
 from .entity import Entity
 from .geometry import BBox
 from .ocr import InputWord
 from .typing_utils import unwrap
-from ._instantiate import _instantiate
 
 
 E = TypeVar('E', bound=Entity)
