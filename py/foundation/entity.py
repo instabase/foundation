@@ -5,6 +5,7 @@ from dataclasses import asdict, dataclass, fields
 from itertools import chain
 from typing import Dict, Generic, Iterable, Optional, Tuple, Type
 
+from ._instantiate import _instantiate
 from .geometry import BBox
 from .ocr import InputWord
 from .typing_utils import assert_exhaustive, unwrap
