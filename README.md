@@ -21,6 +21,12 @@ RUN git clone git@github.com:instabase/foundation.git && \ # preferably at some 
 
 ## Changelog
 
+### v0.0.3
+- Removed protos, all types are now dataclasses + JSON
+- Added address components to Address Entity
+- Removed Line entity, please use the more flexible Phrase entity
+- **This is a breaking change** Please upgrade your usage of Foundation with the new API
+
 ### v0.0.2
 - Change some type definitions to be more flexible
 - Additional types

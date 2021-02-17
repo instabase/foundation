@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="instabase-foundation",
-    version="0.0.1",
+    version="0.0.3",
     author="Instabase",
     author_email="support@instabase.com",
     description="A library defining types and interfaces to be used across Instabase.",
