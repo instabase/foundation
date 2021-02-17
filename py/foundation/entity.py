@@ -265,6 +265,7 @@ class PersonName(Entity):
 class Address(Entity):
   text: str
   lines: Tuple[Phrase, ...]
+  address_parts: Tuple[Tuple[str, str], ...]
   likeness_score: Optional[float] = None
   type: str = 'Address'
 
