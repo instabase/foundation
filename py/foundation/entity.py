@@ -99,21 +99,22 @@ class Word(Entity):
 
 
 @dataclass(frozen=True)
-class Phrase(Entity):
-  """A sequence of words contiguous on the same line."""
+class Text(Entity):
+  """A sequence of one or more words contiguous on the same line."""
   text: str
   words: Tuple[Word, ...]
   maximality_score: Optional[float] = None
-  type: str = 'Phrase'
+  phrase_score: Optional[float] = None
+  type: str = 'Text'
 
   @staticmethod
   def from_words(words: Tuple[Word, ...], score: Optional[float] = None) \
-      -> 'Phrase':
+      -> 'Text':
     if not all(isinstance(word, Word) for word in words):
-      raise ValueError('Phrase must be built from Words')
+      raise ValueError('Text must be built from Words')
     bbox = unwrap(BBox.union(word.bbox for word in words))
     text = ' '.join(word.text for word in words)
-    return Phrase(bbox, text, words, score)
+    return Text(bbox, text, words, score)
 
   @property
   def children(self) -> Iterable[Word]:
@@ -123,19 +124,19 @@ class Phrase(Entity):
 @dataclass(frozen=True)
 class Cluster(Entity):
   text: str
-  lines: Tuple[Phrase, ...]
+  lines: Tuple[Text, ...]
   label: Optional[str] = None
   type: str = 'Cluster'
 
   @staticmethod
-  def from_phrases(phrases: Tuple[Phrase, ...]) -> 'Cluster':
+  def from_phrases(phrases: Tuple[Text, ...]) -> 'Cluster':
     text = '\n'.join(phrase.text for phrase in phrases)
     bbox = unwrap(BBox.union(phrase.bbox for phrase in phrases))
     return Cluster(bbox, text, phrases)
 
   @property
-  def children(self) -> Iterable[Phrase]:
-    """A Cluster's children are Phrases that it spans."""
+  def children(self) -> Iterable[Text]:
+    """A Cluster's children are phrases that it spans."""
     yield from self.lines
 
 
@@ -251,27 +252,27 @@ class Time(Entity):
 @dataclass(frozen=True)
 class PersonName(Entity):
   text: str
-  name_parts: Tuple[Phrase, ...]
+  name_parts: Tuple[Text, ...]
   likeness_score: Optional[float] = None
   type: str = 'PersonName'
 
   @property
-  def children(self) -> Iterable[Phrase]:
-    """A PersonName's children are the Phrases of its name parts."""
+  def children(self) -> Iterable[Text]:
+    """A PersonName's children are the phrases of its name parts."""
     yield from self.name_parts
 
 
 @dataclass(frozen=True)
 class Address(Entity):
   text: str
-  lines: Tuple[Phrase, ...]
+  lines: Tuple[Text, ...]
   address_parts: Tuple[Tuple[str, str], ...]
   likeness_score: Optional[float] = None
   type: str = 'Address'
 
   @property
-  def children(self) -> Iterable[Phrase]:
-    """An Address's children are the Phrases it's composed of."""
+  def children(self) -> Iterable[Text]:
+    """An Address's children are the phrases it's composed of."""
     yield from self.lines
 
 
@@ -306,7 +307,7 @@ entity_registry = {
   'Number': Number,
   'Page': Page,
   'PersonName': PersonName,
-  'Phrase': Phrase,
+  'Text': Text,
   'Table': Table,
   'TableCell': TableCell,
   'TableRow': TableRow,
