@@ -154,16 +154,16 @@ class Date(Entity):
 
 
 @dataclass(frozen=True)
-class Currency(Entity):
+class DollarAmount(Entity):
   text: str
   words: Tuple[Word, ...]
   units: Optional[str] = None
   likeness_score: Optional[float] = None
-  type: str = 'Currency'
+  type: str = 'DollarAmount'
 
   @property
   def children(self) -> Iterable[Entity]:
-    """A Currency's children are the words it spans."""
+    """A DollarAmount's children are the words it spans."""
     yield from self.words
 
 
@@ -300,8 +300,8 @@ CustomEntityRegistry = Dict[str, Type[Entity]]
 entity_registry = {
   'Address': Address,
   'Cluster': Cluster,
-  'Currency': Currency,
   'Date': Date,
+  'DollarAmount': DollarAmount,
   'Integer': Integer,
   'NamedEntity': NamedEntity,
   'Number': Number,
