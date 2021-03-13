@@ -100,21 +100,24 @@ class Word(Entity):
 
 @dataclass(frozen=True)
 class Text(Entity):
-  """A sequence of one or more words contiguous on the same line."""
+  """A sequence of one or more contiguous words."""
   text: str
   words: Tuple[Word, ...]
   maximality_score: Optional[float] = None
-  phrase_score: Optional[float] = None
+  ocr_score: Optional[float] = None
   type: str = 'Text'
 
   @staticmethod
-  def from_words(words: Tuple[Word, ...], score: Optional[float] = None) \
+  def from_words(
+    words: Tuple[Word, ...],
+    maximality_score: Optional[float] = None,
+    ocr_score: Optional[float] = None) \
       -> 'Text':
     if not all(isinstance(word, Word) for word in words):
       raise ValueError('Text must be built from Words')
     bbox = unwrap(BBox.union(word.bbox for word in words))
     text = ' '.join(word.text for word in words)
-    return Text(bbox, text, words, score)
+    return Text(bbox, text, words, maximality_score, ocr_score)
 
   @property
   def children(self) -> Iterable[Word]:

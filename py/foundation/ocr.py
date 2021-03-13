@@ -1,4 +1,4 @@
-""" OCR types wrappers. """
+"""OCR types wrappers."""
 
 from dataclasses import dataclass
 from typing import Optional, Iterable, Tuple
