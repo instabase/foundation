@@ -63,7 +63,7 @@ class ExtractionPoint:
     return f'"{self.entity}"'
 
   def __str__(self) -> str:
-    return f'{self.field} -> {self.entity}'
+    return f'{self.field} -> {self.entity.entity_text}'
 
 
 @dataclass(frozen=True)
