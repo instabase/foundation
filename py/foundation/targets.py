@@ -3,12 +3,14 @@
 import json
 
 from dataclasses import asdict, dataclass, field as dc_field
+from functools import lru_cache
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from foundation.geometry import BBox
 
 from ._instantiate import _instantiate
+from .extraction import Field
 
 
 @dataclass
@@ -60,8 +62,7 @@ class DocTargets:
 
   Attributes:
     doc_name: A document's name.
-    fields: A field-to-optional-value map. If you wish to indicate that a given
-      field must not have any extracted value, set this to null.
+    assignments: A tuple of target assignments.
     doc_tags: This document's tags.
     notes: An arbitrary string, used for storing notes in targets files.
   """
@@ -70,6 +71,10 @@ class DocTargets:
   assignments: Tuple[TargetAssignment, ...]
   doc_tags: List[str] = dc_field(default_factory=list)
   notes: Optional[str] = None
+
+  @property
+  def fields(self) -> Tuple[Field, ...]:
+    return tuple(assignment.field for assignment in self.assignments)
 
 
 @dataclass
@@ -176,9 +181,7 @@ class Targets:
   """A targets file for a collection of documents.
 
   Attributes:
-    docs: A dictionary from "doc name" to that doc's targets. To pair docs with
-      their targets in this file, we look for an entry in this dict whose key is
-      a substring of the doc's OCR results filename.
+    doc_targets: A tuple of targets for docuemnts.
     schema: A dictionary from field to field type.
     output_config: Configuration for what kinds of accuracy stats to report.
     doc_tags: Descriptions of all doc tags that appear in these targets.
@@ -191,6 +194,17 @@ class Targets:
   output_config: OutputConfig = OutputConfig()
   doc_tags: Dict[str, str] = dc_field(default_factory=dict)
   field_groups: Dict[str, FieldGroup] = dc_field(default_factory=dict)
+
+  @lru_cache(maxsize=None)
+  def build_doc_map(self) -> Dict[str, DocTargets]:
+    return {doc_targets.doc_name: doc_targets
+        for doc_targets in self.doc_targets}
+
+  def get_by_doc_name(self, doc_name: str) -> DocTargets:
+    doc_map = self.build_doc_map()
+    if doc_name not in doc_map:
+      raise ValueError(f'doc {doc_name} missing from targets')
+    return doc_map[doc_name]
 
 
 def validate(targets: Targets,
@@ -206,22 +220,22 @@ def validate(targets: Targets,
     The input targets.
   """
 
-  for doc_name, targets_for_doc in targets.docs.items():
-    for doc_tag in targets_for_doc.doc_tags:
+  for doc_targets in targets.doc_targets:
+    for doc_tag in doc_targets.doc_tags:
       if doc_tag not in targets.doc_tags:
         raise ValueError(
-          f'unrecognized doc tag {doc_tag} in doc {doc_name} -- '
+          f'unrecognized doc tag {doc_tag} in doc {doc_targets.doc_name} -- '
           f'please add a description for {doc_tag}')
 
-  for doc_name, targets_for_doc in targets.docs.items():
-    for field in targets_for_doc.fields:
+  for doc_targets in targets.doc_targets:
+    for field in doc_targets.fields:
       if field not in targets.schema:
         raise ValueError(
-          f'field {field} in doc {doc_name} is missing from schema')
+          f'field {field} in doc {doc_targets.doc_name} is missing from schema')
 
   for doc_tag in targets.doc_tags:
-    if not any(doc_tag in targets_for_doc.doc_tags
-               for targets_for_doc in targets.docs.values()):
+    if not any(doc_tag in doc_targets.doc_tags
+               for doc_targets in targets.doc_targets):
       if not silent:
         print(f'Warning: unused doc tag {doc_tag}')
 
