@@ -14,6 +14,7 @@ from .typing_utils import assert_exhaustive, unwrap
 @dataclass(frozen=True)
 class Entity:
   bbox: BBox
+  type: str
 
   @property
   def height(self) -> float:
@@ -63,7 +64,17 @@ class Page(Entity):
       top_left: (0, 100), bottom_right: (50, 200)
   """
   index: int
-  type: str = 'Page'
+
+  def __init__(
+    self,
+    bbox: BBox,
+    index: int,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'Page',
+    )
+    object.__setattr__(self, 'index', index)
 
   @property
   def children(self) -> Iterable['Entity']:
@@ -77,8 +88,20 @@ class Page(Entity):
 @dataclass(frozen=True)
 class Word(Entity):
   text: str
-  origin: Optional[InputWord] = None
-  type: str = 'Word'
+  origin: Optional[InputWord]
+
+  def __init__(
+    self,
+    bbox: BBox,
+    text: str,
+    origin: Optional[InputWord] = None,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'Word',
+    )
+    object.__setattr__(self, 'text', text)
+    object.__setattr__(self, 'origin', origin)
 
   @staticmethod
   def from_input_word(origin: InputWord) -> 'Word':
@@ -103,9 +126,25 @@ class Text(Entity):
   """A sequence of one or more contiguous words."""
   text: str
   words: Tuple[Word, ...]
-  maximality_score: Optional[float] = None
-  ocr_score: Optional[float] = None
-  type: str = 'Text'
+  maximality_score: Optional[float]
+  ocr_score: Optional[float]
+
+  def __init__(
+    self,
+    bbox: BBox,
+    text: str,
+    words: Tuple[Word, ...],
+    maximality_score: Optional[float] = None,
+    ocr_score: Optional[float] = None,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'Text',
+    )
+    object.__setattr__(self, 'text', text)
+    object.__setattr__(self, 'words', words)
+    object.__setattr__(self, 'maximality_score', maximality_score)
+    object.__setattr__(self, 'ocr_score', ocr_score)
 
   @staticmethod
   def from_words(
@@ -128,8 +167,22 @@ class Text(Entity):
 class Cluster(Entity):
   text: str
   lines: Tuple[Text, ...]
-  label: Optional[str] = None
-  type: str = 'Cluster'
+  label: Optional[str]
+
+  def __init__(
+    self,
+    bbox: BBox,
+    text: str,
+    lines: Tuple[Text, ...],
+    label: Optional[str] = None,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'Cluster',
+    )
+    object.__setattr__(self, 'text', text)
+    object.__setattr__(self, 'lines', lines)
+    object.__setattr__(self, 'label', label)
 
   @staticmethod
   def from_phrases(phrases: Tuple[Text, ...]) -> 'Cluster':
@@ -147,8 +200,22 @@ class Cluster(Entity):
 class Date(Entity):
   text: str
   words: Tuple[Word, ...]
-  likeness_score: Optional[float] = None
-  type: str = 'Date'
+  likeness_score: Optional[float]
+
+  def __init__(
+    self,
+    bbox: BBox,
+    text: str,
+    words: Tuple[Word, ...],
+    likeness_score: Optional[float] = None,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'Date',
+    )
+    object.__setattr__(self, 'text', text)
+    object.__setattr__(self, 'words', words)
+    object.__setattr__(self, 'likeness_score', likeness_score)
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -160,9 +227,25 @@ class Date(Entity):
 class DollarAmount(Entity):
   text: str
   words: Tuple[Word, ...]
-  units: Optional[str] = None
-  likeness_score: Optional[float] = None
-  type: str = 'DollarAmount'
+  units: Optional[str]
+  likeness_score: Optional[float]
+
+  def __init__(
+    self,
+    bbox: BBox,
+    text: str,
+    words: Tuple[Word, ...],
+    units: Optional[str] = None,
+    likeness_score: Optional[float] = None,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'DollarAmount',
+    )
+    object.__setattr__(self, 'text', text)
+    object.__setattr__(self, 'words', words)
+    object.__setattr__(self, 'units', units)
+    object.__setattr__(self, 'likeness_score', likeness_score)
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -173,7 +256,17 @@ class DollarAmount(Entity):
 @dataclass(frozen=True)
 class TableCell(Entity):
   content: Tuple[Entity, ...]
-  type: str = 'TableCell'
+
+  def __init__(
+    self,
+    bbox: BBox,
+    content: Tuple[Entity, ...],
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'TableCell',
+    )
+    object.__setattr__(self, 'content', content)
 
   @property
   def children(self) -> Iterable[Entity]:
@@ -184,7 +277,17 @@ class TableCell(Entity):
 @dataclass(frozen=True)
 class TableRow(Entity):
   cells: Tuple[TableCell, ...]
-  type: str = 'TableRow'
+
+  def __init__(
+    self,
+    bbox: BBox,
+    cells: Tuple[TableCell, ...],
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'TableRow',
+    )
+    object.__setattr__(self, 'cells', cells)
 
   @property
   def children(self) -> Iterable[TableCell]:
@@ -195,7 +298,17 @@ class TableRow(Entity):
 @dataclass(frozen=True)
 class Table(Entity):
   rows: Tuple[TableRow, ...]
-  type: str = 'Table'
+
+  def __init__(
+    self,
+    bbox: BBox,
+    rows: Tuple[TableRow, ...],
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'Table',
+    )
+    object.__setattr__(self, 'rows', rows)
 
   @property
   def children(self) -> Iterable[TableRow]:
@@ -206,8 +319,20 @@ class Table(Entity):
 @dataclass(frozen=True)
 class Number(Entity):
   words: Tuple[Word, ...]
-  value: Optional[float] = None
-  type: str = 'Number'
+  value: Optional[float]
+
+  def __init__(
+    self,
+    bbox: BBox,
+    words: Tuple[Word, ...],
+    value: Optional[float] = None,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'Number',
+    )
+    object.__setattr__(self, 'words', words)
+    object.__setattr__(self, 'value', value)
 
   @property
   def text(self) -> str:
@@ -222,8 +347,20 @@ class Number(Entity):
 @dataclass(frozen=True)
 class Integer(Entity):
   words: Tuple[Word, ...]
-  value: Optional[int] = None
-  type: str = 'Number'
+  value: Optional[int]
+
+  def __init__(
+    self,
+    bbox: BBox,
+    words: Tuple[Word, ...],
+    value: Optional[int] = None,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'Integer',
+    )
+    object.__setattr__(self, 'words', words)
+    object.__setattr__(self, 'value', value)
 
   @property
   def text(self) -> str:
@@ -238,9 +375,23 @@ class Integer(Entity):
 @dataclass(frozen=True)
 class Time(Entity):
   words: Tuple[Word, ...]
-  value: Optional[int] = None
-  likeness_score: Optional[float] = None
-  type: str = 'Time'
+  value: Optional[int]
+  likeness_score: Optional[float]
+
+  def __init__(
+    self,
+    bbox: BBox,
+    words: Tuple[Word, ...],
+    value: Optional[int] = None,
+    likeness_score: Optional[float] = None,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'Time',
+    )
+    object.__setattr__(self, 'words', words)
+    object.__setattr__(self, 'value', value)
+    object.__setattr__(self, 'likeness_score', likeness_score)
 
   @property
   def text(self) -> str:
@@ -256,8 +407,22 @@ class Time(Entity):
 class PersonName(Entity):
   text: str
   name_parts: Tuple[Text, ...]
-  likeness_score: Optional[float] = None
-  type: str = 'PersonName'
+  likeness_score: Optional[float]
+
+  def __init__(
+    self,
+    bbox: BBox,
+    text: str,
+    name_parts: Tuple[Text, ...],
+    likeness_score: Optional[float] = None,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'PersonName',
+    )
+    object.__setattr__(self, 'text', text)
+    object.__setattr__(self, 'name_parts', name_parts)
+    object.__setattr__(self, 'likeness_score', likeness_score)
 
   @property
   def children(self) -> Iterable[Text]:
@@ -270,8 +435,24 @@ class Address(Entity):
   text: str
   lines: Tuple[Text, ...]
   address_parts: Tuple[Tuple[str, str], ...]
-  likeness_score: Optional[float] = None
-  type: str = 'Address'
+  likeness_score: Optional[float]
+
+  def __init__(
+    self,
+    bbox: BBox,
+    text: str,
+    lines: Tuple[Text, ...],
+    address_parts: Tuple[Tuple[str, str], ...],
+    likeness_score: Optional[float] = None,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'Address',
+    )
+    object.__setattr__(self, 'text', text)
+    object.__setattr__(self, 'lines', lines)
+    object.__setattr__(self, 'address_parts', address_parts)
+    object.__setattr__(self, 'likeness_score', likeness_score)
 
   @property
   def children(self) -> Iterable[Text]:
@@ -283,9 +464,25 @@ class Address(Entity):
 class NamedEntity(Entity):
   text: str
   words: Tuple[Word, ...]
-  value: Optional[str] = None
-  label: Optional[str] = None
-  type: str = 'NamedEntity'
+  value: Optional[str]
+  label: Optional[str]
+
+  def __init__(
+    self,
+    bbox: BBox,
+    text: str,
+    words: Tuple[Word, ...],
+    value: Optional[str] = None,
+    label: Optional[str] = None,
+  ):
+    super().__init__(
+      bbox = bbox,
+      type = 'NamedEntity',
+    )
+    object.__setattr__(self, 'text', text)
+    object.__setattr__(self, 'words', words)
+    object.__setattr__(self, 'value', value)
+    object.__setattr__(self, 'label', label)
 
   @property
   def children(self) -> Iterable[Entity]:
