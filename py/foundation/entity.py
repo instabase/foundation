@@ -142,7 +142,7 @@ class Text(Entity):
   ):
     super().__init__(
       bbox = bbox,
-      type = text,
+      type = type,
     )
     object.__setattr__(self, 'text', text)
     object.__setattr__(self, 'words', words)
