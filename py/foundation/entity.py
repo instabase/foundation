@@ -69,10 +69,11 @@ class Page(Entity):
     self,
     bbox: BBox,
     index: int,
+    type: str = 'Page',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'Page',
+      type = type,
     )
     object.__setattr__(self, 'index', index)
 
@@ -95,10 +96,11 @@ class Word(Entity):
     bbox: BBox,
     text: str,
     origin: Optional[InputWord] = None,
+    type: str = 'Word',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'Word',
+      type = type,
     )
     object.__setattr__(self, 'text', text)
     object.__setattr__(self, 'origin', origin)
@@ -136,10 +138,11 @@ class Text(Entity):
     words: Tuple[Word, ...],
     maximality_score: Optional[float] = None,
     ocr_score: Optional[float] = None,
+    type: str = 'Text',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'Text',
+      type = text,
     )
     object.__setattr__(self, 'text', text)
     object.__setattr__(self, 'words', words)
@@ -175,10 +178,11 @@ class Cluster(Entity):
     text: str,
     lines: Tuple[Text, ...],
     label: Optional[str] = None,
+    type: str = 'Cluster',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'Cluster',
+      type = type,
     )
     object.__setattr__(self, 'text', text)
     object.__setattr__(self, 'lines', lines)
@@ -208,10 +212,11 @@ class Date(Entity):
     text: str,
     words: Tuple[Word, ...],
     likeness_score: Optional[float] = None,
+    type: str = 'Date',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'Date',
+      type = type,
     )
     object.__setattr__(self, 'text', text)
     object.__setattr__(self, 'words', words)
@@ -237,10 +242,11 @@ class DollarAmount(Entity):
     words: Tuple[Word, ...],
     units: Optional[str] = None,
     likeness_score: Optional[float] = None,
+    type: str = 'DollarAmount',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'DollarAmount',
+      type = type,
     )
     object.__setattr__(self, 'text', text)
     object.__setattr__(self, 'words', words)
@@ -261,10 +267,11 @@ class TableCell(Entity):
     self,
     bbox: BBox,
     content: Tuple[Entity, ...],
+    type: str = 'TableCell',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'TableCell',
+      type = type,
     )
     object.__setattr__(self, 'content', content)
 
@@ -282,10 +289,11 @@ class TableRow(Entity):
     self,
     bbox: BBox,
     cells: Tuple[TableCell, ...],
+    type: str = 'TableRow',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'TableRow',
+      type = type,
     )
     object.__setattr__(self, 'cells', cells)
 
@@ -303,10 +311,11 @@ class Table(Entity):
     self,
     bbox: BBox,
     rows: Tuple[TableRow, ...],
+    type: str = 'Table',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'Table',
+      type = type,
     )
     object.__setattr__(self, 'rows', rows)
 
@@ -326,10 +335,11 @@ class Number(Entity):
     bbox: BBox,
     words: Tuple[Word, ...],
     value: Optional[float] = None,
+    type: str = 'Number',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'Number',
+      type = type,
     )
     object.__setattr__(self, 'words', words)
     object.__setattr__(self, 'value', value)
@@ -354,10 +364,11 @@ class Integer(Entity):
     bbox: BBox,
     words: Tuple[Word, ...],
     value: Optional[int] = None,
+    type: str = 'Integer',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'Integer',
+      type = type,
     )
     object.__setattr__(self, 'words', words)
     object.__setattr__(self, 'value', value)
@@ -384,10 +395,11 @@ class Time(Entity):
     words: Tuple[Word, ...],
     value: Optional[int] = None,
     likeness_score: Optional[float] = None,
+    type: str = 'Time',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'Time',
+      type = type,
     )
     object.__setattr__(self, 'words', words)
     object.__setattr__(self, 'value', value)
@@ -415,10 +427,11 @@ class PersonName(Entity):
     text: str,
     name_parts: Tuple[Text, ...],
     likeness_score: Optional[float] = None,
+    type: str = 'PersonName',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'PersonName',
+      type = type,
     )
     object.__setattr__(self, 'text', text)
     object.__setattr__(self, 'name_parts', name_parts)
@@ -444,10 +457,11 @@ class Address(Entity):
     lines: Tuple[Text, ...],
     address_parts: Tuple[Tuple[str, str], ...],
     likeness_score: Optional[float] = None,
+    type: str = 'Address',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'Address',
+      type = type,
     )
     object.__setattr__(self, 'text', text)
     object.__setattr__(self, 'lines', lines)
@@ -474,10 +488,11 @@ class NamedEntity(Entity):
     words: Tuple[Word, ...],
     value: Optional[str] = None,
     label: Optional[str] = None,
+    type: str = 'NamedEntity',
   ):
     super().__init__(
       bbox = bbox,
-      type = 'NamedEntity',
+      type = type,
     )
     object.__setattr__(self, 'text', text)
     object.__setattr__(self, 'words', words)
