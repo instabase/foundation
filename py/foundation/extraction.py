@@ -124,7 +124,7 @@ class Extraction:
             frozenset(self.assignments) == frozenset(other.assignments)
 
   def __contains__(self, field: Field) -> bool:
-    return field in self.assignments
+    return field in self.fields
 
   def __len__(self) -> int:
     return len(self.assignments)
