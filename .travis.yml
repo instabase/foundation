@@ -7,10 +7,3 @@ matrix:
         - pip install mypy
       script:
         - ./python_tests.sh
-    - language: node_js
-      node_js:
-        - 12
-      before_script:
-        - yarn install
-      script:
-        - yarn type-check
