@@ -1,4 +1,7 @@
-"""OCR types wrappers."""
+"""OCR types wrappers.
+
+It is not really clear whether this should exist, or is currently being used.
+"""
 
 from dataclasses import dataclass
 from typing import Optional, Iterable, Tuple
@@ -38,13 +41,3 @@ class InputWord:
 
   def __str__(self) -> str:
     return 'InputWord("{}", bbox={})'.format(self.text, self.bbox)
-
-  @staticmethod
-  def median_word_height(words: Iterable['InputWord']) -> float:
-    L = sorted(words, key=lambda W: W.height)
-    if not L:
-      return 0
-    n = len(L)
-    if n % 2 == 0:
-      return 0.5 * (L[n // 2 - 1].height + L[n // 2].height)
-    return L[(n - 1) // 2].height

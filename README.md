@@ -1,7 +1,16 @@
 # Foundation
+
 A library for defining types and interfaces to be used across Instabase apps and libraries.
 
+## Repo structure
+
+There are Python and TypeScript versions of the Foundation types. Both the
+Python and the TypeScript projects have their roots in the root folder of the
+repo.
+
 ## Installing
+
+**(These instructions may be out-of-date. Please check with Aaron/Andrey/Erick.)**
 
 If installing from source, run the following commands in this projects root directory
 

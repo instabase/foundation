@@ -2,7 +2,7 @@ from unittest import TestCase
 import json
 
 from foundation.document import Document
-from foundation.entity import Word, Page, Phrase, Address, dump_to_json, load_entity_from_json
+from foundation.entity import Word, Page, Text, Address, dump_to_json, load_entity_from_json
 from foundation.geometry import BBox, Point
 
 from foundation.typing_utils import unwrap
@@ -16,7 +16,7 @@ class TestEntities(TestCase):
     w2 = Word(unwrap(BBox.spanning((Point(6, 0), Point(11, 1)))), 'world', None)
 
     words = (w1, w2)
-    phrases = tuple([Phrase.from_words(words)])
+    phrases = tuple([Text.from_words(words)])
     bbox = unwrap(BBox.union(e.bbox for e in words))
 
     entity = Address(
