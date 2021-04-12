@@ -50,8 +50,7 @@ class Entity:
 
   @property
   def entity_text(self) -> Optional[str]:
-    entity_fields = (field.name for field in fields(self))
-    return self.text if 'text' in entity_fields else None # type: ignore # how to??
+    return getattr(self, 'text', None)
 
 
 @dataclass(frozen=True)

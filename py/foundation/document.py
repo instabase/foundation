@@ -9,9 +9,8 @@ from pathlib import Path
 from typing import Dict, Optional, Iterable, Tuple, Type, TypeVar
 
 from ._instantiate import _instantiate
-from .entity import Entity, entity_registry
+from .entity import Entity, Word, entity_registry
 from .geometry import BBox
-from .ocr import InputWord
 from .typing_utils import unwrap
 
 
@@ -44,9 +43,19 @@ class Document:
 
   @lru_cache(maxsize=None)
   def median_line_height(self) -> float:
-    return InputWord.median_word_height(word.origin for word in filter( # type: ignore
-      lambda W: W.origin is not None, chain.from_iterable(E.entity_words()
-        for E in self.entities)))
+    return median_word_height(
+      chain.from_iterable(
+        E.entity_words() for E in self.entities))
+
+
+def median_word_height(words: Iterable[Word]) -> float:
+  L = sorted(words, key=lambda W: W.height)
+  if not L:
+    return 0
+  n = len(L)
+  if n % 2 == 0:
+    return 0.5 * (L[n // 2 - 1].height + L[n // 2].height)
+  return L[(n - 1) // 2].height
 
 
 def load_fnd_doc_from_json(blob: Dict) -> Document:
