@@ -1,12 +1,9 @@
 # Foundation
 
-A library for defining types and interfaces to be used across Instabase apps and libraries.
-
 ## Repo structure
 
 There are Python and TypeScript versions of the Foundation types. Both the
-Python and the TypeScript projects have their roots in the root folder of the
-repo.
+Python and the TypeScript projects are rooted at this repo's root.
 
 ## Installing
 
@@ -30,15 +27,20 @@ RUN git clone git@github.com:instabase/foundation.git && \ # preferably at some 
 
 ## Changelog
 
+### v0.0.4
+
+- Add TypeScript support.
+- Add TS/Py `FOUNDATION_VERSION` globals for runtime version checking.
+
 ### v0.0.3
-- Removed protos, all types are now dataclasses + JSON
-- Added address components to Address Entity
-- Removed Line entity, please use the more flexible Phrase entity
-- **This is a breaking change** Please upgrade your usage of Foundation with the new API
+- Removed protos, all types are now dataclasses + JSON.
+- Added address components to Address Entity.
+- Removed Line entity, please use the more flexible Phrase entity.
+- **This is a breaking change** Please upgrade your usage of Foundation with the new API.
 
 ### v0.0.2
-- Change some type definitions to be more flexible
-- Additional types
+- Change some type definitions to be more flexible.
+- Additional types.
 
 ### v0.0.1
-- Basic types and serialization/deserialization
+- Basic types and serialization/deserialization.
