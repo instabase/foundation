@@ -1,1 +1,1 @@
-export default const VERSION = '0.0.4';
+export const FOUNDATION_VERSION = '0.0.4';
