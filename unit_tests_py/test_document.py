@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from foundation.document import Document
-from foundation.entity import Word, Page, Phrase
+from foundation.entity import Word, Page, Text
 from foundation.geometry import BBox, Point
 
 from foundation.typing_utils import unwrap
@@ -30,7 +30,7 @@ class TestDoc(TestCase):
     words = (w1, w2)
     doc_words = Document.from_entities(words)
 
-    phrase = Phrase.from_words(words)
+    phrase = Text.from_words(words)
     doc = doc_words.with_entities((phrase,))
 
     assert set(doc.entities) == set((w1, w2, phrase))

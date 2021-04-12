@@ -1,2 +1,2 @@
 test:
-	./tests.sh
+	./python_tests.sh
