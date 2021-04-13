@@ -8,6 +8,7 @@ from functools import lru_cache
 from itertools import chain
 from typing import Any, Collection, Dict, FrozenSet, Generator, Iterable, Optional, Set, Tuple, TypeVar
 
+from ._instantiate import _instantiate
 from .entity import Entity
 from .geometry import BBox
 
@@ -176,3 +177,7 @@ class Extraction:
 
   def __repr__(self) -> str:
     return f'<Extraction({", ".join(map(str, self.points()))})>'
+
+
+def load_extraction_from_json(blob: Dict) -> Extraction:
+  return _instantiate(Extraction, blob)

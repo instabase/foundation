@@ -10,7 +10,7 @@ from typing import Dict, List, Optional, Tuple
 from foundation.geometry import BBox
 
 from ._instantiate import _instantiate
-from .extraction import Field
+from .extraction import Extraction, Field
 
 
 @dataclass
@@ -141,8 +141,6 @@ class Entry:
   is_label: bool
 
 
-# When we switch TargetSchema type format (today) this will all be updated;
-# make TargetsSchema class with these functions etc.
 TargetsSchema = Tuple[Entry, ...]
 
 
@@ -174,6 +172,17 @@ def get_labels_from_schema(schema: TargetsSchema) -> Tuple[str, ...]:
 
 def schema_type_map(schema: TargetsSchema) -> Dict[str, str]:
   return {entry.field: entry.type for entry in schema}
+
+
+def validate_extraction(
+  extraction: Extraction, schema: TargetsSchema) -> Extraction:
+  schema_map = schema_type_map(schema)
+  for point in extraction.assignments:
+    if schema_map[point.field] != point.entity.type:
+      raise TypeError(f'entity type {point.entity.type} for does not match '
+                      f'type {schema_map[point.field]} for field {point.field} '
+                      f'in schema')
+  return extraction
 
 
 @dataclass(frozen=True)
