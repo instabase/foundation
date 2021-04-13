@@ -6,6 +6,12 @@ export type t = {
   assignments: ExtractionPoint.t[];
 };
 
+export function build(): t {
+  return {
+    assignments: [],
+  };
+}
+
 export const fields = memo(
   function(
     extraction: t):
