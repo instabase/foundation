@@ -20,8 +20,16 @@ export const typeNames = memo(
 
 // It is guaranteed that the indices of entities are stable.
 export const entitiesHavingType = memo(
-  function(doc: t, typeName: string): Entity.t[] {
-    return doc.entities.filter(entity => entity.type == typeName);
+  function<ConcreteEntitySubclass extends Entity.t>(
+    doc: t,
+    typeName: ConcreteEntitySubclass['type']):
+      ConcreteEntitySubclass[]
+  {
+    function isCorrectlyTyped(e: Entity.t): e is ConcreteEntitySubclass {
+      return e.type == typeName;
+    }
+
+    return doc.entities.filter(isCorrectlyTyped);
   }
 );
 

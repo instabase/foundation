@@ -19,3 +19,15 @@ export function approximatelyEqual(i1: t, i2: t, epsilon: number) {
   return Math.abs(i1.a - i2.a) < epsilon &&
          Math.abs(i1.b - i2.b) < epsilon;
 }
+
+export function midpoint(i: t): number {
+  return (i.a + i.b) / 2;
+}
+
+export function lowerHalf(i: t): t {
+  return {a: i.a, b: midpoint(i)};
+}
+
+export function upperHalf(i: t): t {
+  return {a: midpoint(i), b: i.b};
+}

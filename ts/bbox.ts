@@ -16,19 +16,35 @@ export function height(bbox: t): number {
 }
 
 export function upperLeft(bbox: t) {
-  return ({x: bbox.ix.a, y: bbox.iy.a});
+  return {x: bbox.ix.a, y: bbox.iy.a};
 }
 
 export function upperRight(bbox: t) {
-  return ({x: bbox.ix.b, y: bbox.iy.a});
+  return {x: bbox.ix.b, y: bbox.iy.a};
 }
 
 export function lowerRight(bbox: t) {
-  return ({x: bbox.ix.b, y: bbox.iy.b});
+  return {x: bbox.ix.b, y: bbox.iy.b};
 }
 
 export function lowerLeft(bbox: t) {
-  return ({x: bbox.ix.a, y: bbox.iy.b});
+  return {x: bbox.ix.a, y: bbox.iy.b};
+}
+
+export function leftHalf({ix, iy}: t): t {
+  return {ix: Interval.lowerHalf(ix), iy};
+}
+
+export function rightHalf({ix, iy}: t): t {
+  return {ix: Interval.upperHalf(ix), iy};
+}
+
+export function lowerHalf({ix, iy}: t): t {
+  return {ix, iy: Interval.upperHalf(iy)};
+}
+
+export function upperHalf({ix, iy}: t): t {
+  return {ix, iy: Interval.lowerHalf(iy)};
 }
 
 export function distanceFromLeft(p: Point.t, bbox: t) {
@@ -89,6 +105,11 @@ export function containing(ps: Nonempty<Point.t[]>): t {
   };
 }
 
+export function contains(bigger: t, smaller: t): boolean {
+  return Interval.contains(bigger.ix, smaller.ix) &&
+         Interval.contains(bigger.iy, smaller.iy);
+}
+
 export function intersect(bbox1: t, bbox2: t): boolean {
   return Interval.intersect(bbox1.ix, bbox2.ix) &&
          Interval.intersect(bbox1.iy, bbox2.iy);
@@ -99,4 +120,12 @@ export function areEqual(bbox1: t, bbox2: t): boolean {
           bbox1.ix.b == bbox2.ix.b &&
           bbox1.iy.a == bbox2.iy.a &&
           bbox1.iy.b == bbox2.iy.b
+}
+
+export function splitSquareLike(bbox: t): [t, t] {
+  if (width(bbox) > height(bbox)) {
+    return [leftHalf(bbox), rightHalf(bbox)];
+  } else {
+    return [upperHalf(bbox), lowerHalf(bbox)];
+  }
 }
