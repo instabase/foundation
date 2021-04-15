@@ -9,7 +9,7 @@ from itertools import chain
 from typing import Any, Collection, Dict, FrozenSet, Generator, Iterable, Optional, Set, Tuple, TypeVar
 
 from ._instantiate import _instantiate
-from .entity import Entity
+from .entity import Entity, entity_registry
 from .geometry import BBox
 
 
@@ -180,4 +180,4 @@ class Extraction:
 
 
 def load_extraction_from_json(blob: Dict) -> Extraction:
-  return _instantiate(Extraction, blob)
+  return _instantiate(Extraction, blob, entity_registry)
