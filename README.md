@@ -5,6 +5,18 @@
 There are Python and TypeScript versions of the Foundation types. Both the
 Python and the TypeScript projects are rooted at this repo's root.
 
+## Versioning
+
+(Please talk to Andrey if this changes.)
+
+To ship a new version of Foundation:
+- Grep for `FOUNDATION_VERSION` and update the version strings.
+- Make a commit that includes all the changes for your new version,
+  including the version string bumps.
+- Merge your commit into `instabase/foundation/main`.
+- Make a new release in GitHub for your new Foundation version.
+  This will also create a Git tag for the version.
+
 ## Installing
 
 **(These instructions may be out-of-date. Please check with Aaron/Andrey/Erick.)**
@@ -24,23 +36,3 @@ RUN git clone git@github.com:instabase/foundation.git && \ # preferably at some 
     cd .. && \
     rm -rf foundation
 ```
-
-## Changelog
-
-### v0.0.4
-
-- Add TypeScript support.
-- Add TS/Py version globals for runtime version checking for Foundation.
-
-### v0.0.3
-- Removed protos, all types are now dataclasses + JSON.
-- Added address components to Address Entity.
-- Removed Line entity, please use the more flexible Phrase entity.
-- **This is a breaking change** Please upgrade your usage of Foundation with the new API.
-
-### v0.0.2
-- Change some type definitions to be more flexible.
-- Additional types.
-
-### v0.0.1
-- Basic types and serialization/deserialization.
