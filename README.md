@@ -30,7 +30,7 @@ RUN git clone git@github.com:instabase/foundation.git && \ # preferably at some 
 ### v0.0.4
 
 - Add TypeScript support.
-- Add TS/Py `FOUNDATION_VERSION` globals for runtime version checking.
+- Add TS/Py version globals for runtime version checking for Foundation.
 
 ### v0.0.3
 - Removed protos, all types are now dataclasses + JSON.
