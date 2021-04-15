@@ -31,3 +31,10 @@ export function lowerHalf(i: t): t {
 export function upperHalf(i: t): t {
   return {a: midpoint(i), b: i.b};
 }
+
+export function absoluteSubinterval(i: t, percentageInterval: t) {
+  return {
+    a: i.a + percentageInterval.a * length(i),
+    b: i.a + percentageInterval.b * length(i),
+  };
+}

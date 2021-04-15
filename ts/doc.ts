@@ -39,3 +39,7 @@ export const getWords = memo(
       entity.type == 'Text' && entity.words.length == 1);
   }
 );
+
+export function absoluteBBox(doc: t, percentageBBox: BBox.t): BBox.t {
+  return BBox.absolutePositionIn(doc.bbox, percentageBBox);
+}

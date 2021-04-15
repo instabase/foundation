@@ -33,6 +33,8 @@ export function isNonnegativeNumber(x: unknown): boolean {
 export type Nonempty<T> =
   T extends Array<infer U> ? U[] & {'0': U} : never;
 
+export type NonemptyArray<T> = Nonempty<T[]>;
+
 export function isEmptyArray<T>(x: T[]): x is [] {
   return x.length == 0;
 }

@@ -4,12 +4,20 @@ import * as TargetWord from './targetWord';
 import * as Word from './word';
 import * as BBox from './bbox';
 import * as Interval from './interval';
-import {Nonempty, isNonemptyArray} from './util/types';
-import * as assert from './util/assert';
+import {NonemptyArray, isNonemptyArray} from './util/types';
+
+import assert from './util/assert';
+import memo from './util/memo';
 
 export type t = {
   text: string | undefined;
-  words: TargetWord.t[] | undefined;
+  words: NonemptyArray<TargetWord.t> | undefined;
+  geometry_validated: boolean;
+};
+
+export type NonNullTargetValue = {
+  text: string;
+  words: NonemptyArray<TargetWord.t>;
   geometry_validated: boolean;
 };
 
@@ -54,7 +62,7 @@ function build(words: TargetWord.t[]): t {
       .join('\n');
     return {
       text,
-      words: lines.flat(),
+      words: lines.flat() as NonemptyArray<TargetWord.t>,
       geometry_validated: true,
     };
   } else {
@@ -66,8 +74,16 @@ function build(words: TargetWord.t[]): t {
   }
 }
 
+export const bbox = memo(
+  function(targetValue: NonNullTargetValue): BBox.t {
+    return BBox.union(
+      targetValue.words.map(word => word.bbox) as NonemptyArray<BBox.t>
+    );
+  }
+);
+
 export function approximateFromUserDragSelection(
-  words: Nonempty<Entity.t[]>, doc: FndDoc.t): t | undefined
+  words: NonemptyArray<Entity.t>, doc: FndDoc.t): t | undefined
 {
   return build(words.map(word => hack(word, doc)));
 }
@@ -125,6 +141,16 @@ export function symmetricDifference(
   }
 }
 
+export function extractedValueShouldBeDefined(targetValue: t): boolean {
+  return targetValue.text != undefined;
+}
+
 export function extractedValueShouldBeUndefined(targetValue: t): boolean {
   return targetValue.text == undefined;
+}
+
+export function isNonNull(targetValue: t): targetValue is NonNullTargetValue {
+  return targetValue.text != undefined &&
+         targetValue.words != undefined &&
+         targetValue.words.length > 0;
 }

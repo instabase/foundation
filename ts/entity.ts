@@ -26,3 +26,7 @@ export type t =
 export type Type = typeof Types[number];
 
 export const DefaultType: Type = 'Text';
+
+export function text(entity: t): string | undefined {
+  return entity.text;
+}

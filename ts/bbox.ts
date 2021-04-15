@@ -1,6 +1,6 @@
 import * as Interval from './interval';
 import * as Point from './point';
-import {Nonempty} from './util/types';
+import {NonemptyArray} from './util/types';
 
 export type t = {
   ix: Interval.t;
@@ -92,7 +92,14 @@ export function percentageBasedPositionIn(bbox: t, other: t): t {
   }
 }
 
-export function containing(ps: Nonempty<Point.t[]>): t {
+export function absolutePositionIn(bbox: t, percentageBBox: t): t {
+  return {
+    ix: Interval.absoluteSubinterval(bbox.ix, percentageBBox.ix),
+    iy: Interval.absoluteSubinterval(bbox.iy, percentageBBox.iy),
+  };
+}
+
+export function containing(ps: NonemptyArray<Point.t>): t {
   return {
     ix: {
       a: Math.min(...ps.map(p => p.x)),
@@ -103,6 +110,19 @@ export function containing(ps: Nonempty<Point.t[]>): t {
       b: Math.max(...ps.map(p => p.y)),
     },
   };
+}
+
+export function corners(bbox: t): [Point.t, Point.t, Point.t, Point.t] {
+  return [
+    upperRight(bbox),
+    upperLeft(bbox),
+    lowerLeft(bbox),
+    lowerRight(bbox),
+  ];
+}
+
+export function union(bboxes: NonemptyArray<t>): t {
+  return containing(bboxes.map(corners).flat() as NonemptyArray<Point.t>);
 }
 
 export function contains(bigger: t, smaller: t): boolean {
