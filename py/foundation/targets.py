@@ -9,8 +9,8 @@ from typing import Dict, List, Optional, Tuple
 
 from foundation.geometry import BBox
 
-from ._instantiate import _instantiate
 from .extraction import Extraction, Field
+from .instantiate import instantiate
 
 
 @dataclass
@@ -279,16 +279,16 @@ def load_targets(path: Path,
 def load_targets_from_json(blob: Dict,
                            silent: bool = False) \
                              -> Targets:
-  return validate(_instantiate(Targets, blob),
+  return validate(instantiate(Targets, blob),
                   silent)
 
 
 def load_doc_targets_from_json(blob: Dict) -> DocTargets:
-  return _instantiate(DocTargets, blob)
+  return instantiate(DocTargets, blob)
 
 
 def load_schema_from_json(blob: Dict) -> TargetsSchema:
-  return _instantiate(TargetsSchema, blob)
+  return instantiate(TargetsSchema, blob)
 
 
 def save_targets(targets: Targets, path: Path, silent: bool = False) -> None:
