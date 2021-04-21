@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import FrozenSet, Iterable, Optional, Sequence, Tuple
+from typing import FrozenSet, Iterable, Optional, Sequence, Set, Tuple
 
 from .geometry import BBox
 from .meta import FoundationType
@@ -13,7 +13,13 @@ class Entity(metaclass=FoundationType):
     return self.__class__.__name__
 
   def __repr__(self) -> str:
-    return "default repr"
+    classes = type.mro(self.__class__)[:-1][::-1]
+    attributes = [k for c in classes for k in c.__annotations__]
+    attr_vals = [getattr(self, k) for k in attributes]
+    str_vals = [f"\"{v}\"" if isinstance(v, str) else str(v) for v in attr_vals]
+    vals = [f"{k}={v}" for k, v in zip(attributes, str_vals)]
+    attr_str = ", ".join(vals)
+    return f"{self.type}({attr_str})"
   
   @property
   def bbox(self) -> Optional[BBox]:

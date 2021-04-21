@@ -9,7 +9,7 @@ from foundation.typing_utils import unwrap
 
 class TestEntities(TestCase):
 
-  def test_address(self) -> None:
+  def test_text(self) -> None:
 
     w1 = Word('word-0', bbox=unwrap(BBox.spanning((Point(0, 0, 0), Point(5, 1, 0)))), text='hello')
     w2 = Word('word-1', bbox=unwrap(BBox.spanning((Point(6, 0, 0), Point(11, 1, 0)))), text='world')
@@ -25,3 +25,4 @@ class TestEntities(TestCase):
     self.assertEqual(text_bbox.iy.b, 1)
 
     self.assertEqual(text_bbox.page_index, 0)
+    
