@@ -12,8 +12,8 @@ class TestEntities(TestCase):
 
   def test_address(self) -> None:
 
-    w1 = Word(unwrap(BBox.spanning((Point(0, 0), Point(5, 1)))), 'hello', None)
-    w2 = Word(unwrap(BBox.spanning((Point(6, 0), Point(11, 1)))), 'world', None)
+    w1 = Word(unwrap(BBox.spanning((Point(0, 0, 0), Point(5, 1, 0)))), 'hello', None)
+    w2 = Word(unwrap(BBox.spanning((Point(6, 0, 0), Point(11, 1, 0)))), 'world', None)
 
     words = (w1, w2)
     phrases = tuple([Text.from_words(words)])

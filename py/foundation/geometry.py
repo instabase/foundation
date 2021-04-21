@@ -106,6 +106,7 @@ class Interval:
 class Point:
   x: float
   y: float
+  page_index: int
 
   def __str__(self) -> str:
     return "Point({}, {})".format(self.x, self.y)
@@ -135,10 +136,11 @@ class Point:
 class BBox:
   ix: Interval
   iy: Interval
+  page_index: int
 
   @property
   def center(self) -> Point:
-    return Point(self.ix.center, self.iy.center)
+    return Point(self.ix.center, self.iy.center, self.page_index)
 
   @property
   def width(self) -> float:
@@ -167,10 +169,10 @@ class BBox:
     return "BBox(ix={}, iy={})".format(self.ix, self.iy)
 
   def corners(self) -> Generator[Point, None, None]:
-    yield Point(self.ix.a, self.iy.a)
-    yield Point(self.ix.a, self.iy.b)
-    yield Point(self.ix.b, self.iy.b)
-    yield Point(self.ix.b, self.iy.a)
+    yield Point(self.ix.a, self.iy.a, self.page_index)
+    yield Point(self.ix.a, self.iy.b, self.page_index)
+    yield Point(self.ix.b, self.iy.b, self.page_index)
+    yield Point(self.ix.b, self.iy.a, self.page_index)
 
   def contains_bbox(self, other: 'BBox') -> bool:
     return self.ix.contains_interval(other.ix) and self.iy.contains_interval(
@@ -188,13 +190,17 @@ class BBox:
       result = BBox(Interval(0, 0.5), Interval(0.25, 0.75))
       assert box1.percentages_overlapping(box2) == result
     """
+    if self.page_index != other.page_index:
+      return None
+
     return BBox.build(
         self.ix.percentages_overlapping(other.ix),
-        self.iy.percentages_overlapping(other.iy))
+        self.iy.percentages_overlapping(other.iy),
+        self.page_index)
 
   @staticmethod
-  def build(ix: Optional[Interval], iy: Optional[Interval]) -> Optional['BBox']:
-    return BBox(ix, iy) if ix is not None and iy is not None else None
+  def build(ix: Optional[Interval], iy: Optional[Interval], page_index: Optional[int]) -> Optional['BBox']:
+    return BBox(ix, iy, page_index) if ix is not None and iy is not None and page_index is not None else None
 
   @staticmethod
   def spanning(ps: Iterable[Point]) -> Optional['BBox']:
@@ -203,7 +209,8 @@ class BBox:
       return None
     ix = Interval(min(p.x for p in ps), max(p.x for p in ps))
     iy = Interval(min(p.y for p in ps), max(p.y for p in ps))
-    return BBox(ix, iy)
+    page_index = ps[0].page_index
+    return BBox(ix, iy, page_index)
 
   @staticmethod
   def intersection(bs: Iterable['BBox']) -> Optional['BBox']:
@@ -214,7 +221,7 @@ class BBox:
     iy = Interval.intersection(b.iy for b in bs)
     if ix is None or iy is None:
       return None
-    return BBox(ix, iy)
+    return BBox(ix, iy, bs[0].page_index)
 
   @staticmethod
   def union(bs: Iterable['BBox']) -> Optional['BBox']:
