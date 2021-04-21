@@ -5,8 +5,8 @@ from dataclasses import asdict, dataclass, fields
 from itertools import chain
 from typing import Any, Dict, Generic, Iterable, Optional, Tuple, Type
 
-from ._instantiate import _instantiate
 from .geometry import BBox
+from .instantiate import instantiate
 from .ocr import InputWord
 from .typing_utils import assert_exhaustive, unwrap
 
@@ -531,7 +531,7 @@ def entity_resolver(v: Any) -> Type:
 
 
 def load_entity_from_json(blob: Dict) -> Entity:
-  return _instantiate(
+  return instantiate(
     Entity,
     blob,
     base_classes={Entity},

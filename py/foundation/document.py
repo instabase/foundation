@@ -8,9 +8,9 @@ from itertools import chain
 from pathlib import Path
 from typing import Dict, Optional, Iterable, Tuple, Type, TypeVar
 
-from ._instantiate import _instantiate
 from .entity import Entity, Word, entity_resolver
 from .geometry import BBox
+from .instantiate import instantiate
 from .typing_utils import unwrap
 
 
@@ -59,7 +59,7 @@ def median_word_height(words: Iterable[Word]) -> float:
 
 
 def load_fnd_doc_from_json(blob: Dict) -> Document:
-  return _instantiate(
+  return instantiate(
     Document,
     blob,
     base_classes={Entity},

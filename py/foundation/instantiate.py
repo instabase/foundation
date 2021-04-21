@@ -7,7 +7,7 @@ import typing
 T = typing.TypeVar('T')
 
 
-def _instantiate(t: typing.Type[T], v: typing.Any,
+def instantiate(t: typing.Type[T], v: typing.Any,
                  forward_ref_resolver:
                    typing.Optional[
                      typing.Dict[str, typing.Type]] = None,
@@ -49,7 +49,7 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
       ys: List[float]
       z: Optional[int] = None
 
-    _instantiate(MyDataclass, {
+    instantiate(MyDataclass, {
       'x': 1,
       'name': 'apples',
       'ys': [1, 2.5, 3, 4.3, 5],
@@ -99,7 +99,7 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
       raise RuntimeError('dataclasses must be instantiated from dicts; '
         f'error instantiating {t} from {v}')
     types = {field.name: field.type for field in dataclasses.fields(t)}
-    return t(**{key: _instantiate( # type: ignore
+    return t(**{key: instantiate( # type: ignore
         types[key], value, FRR, base_classes, derived_class_resolver)
       for key, value in v.items()})
 
@@ -107,7 +107,7 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
     if not isinstance(v, list):
       raise RuntimeError('lists must be instantiated from lists; '
         f'error instantiating {t} from {v}')
-    return list(_instantiate( # type: ignore
+    return list(instantiate( # type: ignore
         get_args(t)[0], entry, FRR, base_classes, derived_class_resolver)
       for entry in v)
 
@@ -115,12 +115,12 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
     if not isinstance(v, list):
       raise RuntimeError('tuples must be instantiated from lists; '
         f'error instantiating {t} from {v}')
-    return tuple(_instantiate( # type: ignore
+    return tuple(instantiate( # type: ignore
         get_args(t)[0], entry, FRR, base_classes, derived_class_resolver)
       for entry in v)
 
   elif is_optional(t):
-    return None if v is None else _instantiate( # type: ignore
+    return None if v is None else instantiate( # type: ignore
       get_optional_arg(t), v, FRR, base_classes, derived_class_resolver)
 
   elif get_origin(t) == dict:
@@ -135,7 +135,7 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
       key_type, value_type = get_args(t) # type: ignore
       if not key_type in {int, float, str}:
         raise RuntimeError(f'invalid key type in dict: {key_type} in {t}')
-      return dict(**{key_type(key): _instantiate( # type: ignore
+      return dict(**{key_type(key): instantiate( # type: ignore
           value_type, value, FRR, base_classes, derived_class_resolver)
         for key, value in v.items()})
     else:
@@ -144,11 +144,11 @@ def _instantiate(t: typing.Type[T], v: typing.Any,
   elif isinstance(t, typing.ForwardRef):
     t_name = get_forward_arg(t)
     if FRR and t_name in FRR:
-      return _instantiate(
+      return instantiate(
         FRR[t_name], v, FRR, base_classes, derived_class_resolver)
     else:
       raise RuntimeError(
-        'you need to provide _instantiate with a dictionary to resolve '
+        'you need to provide instantiate with a dictionary to resolve '
         f'types which are forward references (for "{get_forward_arg(t)}")')
 
   else:
