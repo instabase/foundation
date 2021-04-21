@@ -1,9 +1,9 @@
-from typing import FrozenSet, Sequence, Tuple, Iterable, Optional
-
 from abc import abstractmethod
+from typing import FrozenSet, Iterable, Optional, Sequence, Tuple
 
-from .geometry import BBox, Interval
-from .meta import FoundationType, foundation_types
+from .geometry import BBox
+from .meta import FoundationType
+
 
 class Entity(metaclass=FoundationType):
   id: str
