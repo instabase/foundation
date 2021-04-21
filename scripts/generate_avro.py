@@ -9,7 +9,8 @@ from foundation.typing_utils import assert_exhaustive
 def cumulative_annots(cls: Type) -> Optional[Dict[str, Type]]:
   if inspect.isabstract(cls):
     return None
-  classes = type.mro(cls)[:-1][::-1]
+  classes = type.mro(cls)[:-2][::-1]
+  print(classes)
   attributes = {k:v for c in classes for k,v in c.__annotations__.items()}
   return attributes
 
