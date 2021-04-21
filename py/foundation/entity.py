@@ -86,9 +86,3 @@ class Page(Entity):
 
   def get_children(self) -> Iterable[Word]:
     yield from self._children
-
-if __name__ == "__main__":
-  # test that constructing works
-  w = Word('id', text='hello', bbox=BBox(Interval(1,2), Interval(2,3), 0))
-  t = Text('id2', children=[w])
-  print(foundation_types)
