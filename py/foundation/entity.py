@@ -71,7 +71,7 @@ class Text(Entity):
   def get_children(self) -> Iterable[Word]:
     yield from self._children
 
-class Image:
+class Image(metaclass=FoundationType):
   input_filepath: str
   bbox: BBox
 

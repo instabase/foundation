@@ -25,4 +25,3 @@ class TestEntities(TestCase):
     self.assertEqual(text_bbox.iy.b, 1)
 
     self.assertEqual(text_bbox.page_index, 0)
-    

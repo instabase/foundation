@@ -5,9 +5,9 @@ from itertools import chain
 from math import sqrt
 from typing import Dict, FrozenSet, Generator, Iterable, Optional
 
+from .meta import FoundationType
 
-@dataclass(frozen=True)
-class Interval:
+class Interval(metaclass=FoundationType):
   """Represents a closed interval."""
 
   a: float
@@ -102,8 +102,7 @@ class Interval:
     }
 
 
-@dataclass(frozen=True)
-class Point:
+class Point(metaclass=FoundationType):
   x: float
   y: float
   page_index: int
@@ -132,8 +131,7 @@ class Point:
     return max(p.y for p in points)
 
 
-@dataclass(frozen=True)
-class BBox:
+class BBox(metaclass=FoundationType):
   ix: Interval
   iy: Interval
   page_index: int
