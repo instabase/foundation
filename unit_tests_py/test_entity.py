@@ -1,8 +1,7 @@
 from unittest import TestCase
 import json
 
-from foundation.document import Document
-from foundation.entity import Word, Page, Text, Address, dump_to_json, load_entity_from_json
+from foundation.entity import Word, Text
 from foundation.geometry import BBox, Point
 
 from foundation.typing_utils import unwrap
@@ -12,21 +11,17 @@ class TestEntities(TestCase):
 
   def test_address(self) -> None:
 
-    w1 = Word(unwrap(BBox.spanning((Point(0, 0, 0), Point(5, 1, 0)))), 'hello', None)
-    w2 = Word(unwrap(BBox.spanning((Point(6, 0, 0), Point(11, 1, 0)))), 'world', None)
+    w1 = Word('word-0', bbox=unwrap(BBox.spanning((Point(0, 0, 0), Point(5, 1, 0)))), text='hello')
+    w2 = Word('word-1', bbox=unwrap(BBox.spanning((Point(6, 0, 0), Point(11, 1, 0)))), text='world')
 
     words = (w1, w2)
-    phrases = tuple([Text.from_words(words)])
-    bbox = unwrap(BBox.union(e.bbox for e in words))
+    text = Text('text-id', children=words)
 
-    entity = Address(
-      bbox=bbox,
-      text='some address',
-      lines=phrases,
-      address_parts=(('street', '123 main street'), ('zip', '02116')),
-      likeness_score=0.98
-    )
+    text_bbox = unwrap(text.bbox)
 
-    json_str = dump_to_json(entity)
-    recreation = load_entity_from_json(json.loads(json_str))
-    self.assertEqual(recreation, entity)
+    self.assertEqual(text_bbox.ix.a, 0)
+    self.assertEqual(text_bbox.ix.b, 11)
+    self.assertEqual(text_bbox.iy.a, 0)
+    self.assertEqual(text_bbox.iy.b, 1)
+
+    self.assertEqual(text_bbox.page_index, 0)
