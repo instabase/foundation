@@ -1,11 +1,10 @@
 from abc import abstractmethod
-from typing import FrozenSet, Iterable, Optional, Sequence, Set, Tuple
+from typing import FrozenSet, Iterable, Optional, Sequence, Set, Tuple, Dict
 
 from .geometry import BBox
 from .meta import FoundationType
 
-
-class Entity(metaclass=FoundationType):
+class Entity(FoundationType):
   id: str
   
   @property
@@ -71,7 +70,7 @@ class Text(Entity):
   def get_children(self) -> Iterable[Word]:
     yield from self._children
 
-class Image(metaclass=FoundationType):
+class Image(FoundationType):
   input_filepath: str
   bbox: BBox
 

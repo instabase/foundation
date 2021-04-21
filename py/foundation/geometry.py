@@ -7,7 +7,8 @@ from typing import Dict, FrozenSet, Generator, Iterable, Optional
 
 from .meta import FoundationType
 
-class Interval(metaclass=FoundationType):
+@dataclass
+class Interval(FoundationType):
   """Represents a closed interval."""
 
   a: float
@@ -101,8 +102,8 @@ class Interval(metaclass=FoundationType):
       'b': self.b,
     }
 
-
-class Point(metaclass=FoundationType):
+@dataclass
+class Point(FoundationType):
   x: float
   y: float
   page_index: int
@@ -130,8 +131,8 @@ class Point(metaclass=FoundationType):
   def max_y(points: Iterable['Point']) -> float:
     return max(p.y for p in points)
 
-
-class BBox(metaclass=FoundationType):
+@dataclass
+class BBox(FoundationType):
   ix: Interval
   iy: Interval
   page_index: int
