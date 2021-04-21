@@ -3,7 +3,7 @@ import json
 
 from dataclasses import asdict, dataclass, fields
 from itertools import chain
-from typing import Dict, Generic, Iterable, Optional, Tuple, Type
+from typing import Any, Dict, Generic, Iterable, Optional, Tuple, Type
 
 from ._instantiate import _instantiate
 from .geometry import BBox
@@ -504,34 +504,38 @@ class NamedEntity(Entity):
     yield from self.words
 
 
-"""
-Associates a string entity type name to a custom class that inherits from
-Entity.
-"""
-CustomEntityRegistry = Dict[str, Type[Entity]]
-
-
-entity_registry = {
-  'Address': Address,
-  'Cluster': Cluster,
-  'Date': Date,
-  'DollarAmount': DollarAmount,
-  'Integer': Integer,
-  'NamedEntity': NamedEntity,
-  'Number': Number,
-  'Page': Page,
-  'PersonName': PersonName,
-  'Text': Text,
-  'Table': Table,
-  'TableCell': TableCell,
-  'TableRow': TableRow,
-  'Time': Time,
-  'Word': Word,
-}
+def entity_resolver(v: Any) -> Type:
+  assert isinstance(v, dict)
+  entity_registry = {
+    'Address': Address,
+    'Cluster': Cluster,
+    'Date': Date,
+    'DollarAmount': DollarAmount,
+    'Integer': Integer,
+    'NamedEntity': NamedEntity,
+    'Number': Number,
+    'Page': Page,
+    'PersonName': PersonName,
+    'Text': Text,
+    'Table': Table,
+    'TableCell': TableCell,
+    'TableRow': TableRow,
+    'Time': Time,
+    'Word': Word,
+  }
+  assert 'type' in v
+  entity_type = v['type']
+  if entity_type not in entity_registry:
+    raise TypeError(f'Entity type {entity_type} not supported')
+  return entity_registry[entity_type]
 
 
 def load_entity_from_json(blob: Dict) -> Entity:
-  return _instantiate(Entity, blob, entity_registry)
+  return _instantiate(
+    Entity,
+    blob,
+    base_classes={Entity},
+    derived_class_resolver=entity_resolver)
 
 
 def dump_to_json(entity: Entity) -> str:
