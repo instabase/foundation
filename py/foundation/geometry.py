@@ -202,10 +202,10 @@ class BBox(FoundationType):
     return BBox(ix, iy, page_index) if ix is not None and iy is not None and page_index is not None else None
 
   @staticmethod
-  def spanning(ps: Iterable[Point]) -> Optional['BBox']:
+  def spanning(ps: Iterable[Point]) -> 'BBox':
     ps = tuple(ps)
     if not ps:
-      return None
+      raise ValueError('Cannot get spanning of an empty iterrable')
     ix = Interval(min(p.x for p in ps), max(p.x for p in ps))
     iy = Interval(min(p.y for p in ps), max(p.y for p in ps))
     page_index = ps[0].page_index
@@ -223,7 +223,7 @@ class BBox(FoundationType):
     return BBox(ix, iy, bs[0].page_index)
 
   @staticmethod
-  def union(bs: Iterable['BBox']) -> Optional['BBox']:
+  def union(bs: Iterable['BBox']) -> 'BBox':
     """Returns the smallest bbox containing all bs (their union).
 
     Returns:

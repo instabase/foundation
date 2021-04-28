@@ -1,9 +1,9 @@
 from unittest import TestCase
 import json
 
-from foundation.in_memory import InMemoryWord
+from foundation.in_memory import *
 from foundation.geometry import BBox, Point
-from foundation.interfaces import Word
+from foundation.interfaces import *
 
 from foundation.typing_utils import unwrap
 
@@ -12,8 +12,11 @@ class TestEntities(TestCase):
 
   def test_text(self) -> None:
 
-    w1: Word = InMemoryWord('word-0', bbox=unwrap(BBox.spanning((Point(0, 0, 0), Point(5, 1, 0)))), text='hello')
-    print(w1.text)
+    word_0: Word = InMemoryWord('word-0', bbox=unwrap(BBox.spanning((Point(0, 0, 0), Point(5, 1, 0)))), text='hello')
+    text_0: Text = InMemoryText('text-0', (word_0,))
+    image_0: Image = InMemoryImage(text_0.bbox, 'path/to/image/0')
+    page_0: Page = InMemoryPage('page-0', image_0, (word_0, text_0))
+
     # self.assertTrue(isinstance(w1, Word))
     # w2 = Word('word-1', bbox=unwrap(BBox.spanning((Point(6, 0, 0), Point(11, 1, 0)))), text='world')
 
