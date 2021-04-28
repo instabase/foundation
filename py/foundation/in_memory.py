@@ -1,8 +1,8 @@
-from typing import Tuple, cast, Dict, Iterable
+from typing import Tuple, cast, Dict, Iterable, Any
 
 import attr
 from .geometry import BBox
-from .interfaces import Page, RecordContext, Word, Image
+from .interfaces import Page, RecordContext, Word, Image, Entity, Text
 
 @attr.s(auto_attribs=True)
 class InMemoryWord(Word):
