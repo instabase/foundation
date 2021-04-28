@@ -2,18 +2,14 @@
 
 title Foundation System
 
-package "Bytes" {
-  :Serialized Protocol Buffers; as pbuf
-}
+participant "Python Wrapper" as py
+participant "Python Proto" as pyproto
+participant "Serialized Proto" as proto
+participant "JSON" as json
+participant "TypeScript "
 
-package "Python" {
-  package "Serialization" {
-
-  }
-}
-
-package "TypeScript" {
-
-}
+py <-> pyproto
+pyproto <-> proto
+pyproto <-> json
 
 @enduml
