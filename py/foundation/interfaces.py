@@ -1,20 +1,25 @@
-from abc import ABC, abstractmethod
-
-from typing import Dict, Generic, Optional, Iterable, TypeVar, Any
+from typing import Dict, Optional, Iterable
 from typing_extensions import Protocol
 
 from .geometry import BBox
-from .descriptors import FoundationAttribute
 
 class Entity(Protocol):
-  id: FoundationAttribute[str]
-  bbox: FoundationAttribute[BBox]
-  type: FoundationAttribute[str]
+  @property
+  def id(self) -> str: ...
+
+  @property
+  def type(self) -> str: ...
+  
+  @property
+  def bbox(self) -> BBox: ...
+
   def get_bboxes(self) -> Iterable[BBox]: ...
+  
   def get_children(self) -> Iterable['Entity']: ...
 
 class Word(Entity):
-  text: FoundationAttribute[str]
+  @property
+  def text(self) -> str: ...
 
   @property
   def char_width(self) -> float:
@@ -27,9 +32,15 @@ class Text(Entity):
   def __len__(self) -> int: ...
 
 class Image(Protocol):
-  bbox: BBox
-  input_filepath: str
+  @property
+  def bbox(self) -> BBox: ...
+
+  @property
+  def input_filepath(self) -> str: ...
 
 class Page(Entity):
-  page_index: int
-  image: Image
+  @property
+  def page_index(self) -> int: ...
+
+  @property
+  def image(self) -> Image: ...
