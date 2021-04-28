@@ -15,6 +15,10 @@ class Interval(FoundationType):
   b: float
 
   @property
+  def type(self) -> str:
+    return "Interval"
+
+  @property
   def length(self) -> float:
     return self.b - self.a
 
@@ -96,7 +100,7 @@ class Interval(FoundationType):
         'of an empty list of intervals')
     return Interval.build(max(I.a for I in Is), min(I.b for I in Is))
 
-  def dump(self) -> Dict:
+  def as_dict(self) -> Dict:
     return {
       'a': self.a,
       'b': self.b,
@@ -107,6 +111,10 @@ class Point(FoundationType):
   x: float
   y: float
   page_index: int
+
+  @property
+  def type(self) -> str:
+    return "Point"
 
   def __str__(self) -> str:
     return "Point({}, {})".format(self.x, self.y)
@@ -136,6 +144,10 @@ class BBox(FoundationType):
   ix: Interval
   iy: Interval
   page_index: int
+
+  @property
+  def type(self) -> str:
+    return "BBox"
 
   @property
   def center(self) -> Point:
@@ -241,8 +253,8 @@ class BBox(FoundationType):
     inner_height = max(0, iy.length - b1.iy.length - b2.iy.length)
     return sqrt(inner_width**2 + inner_height**2)
 
-  def dump(self) -> Dict:
+  def as_dict(self) -> Dict:
     return {
-      'ix': self.ix.dump(),
-      'iy': self.iy.dump(),
+      'ix': self.ix.as_dict(),
+      'iy': self.iy.as_dict(),
     }

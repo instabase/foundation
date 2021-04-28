@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, cast, Dict
 
 import attr
 from .interfaces import *
@@ -31,6 +31,13 @@ class InMemoryWord(Word):
   def get_children(self) -> Iterable[Entity]:
     yield from []
 
+  def as_dict(self) -> Dict[str, Any]:
+    return {
+      'id': self._id,
+      'bbox': self.bbox.as_dict(),
+      'text': self._text,
+    }
+
 @attr.s(auto_attribs=True)
 class InMemoryText(Text):
   _id: str
@@ -51,6 +58,10 @@ class InMemoryText(Text):
 class InMemoryImage(Image):
   _bbox: BBox
   _input_filepath: str
+
+  @property
+  def type(self) -> str:
+    return "Image"
 
   @property
   def bbox(self) -> BBox:
@@ -88,3 +99,38 @@ class InMemoryPage(Page):
 
   def get_children(self) -> Iterable[Entity]:
     yield from self._children
+
+@attr.s(auto_attribs=True)
+class InMemoryRecordContext(RecordContext):
+  _entities: Dict[str, Entity] # maps all entity IDs to entities
+  _pages: Tuple[str, ...] # list of page IDs
+  _collections: Tuple[str, ...] # list of collection IDs
+
+  @property
+  def type(self) -> str:
+    return "RecordContext"
+
+  def get_entities(self) -> Iterable[Entity]:
+    yield from self._entities.values()
+
+  def get_pages(self) -> Iterable[Page]:
+    for id in self._pages:
+      yield cast(Page, self._entities[id])
+
+  def get_collection_entities(self) -> Iterable[Entity]:
+    for id in self._collections:
+      yield self._entities[id]
+
+  # def as_dict(self) -> Dict:
+  #   rtn = {
+  #     'entities': {
+  #       id: entity.as_dict() for id, entity in self._entities.items()
+  #     },
+  #     'pages': list(self._pages),
+  #     'collections': list(self._collections),
+  #   }
+  #   return rtn
+
+  # @staticmethod
+  # def from_dict(record_dict: Dict) -> 'InMemoryRecordContext':
+  #   return InMemoryRecordContext({}, ('h',), ('h',))

@@ -17,6 +17,14 @@ class TestEntities(TestCase):
     image_0: Image = InMemoryImage(text_0.bbox, 'path/to/image/0')
     page_0: Page = InMemoryPage('page-0', image_0, (word_0, text_0))
 
+    record_0: RecordContext = InMemoryRecordContext(
+      {
+        e.id: e for e in [word_0, text_0, page_0]
+      },
+      (page_0.id,),
+      (text_0.id, page_0.id,)
+    )
+
     # self.assertTrue(isinstance(w1, Word))
     # w2 = Word('word-1', bbox=unwrap(BBox.spanning((Point(6, 0, 0), Point(11, 1, 0)))), text='world')
 

@@ -1,19 +1,16 @@
 from abc import abstractmethod
-from typing import Dict, Optional, Iterable
+from typing import Any, Dict, Optional, Iterable
 from typing_extensions import Protocol
 
 from itertools import chain
 
+from .meta import FoundationType
 from .geometry import BBox
 
-class Entity(Protocol):
+class Entity(FoundationType):
   @property
   @abstractmethod
   def id(self) -> str: ...
-
-  @property
-  @abstractmethod
-  def type(self) -> str: ...
   
   @property
   def bbox(self) -> BBox:
@@ -44,7 +41,7 @@ class Text(Entity):
   def __len__(self) -> int:
     return sum(len(c) for c in self.get_children())
 
-class Image(Protocol):
+class Image(FoundationType):
   @property
   @abstractmethod
   def bbox(self) -> BBox: ...
@@ -61,3 +58,38 @@ class Page(Entity):
   @property
   @abstractmethod
   def image(self) -> Image: ...
+
+
+class RecordContext(FoundationType):
+  @abstractmethod
+  def get_entities(self) -> Iterable[Entity]: 
+    """
+    Returns all entities associated with this record (including Words)
+    """
+    ...
+
+  @abstractmethod
+  def get_pages(self) -> Iterable[Page]: 
+    """
+    Returns the page entities associated with this record in order
+    """
+    ...
+
+  @abstractmethod
+  def get_collection_entities(self) -> Iterable[Entity]:
+    """
+    Returns the non-word entities associated with this Record
+    """
+    ...
+
+  # @abstractmethod
+  # def as_dict(self) -> Dict:
+  #   """
+  #   Serializes this RecordContext to JSON
+  #   """
+  #   ...
+
+  # @staticmethod
+  # @abstractmethod
+  # def from_dict(record_dict: Dict) -> 'RecordContext':
+  #   ...
