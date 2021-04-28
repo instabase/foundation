@@ -6,7 +6,6 @@ from .meta import FoundationType
 
 class Entity(FoundationType):
   id: str
-  
   @property
   def type(self) -> str:
     return self.__class__.__name__
@@ -22,9 +21,10 @@ class Entity(FoundationType):
   
   @property
   def bbox(self) -> Optional[BBox]:
-    return BBox.union(self.get_bboxes())
+    return BBox.union(self.bboxes)
 
-  def get_bboxes(self) -> Iterable[BBox]:
+  @property
+  def bboxes(self) -> Iterable[BBox]:
     yield from (c.bbox for c in self.get_children() if c.bbox is not None)
 
   @property
@@ -45,8 +45,9 @@ class Entity(FoundationType):
   def get_children(self) -> Iterable['Entity']: ...
 
 class Word(Entity):
+  __slots__ = ['id', '_bbox', '_text']
   _bbox: BBox
-  text: str
+  _text: str
 
   def __init__(self, id: str, *, text: str, bbox: BBox):
     self.id = id
@@ -58,13 +59,18 @@ class Word(Entity):
     return self._bbox
 
   @property
+  def text(self) -> str:
+    return self._text
+
+  @property
   def char_width(self) -> float:
     return self.bbox.width / float(len(self.text))
 
   def get_children(self) -> Iterable[Entity]:
-    yield from ()
+    yield from []
 
 class Text(Entity):
+  __slots__ = ['id', '_children']
   _children: Tuple[Word, ...]
 
   def __init__(self, id: str, *, children: Sequence[Word]):
@@ -75,6 +81,7 @@ class Text(Entity):
     yield from self._children
 
 class Image(FoundationType):
+  __slots__ = ['input_filepath', 'bbox']
   input_filepath: str
   bbox: BBox
 

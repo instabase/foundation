@@ -1,0 +1,19 @@
+@startuml
+
+title Foundation System
+
+package "Bytes" {
+  :Serialized Protocol Buffers; as pbuf
+}
+
+package "Python" {
+  package "Serialization" {
+
+  }
+}
+
+package "TypeScript" {
+
+}
+
+@enduml
