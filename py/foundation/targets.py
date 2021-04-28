@@ -287,6 +287,11 @@ def load_doc_targets_from_json(blob: Dict) -> DocTargets:
   return instantiate(DocTargets, blob)
 
 
+def load_schema(path: Path) -> TargetsSchema:
+  with path.open() as f:
+    return load_schema_from_json(json.load(f))
+
+
 def load_schema_from_json(blob: Dict) -> TargetsSchema:
   return instantiate(TargetsSchema, blob)
 

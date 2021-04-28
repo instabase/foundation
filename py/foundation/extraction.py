@@ -3,9 +3,12 @@
 Typically an extraction is represented as a tuple of field-entity pairs.
 """
 
+import json
+
 from dataclasses import asdict, dataclass, replace
 from functools import lru_cache
 from itertools import chain
+from pathlib import Path
 from typing import Any, Collection, Dict, FrozenSet, Generator, Iterable, Optional, Set, Tuple, TypeVar
 
 from .entity import Entity, entity_resolver
@@ -177,6 +180,11 @@ class Extraction:
 
   def __repr__(self) -> str:
     return f'<Extraction({", ".join(map(str, self.points()))})>'
+
+
+def load_extraction(path: Path) -> Extraction:
+  with path.open() as f:
+    return load_extraction_from_json(json.load(f))
 
 
 def load_extraction_from_json(blob: Dict) -> Extraction:
