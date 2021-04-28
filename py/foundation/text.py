@@ -3,7 +3,7 @@ from typing import List, Iterable, Union, Optional, Any
 
 from .entity import Entity, Word, Whitespace
 
-class SpatialText:
+class Text:
   words: List[Union[Word, Whitespace]]
   length: Optional[int]
 

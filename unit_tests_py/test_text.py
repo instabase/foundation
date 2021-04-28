@@ -2,12 +2,12 @@ from unittest import TestCase
 
 from foundation.entity import Word, Whitespace
 from foundation.geometry import BBox, Point
-from foundation.spatial_text import SpatialText
+from foundation.text import Text
 
 from foundation.typing_utils import unwrap
 
 
-class TestSpatialText(TestCase):
+class TestText(TestCase):
 
   bbox = unwrap(BBox.spanning((Point(0, 0, 0), Point(5, 1, 0))))
 
@@ -19,28 +19,28 @@ class TestSpatialText(TestCase):
 
     words = [self.w1, self.ws, self.w2]
 
-    spatial = SpatialText(words)
+    spatial = Text(words)
     self.assertEqual(len(spatial), len('hello     world'))
 
   def test_strip(self) -> None:
 
     words = [self.ws, self.ws, self.w1, self.w2]
 
-    spatial = SpatialText(words)
+    spatial = Text(words)
     spatial.lstrip()
 
     self.assertEqual(str(spatial), 'helloworld')
 
     words = [self.w1, self.w2, self.ws, self.ws]
 
-    spatial = SpatialText(words)
+    spatial = Text(words)
     spatial.rstrip()
 
     self.assertEqual(str(spatial), 'helloworld')
 
     words = [self.ws, self.ws, self.w1, self.w2, self.ws]
 
-    spatial = SpatialText(words)
+    spatial = Text(words)
     spatial.strip()
 
     self.assertEqual(str(spatial), 'helloworld')
@@ -48,7 +48,7 @@ class TestSpatialText(TestCase):
   def test_slice(self) -> None:
     words = [self.ws, self.w1, self.w2]
 
-    spatial = SpatialText(words) #'     helloworld'
+    spatial = Text(words) #'     helloworld'
 
     # Test slicing with ints
     self.assertEqual(str(spatial[0]), '     ')
