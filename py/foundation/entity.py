@@ -62,7 +62,18 @@ class Word(Entity):
     return self.bbox.width / float(len(self.text))
 
   def get_children(self) -> Iterable[Entity]:
-    yield from ()
+    yield from []
+
+  def __len__(self) -> int:
+    return len(self.text)
+
+class Whitespace(Word):
+
+  def __init__(self, id: str, *, text: str, bbox: BBox):
+    super().__init__(id, bbox=bbox, text=text)
+  
+  def is_valid(self) -> bool:
+    return self.text.isspace()
 
 class Text(Entity):
   _children: Tuple[Word, ...]
