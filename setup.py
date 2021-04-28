@@ -18,9 +18,9 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     package_dir={'': 'py'},
     install_requires=[
-        'mypy==0.790',
+        'mypy==0.701',
     ]
 )
