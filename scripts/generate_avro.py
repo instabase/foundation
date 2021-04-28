@@ -1,3 +1,4 @@
+import json
 from typing import Type, Dict, Optional, Tuple, List
 from collections.abc import Iterable
 import inspect
@@ -90,7 +91,30 @@ def get_type_def(cls: Type) -> Optional[Dict[str, str]]:
   }
   return rtn
 
+def get_schema() -> Dict:
+  return {
+    "namespace": "foundation",
+    "type": "record",
+    "name": "RecordContext",
+    "fields": [
+      {
+        "name": "datastore",
+        "type": {
+          "name": "datastore",
+          "type": "map",
+          "values": [
+            get_type_def(t) for t in foundation_types.values()
+          ]
+        }
+      },
+      {
+        "name": "pages",
+        "type": "array",
+        "values": "string",
+      }
+    ]
+  }
+
 if __name__ == "__main__":
-  for k,t in foundation_types.items():
-    o = get_type_def(t)
-    pprint(o)
+  # print(json.dumps(get_schema()))
+  pprint(get_schema())

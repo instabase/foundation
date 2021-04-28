@@ -37,6 +37,10 @@ class Entity(FoundationType):
   # t = Text(...)
   # word1 = next(t.children) <- this would be the first child
   # word2 = next(t.children) <- this would be also be the first child
+
+  # iter = t.children
+  # word1 = next(iter)
+  # word2 = next(iter)
   @abstractmethod
   def get_children(self) -> Iterable['Entity']: ...
 
