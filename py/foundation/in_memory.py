@@ -1,8 +1,8 @@
-from typing import Tuple, cast, Dict, Iterable, Any
+from typing import Tuple, cast, Dict, Iterable, Any, Union
 
 import attr
 from .geometry import BBox
-from .interfaces import Page, RecordContext, Word, Image, Entity, Text
+from .interfaces import Page, RecordContext, Word, Image, Entity, Text, Whitespace
 
 @attr.s(auto_attribs=True)
 class InMemoryWord(Word):
@@ -40,9 +40,21 @@ class InMemoryWord(Word):
     }
 
 @attr.s(auto_attribs=True)
+class InMemoryWhitespace(Whitespace):
+  _text: str
+
+  @property
+  def type(self) -> str:
+    return "Whitespace"
+
+  @property
+  def text(self) -> str:
+    return self._text
+
+@attr.s(auto_attribs=True)
 class InMemoryText(Text):
   _id: str
-  _children: Tuple[Word, ...]
+  _children: Tuple[Union[Word, Whitespace], ...]
 
   @property
   def type(self) -> str:
@@ -53,7 +65,60 @@ class InMemoryText(Text):
     return self._id
 
   def get_children(self) -> Iterable[Word]:
-    yield from self._children
+    yield from (c for c in self._children if isinstance(c, Word))
+
+  def __str__(self) -> str:
+    return ''.join([word.text for word in self._children])
+
+  def _get_word_index(self, key: int) -> int:
+    # Gets the index of the appropriate word given a character index
+    amount_remaining = key
+    i = 0
+    while len(self._children[i]) <= amount_remaining:
+        amount_remaining -= len(self._children[i])
+        i += 1
+    return i
+
+  def __getitem__(self, key: Union[int, slice, Tuple[slice, slice]]) -> 'InMemoryText':
+    if isinstance(key, int):
+      # Gets the word at that character index
+      i = self._get_word_index(key)
+      return self.__class__('TODO', (self._children[i],))
+    elif isinstance(key, slice):
+      i = 0
+      j = len(self._children) - 1
+      if key.start:
+        i = self._get_word_index(key.start)
+      if key.stop:
+        j = self._get_word_index(key.stop-1)
+      return self.__class__('TODO', tuple(self._children[i:j+1]))
+    elif isinstance(key, tuple):
+      raise NotImplementedError
+    else:
+      raise ValueError('Invalid key argument')
+  
+  def lstrip(self) -> 'InMemoryText':
+    # Removes whitespace from the left side
+    i = 0
+    for c in self._children:
+      if not c.type == "Whitespace":
+        break
+      i += 1
+    
+    self._children = self._children[i:]
+    return self
+
+  def rstrip(self) -> 'InMemoryText':
+    # Removes whitespace from right side
+    i = len(self._children) - 1
+    while self._children[i].type == "Whitespace" and i >= 0:
+      i -= 1
+    
+    self._children = self._children[:(i+1)]
+    return self
+
+  def __len__(self) -> int:
+    return sum(len(c) for c in self._children)
 
 @attr.s(auto_attribs=True)
 class InMemoryImage(Image):

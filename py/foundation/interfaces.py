@@ -1,6 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, Optional, Iterable
-from typing_extensions import Protocol
+from typing import Any, Dict, Optional, Iterable, Union, Tuple
 
 from itertools import chain
 
@@ -34,12 +33,54 @@ class Word(Entity):
   def __len__(self) -> int:
     return len(self.text)
 
+class Whitespace(FoundationType):
+  @property
+  @abstractmethod
+  def text(self) -> str: ...
+
+  def __str__(self) -> str:
+    return self.text
+
+  def __len__(self) -> int:
+    return len(self.text)
+
 class Text(Entity):
   @abstractmethod
   def get_children(self) -> Iterable[Word]: ...
 
-  def __len__(self) -> int:
-    return sum(len(c) for c in self.get_children())
+  @abstractmethod
+  def __len__(self) -> int: ...
+
+  def __bool__(self) -> bool:
+    return len(self) != 0
+
+  @abstractmethod
+  def __str__(self) -> str: ...
+
+  @abstractmethod
+  def lstrip(self) -> 'Text':
+    """
+    Removes whitespace from the left side
+    """
+    ...
+
+  @abstractmethod
+  def rstrip(self) -> 'Text':
+    """
+    Removes whitespace from right side
+    """
+    ...
+  
+  def strip(self) -> 'Text':
+    """
+    Removes whitespace from both sides
+    """
+    return self.rstrip().lstrip()
+
+  @abstractmethod
+  def __getitem__(self, key: Union[int, slice, Tuple[slice, slice]]) -> Any:
+    ...
+
 
 class Image(FoundationType):
   @property

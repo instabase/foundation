@@ -1,8 +1,10 @@
 from unittest import TestCase
 
-from foundation.entity import Word, Whitespace
+from typing import Tuple, Union
+
+from foundation.interfaces import Word, Whitespace, Text
+from foundation.in_memory import InMemoryWord, InMemoryWhitespace, InMemoryText
 from foundation.geometry import BBox, Point
-from foundation.text import Text
 
 from foundation.typing_utils import unwrap
 
@@ -11,44 +13,44 @@ class TestText(TestCase):
 
   bbox = unwrap(BBox.spanning((Point(0, 0, 0), Point(5, 1, 0))))
 
-  w1 = Word('word-0', bbox=bbox, text='hello')
-  w2 = Word('word-1', bbox=bbox, text='world')
-  ws = Whitespace('whitespace-1', bbox=bbox, text='     ')
+  w1: Word = InMemoryWord('word-0', bbox=bbox, text='hello')
+  w2: Word = InMemoryWord('word-1', bbox=bbox, text='world')
+  ws: Whitespace = InMemoryWhitespace(text='     ')
 
   def test_len(self) -> None:
 
-    words = [self.w1, self.ws, self.w2]
+    words: Tuple[Union[Word, Whitespace], ...] = (self.w1, self.ws, self.w2)
 
-    spatial = Text(words)
+    spatial: Text = InMemoryText('text-0', words)
     self.assertEqual(len(spatial), len('hello     world'))
 
   def test_strip(self) -> None:
 
-    words = [self.ws, self.ws, self.w1, self.w2]
+    words: Tuple[Union[Word, Whitespace], ...] = (self.w1, self.ws, self.w2)
 
-    spatial = Text(words)
+    spatial: Text = InMemoryText('text-1', words)
     spatial.lstrip()
 
-    self.assertEqual(str(spatial), 'helloworld')
+    self.assertEqual(str(spatial), 'hello     world')
 
-    words = [self.w1, self.w2, self.ws, self.ws]
+    words = (self.w1, self.w2, self.ws, self.ws)
 
-    spatial = Text(words)
+    spatial = InMemoryText('text-2', words)
     spatial.rstrip()
 
     self.assertEqual(str(spatial), 'helloworld')
 
-    words = [self.ws, self.ws, self.w1, self.w2, self.ws]
+    words = (self.ws, self.ws, self.w1, self.w2, self.ws)
 
-    spatial = Text(words)
+    spatial = InMemoryText('text-3', words)
     spatial.strip()
 
     self.assertEqual(str(spatial), 'helloworld')
   
   def test_slice(self) -> None:
-    words = [self.ws, self.w1, self.w2]
+    words: Tuple[Union[Word, Whitespace], ...] = (self.ws, self.w1, self.w2)
 
-    spatial = Text(words) #'     helloworld'
+    spatial: Text = InMemoryText('text-4', words) #'     helloworld'
 
     # Test slicing with ints
     self.assertEqual(str(spatial[0]), '     ')
