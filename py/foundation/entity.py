@@ -74,6 +74,20 @@ class Whitespace(Word):
   
   def is_valid(self) -> bool:
     return self.text.isspace()
+  
+class Subword(Word):
+  start: int
+  end: int
+
+  def __init__(self, id: str, *, text: str, bbox: BBox, start: int, end: int):
+    super().__init__(id, bbox=bbox, text=text)
+    self.start = start
+    self.end = end
+    self.text = text[start:end]
+
+  def __len__(self) -> int:
+    return len(self.text)
+
 
 class Text(Entity):
   _children: Tuple[Word, ...]
