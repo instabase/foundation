@@ -123,12 +123,17 @@ class RecordContext(FoundationType):
     """
     ...
 
-  # @abstractmethod
-  # def as_dict(self) -> Dict:
-  #   """
-  #   Serializes this RecordContext to JSON
-  #   """
-  #   ...
+  def as_dict(self) -> Dict[str, Any]:
+    """
+    Serializes this RecordContext to JSON
+    """
+    return {
+      'entities': {
+        e.id: e.as_dict() for e in self.get_entities()
+      },
+      'pages': [p.id for p in self.get_pages()],
+      'collections': [c.id for c in self.get_collection_entities()]
+    }
 
   # @staticmethod
   # @abstractmethod

@@ -4,6 +4,17 @@ import attr
 from .geometry import BBox
 from .interfaces import Page, RecordContext, Word, Image, Entity, Text, Whitespace
 
+
+@attr.s(auto_attribs=True)
+class EntityReference(Entity):
+  _id: str
+  @property
+  def id(self) -> str:
+    return self._id
+
+  def get_children(self) -> Iterable[Entity]:
+    raise ValueError('Entity was not de-referenced')
+
 @attr.s(auto_attribs=True)
 class InMemoryWord(Word):
   _id: str
@@ -32,12 +43,14 @@ class InMemoryWord(Word):
   def get_children(self) -> Iterable[Entity]:
     yield from []
 
-  def as_dict(self) -> Dict[str, Any]:
-    return {
-      'id': self._id,
-      'bbox': self.bbox.as_dict(),
-      'text': self._text,
-    }
+  @staticmethod
+  def from_dict(d: Dict[str, Any]) -> 'InMemoryWord':
+    ...
+    # return InMemoryWord(
+    #   d['id'],
+    #   BBox.from_dict(d['bbox']),
+    #   d['text']
+    # )
 
 @attr.s(auto_attribs=True)
 class InMemoryWhitespace(Whitespace):
@@ -50,6 +63,10 @@ class InMemoryWhitespace(Whitespace):
   @property
   def text(self) -> str:
     return self._text
+
+  @staticmethod
+  def from_dict(d: Dict[str, Any]) -> 'InMemoryWhitespace':
+    ...
 
 @attr.s(auto_attribs=True)
 class InMemoryText(Text):
@@ -120,6 +137,10 @@ class InMemoryText(Text):
   def __len__(self) -> int:
     return sum(len(c) for c in self._children)
 
+  @staticmethod
+  def from_dict(d: Dict[str, Any]) -> 'InMemoryText':
+    ...
+
 @attr.s(auto_attribs=True)
 class InMemoryImage(Image):
   _bbox: BBox
@@ -136,6 +157,10 @@ class InMemoryImage(Image):
   @property
   def input_filepath(self) -> str:
     return self._input_filepath
+
+  @staticmethod
+  def from_dict(d: Dict[str, Any]) -> 'InMemoryImage':
+    ...
 
 @attr.s(auto_attribs=True)
 class InMemoryPage(Page):
@@ -166,6 +191,10 @@ class InMemoryPage(Page):
   def get_children(self) -> Iterable[Entity]:
     yield from self._children
 
+  @staticmethod
+  def from_dict(d: Dict[str, Any]) -> 'InMemoryPage':
+    ...
+
 @attr.s(auto_attribs=True)
 class InMemoryRecordContext(RecordContext):
   _entities: Dict[str, Entity] # maps all entity IDs to entities
@@ -186,6 +215,14 @@ class InMemoryRecordContext(RecordContext):
   def get_collection_entities(self) -> Iterable[Entity]:
     for id in self._collections:
       yield self._entities[id]
+
+  def add_collection_entity(self, entity: Entity) -> None:
+    self._entities[entity.id] = entity
+    self._collections += (entity.id,)
+
+  @staticmethod
+  def from_dict(d: Dict[str, Any]) -> 'InMemoryRecordContext':
+    ...
 
   # def as_dict(self) -> Dict:
   #   rtn = {

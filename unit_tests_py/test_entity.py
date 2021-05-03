@@ -25,6 +25,8 @@ class TestEntities(TestCase):
       (text_0.id, page_0.id,)
     )
 
+    print(record_0.as_dict())
+
     # self.assertTrue(isinstance(w1, Word))
     # w2 = Word('word-1', bbox=unwrap(BBox.spanning((Point(6, 0, 0), Point(11, 1, 0)))), text='world')
 
