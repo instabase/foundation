@@ -78,7 +78,6 @@ class InMemorySubword(Subword):
   def type(self) -> str:
     return "Subword"
   
-  @property
   def id(self) -> str:
     return super().id
   
@@ -209,8 +208,7 @@ class InMemoryText(Text):
 
   def strip(self) -> 'InMemoryText':
     # Removes whitespace from both sides
-    removed = self.rstrip().lstrip()
-    return removed
+    return self.rstrip().lstrip()
 
   def __len__(self) -> int:
     return sum(len(c) for c in self._children)

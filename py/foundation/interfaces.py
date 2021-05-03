@@ -52,12 +52,6 @@ class Subword(Word):
   @property
   def end(self) -> int: ...
 
-  def __str__(self) -> str:
-    return self.text[self.start:self.end]
-
-  def __len__(self) -> int:
-    return len(self.text[self.start:self.end])
-
 class Text(Entity):
   @abstractmethod
   def get_children(self) -> Iterable[Word]: ...
