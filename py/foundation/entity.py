@@ -81,9 +81,17 @@ class Subword(Word):
 
   def __init__(self, id: str, *, text: str, bbox: BBox, start: int, end: int):
     super().__init__(id, bbox=bbox, text=text)
-    self.start = start
-    self.end = end
+    # self.start = start
+    # self.end = end
     self.text = text[start:end]
+
+  @property
+  def start(self) -> int:
+    return self.start
+  
+  @property
+  def end(self) -> int:
+    return self.end
 
   def __len__(self) -> int:
     return len(self.text)
