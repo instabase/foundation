@@ -81,18 +81,18 @@ class TestText(TestCase):
     spatial: Text = InMemoryText('text-4', words) #'     helloworld'
 
     # Test slicing with ints
-    # self.assertEqual(str(spatial[0]), ' ')
-    # self.assertEqual(str(spatial[4]), ' ')
-    # self.assertEqual(str(spatial[5]), 'h')
-    # self.assertEqual(str(spatial[9]), 'o')
-    # self.assertEqual(str(spatial[10]), 'w')
+    self.assertEqual(str(spatial[0]), ' ')
+    self.assertEqual(str(spatial[4]), ' ')
+    self.assertEqual(str(spatial[5]), 'h')
+    self.assertEqual(str(spatial[9]), 'o')
+    self.assertEqual(str(spatial[10]), 'w')
 
-    # # Test with slices
-    # self.assertEqual(str(spatial[0:4]), '    ')
-    # self.assertEqual(str(spatial[0:10]), '     hello')
+    # Test with slices
+    self.assertEqual(str(spatial[0:4]), '    ')
+    self.assertEqual(str(spatial[0:10]), '     hello')
     self.assertEqual(str(spatial[0:11]), '     hellow')
-    # self.assertEqual(str(spatial[4:11]), ' hellow')
-    # self.assertEqual(str(spatial[8:11]), 'low')
+    self.assertEqual(str(spatial[4:11]), ' hellow')
+    self.assertEqual(str(spatial[8:11]), 'low')
 
     # Test strip after slice
     new_spatial = spatial[3:17]
