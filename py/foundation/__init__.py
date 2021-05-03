@@ -1,6 +1,5 @@
-from .entity import *
 from .geometry import *
-from .meta import *
-from .serialization import *
+from .interfaces import *
+from .in_memory import *
 
 FOUNDATION_VERSION = '0.0.5'

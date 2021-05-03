@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="instabase-foundation",
-    version="0.0.3",
+    version="0.1.0",
     author="Instabase",
     author_email="support@instabase.com",
     description="Foundation",
@@ -18,9 +18,9 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     package_dir={'': 'py'},
     install_requires=[
-        'mypy==0.790',
+        'mypy==0.701',
     ]
 )

@@ -14,7 +14,7 @@ export MYPYPATH="$PYTHONPATH"
 UNIT_TEST_DIR="$REPO_ROOT/unit_tests_py"
 
 echo "Checking mypy"
-python3 -m mypy $FND_PYTHONPATH/foundation
+python3 -m mypy $FND_PYTHONPATH/foundation --show-traceback
 python3 -m mypy $UNIT_TEST_DIR
 echo "Ok mypy"
 

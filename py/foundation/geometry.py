@@ -15,6 +15,10 @@ class Interval(FoundationType):
   b: float
 
   @property
+  def type(self) -> str:
+    return "Interval"
+
+  @property
   def length(self) -> float:
     return self.b - self.a
 
@@ -96,7 +100,7 @@ class Interval(FoundationType):
         'of an empty list of intervals')
     return Interval.build(max(I.a for I in Is), min(I.b for I in Is))
 
-  def dump(self) -> Dict:
+  def as_dict(self) -> Dict:
     return {
       'a': self.a,
       'b': self.b,
@@ -107,6 +111,10 @@ class Point(FoundationType):
   x: float
   y: float
   page_index: int
+
+  @property
+  def type(self) -> str:
+    return "Point"
 
   def __str__(self) -> str:
     return "Point({}, {})".format(self.x, self.y)
@@ -136,6 +144,10 @@ class BBox(FoundationType):
   ix: Interval
   iy: Interval
   page_index: int
+
+  @property
+  def type(self) -> str:
+    return "BBox"
 
   @property
   def center(self) -> Point:
@@ -202,10 +214,10 @@ class BBox(FoundationType):
     return BBox(ix, iy, page_index) if ix is not None and iy is not None and page_index is not None else None
 
   @staticmethod
-  def spanning(ps: Iterable[Point]) -> Optional['BBox']:
+  def spanning(ps: Iterable[Point]) -> 'BBox':
     ps = tuple(ps)
     if not ps:
-      return None
+      raise ValueError('Cannot get spanning of an empty iterrable')
     ix = Interval(min(p.x for p in ps), max(p.x for p in ps))
     iy = Interval(min(p.y for p in ps), max(p.y for p in ps))
     page_index = ps[0].page_index
@@ -223,7 +235,7 @@ class BBox(FoundationType):
     return BBox(ix, iy, bs[0].page_index)
 
   @staticmethod
-  def union(bs: Iterable['BBox']) -> Optional['BBox']:
+  def union(bs: Iterable['BBox']) -> 'BBox':
     """Returns the smallest bbox containing all bs (their union).
 
     Returns:
@@ -241,8 +253,8 @@ class BBox(FoundationType):
     inner_height = max(0, iy.length - b1.iy.length - b2.iy.length)
     return sqrt(inner_width**2 + inner_height**2)
 
-  def dump(self) -> Dict:
+  def as_dict(self) -> Dict:
     return {
-      'ix': self.ix.dump(),
-      'iy': self.iy.dump(),
+      'ix': self.ix.as_dict(),
+      'iy': self.iy.as_dict(),
     }
