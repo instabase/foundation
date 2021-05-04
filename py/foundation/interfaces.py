@@ -89,6 +89,22 @@ class Text(Entity):
   def __getitem__(self, key: Union[int, slice, Tuple[slice, slice]]) -> Any:
     ...
 
+class SpatialText(Entity):
+  @abstractmethod
+  def get_children(self) -> Iterable[Word]: ...
+
+  @abstractmethod
+  def __len__(self) -> int: ...
+
+  def __bool__(self) -> bool:
+    return len(self) != 0
+
+  @abstractmethod
+  def __str__(self) -> str: ...
+
+  @abstractmethod
+  def __getitem__(self, key: Union[int, slice, Tuple[slice, slice]]) -> Any:
+    ...
 
 class Image(FoundationType):
   @property
