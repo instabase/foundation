@@ -44,6 +44,14 @@ class Whitespace(FoundationType):
   def __len__(self) -> int:
     return len(self.text)
 
+class Subword(Word):
+
+  @property
+  def start(self) -> int: ...
+
+  @property
+  def end(self) -> int: ...
+
 class Text(Entity):
   @abstractmethod
   def get_children(self) -> Iterable[Word]: ...
