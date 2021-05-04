@@ -1,8 +1,9 @@
-from typing import Tuple, cast, Dict, Iterable, Any, Union
+from typing import Tuple, cast, Dict, Iterable, Any, Union, List
 
 import attr
 from .geometry import BBox
-from .interfaces import Page, RecordContext, Word, Image, Entity, Text, Whitespace, Subword
+from .interfaces import Page, RecordContext, Word, \
+  Image, Entity, Text, Whitespace, Subword
 
 
 @attr.s(auto_attribs=True)
@@ -121,6 +122,9 @@ class InMemoryText(Text):
 
   def get_children(self) -> Iterable[Word]:
     yield from (c for c in self._children if isinstance(c, Word))
+  
+  def get_children_with_spaces(self) -> Iterable[Union[Word, Whitespace]]:
+    yield from (c for c in self._children if isinstance(c, Word) or isinstance(c, Whitespace))
 
   def __str__(self) -> str:
     return ''.join([word.text for word in self._children])
@@ -216,6 +220,57 @@ class InMemoryText(Text):
   @staticmethod
   def from_dict(d: Dict[str, Any]) -> 'InMemoryText':
     ...
+
+@attr.s(auto_attribs=True)
+class InMemorySpatialText(Text):
+  _id: str
+  _lines: List[InMemoryText]
+
+  @property
+  def type(self) -> str:
+    return "SpatialText"
+  
+  @property
+  def id(self) -> str:
+    return self._id
+
+  def _get_in_memory_text(self) -> 'InMemoryText':
+    # Gets a one dimensional InMemoryText
+    full_list: List[Union[Word, Whitespace]] = list(self._lines[0].get_children_with_spaces())
+    new_line = InMemoryWhitespace(text='\n')
+    for i in range(1, len(self._lines)):
+      full_list.append(new_line)
+      full_list.extend(self._lines[i].get_children_with_spaces())
+    
+    return InMemoryText('TODO', tuple(full_list))
+  
+  def __str__(self) -> str:
+    return '\n'.join([str(line) for line in self._lines])
+  
+  def __len__(self) -> int:
+    # +1 accounts for new line at each line, -1 because no new line at the end
+    return sum([len(line) + 1 for line in self._lines]) - 1
+  
+  def get_children(self) -> Iterable[Word]:
+    return self._get_in_memory_text().get_children()
+
+  def lstrip(self) -> 'InMemoryText':
+    return self._get_in_memory_text().lstrip()
+  
+  def rstrip(self) -> 'InMemoryText':
+    return self._get_in_memory_text().rstrip()
+  
+  def __getitem__(self, key: Union[int, slice, Tuple[slice, slice]]) -> Any:
+    if isinstance(key, int) or isinstance(key, slice):
+      return self._get_in_memory_text()[key]
+    elif isinstance(key, tuple):
+      if len(key) > 2:
+        raise ValueError('Too many slices')
+      x_key, y_key = key
+      new_lines = [line[x_key.start:x_key.stop] for line in self._lines[y_key.start:y_key.stop]]
+      return self.__class__('TODO', new_lines)
+    else:
+      raise ValueError('Invalid key argument')
 
 @attr.s(auto_attribs=True)
 class InMemoryImage(Image):
