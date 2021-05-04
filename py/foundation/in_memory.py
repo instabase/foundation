@@ -1,9 +1,10 @@
 from typing import Tuple, cast, Dict, Iterable, Any, Union, List
+import uuid
 
 import attr
 from .geometry import BBox
 from .interfaces import Page, RecordContext, Word, \
-  Image, Entity, Text, Whitespace, Subword
+  Image, Entity, Text, Whitespace, Subword, SpatialText
 
 
 @attr.s(auto_attribs=True)
@@ -123,7 +124,7 @@ class InMemoryText(Text):
   def get_children(self) -> Iterable[Word]:
     yield from (c for c in self._children if isinstance(c, Word))
   
-  def get_children_with_spaces(self) -> Iterable[Union[Word, Whitespace]]:
+  def _get_children_with_spaces(self) -> Iterable[Union[Word, Whitespace]]:
     yield from (c for c in self._children if isinstance(c, Word) or isinstance(c, Whitespace))
 
   def __str__(self) -> str:
@@ -144,7 +145,7 @@ class InMemoryText(Text):
       i, ar = self._get_word_index(key)
       word = self._children[i]
       subword = InMemorySubword(text=word.text, start=ar, end=ar+1)
-      return self.__class__('TODO', (subword,))
+      return self.__class__(str(uuid.uuid4()), (subword,))
     elif isinstance(key, slice):
       # Gets a substring from the Text
       i, ar1, ar2 = 0, 0, 0
@@ -160,9 +161,9 @@ class InMemoryText(Text):
         if word.type == 'Whitespace':
           text = ' ' * (ar2 - ar1 + 1)
           whitespace = InMemoryWhitespace(text)
-          return self.__class__('TODO', (whitespace, ))
+          return self.__class__(str(uuid.uuid4()), (whitespace, ))
         subword = InMemorySubword(text=word.text, start=ar1, end=ar2+1)
-        return self.__class__('TODO', (subword,))
+        return self.__class__(str(uuid.uuid4()), (subword,))
       else:
         # Getting multiple words and/or subwords
         first_word, last_word = self._children[i], self._children[j]
@@ -184,7 +185,7 @@ class InMemoryText(Text):
           new_list.extend(self._children[i+1:j])
         
         new_list.append(last_word)
-        return self.__class__('TODO', tuple(new_list))
+        return self.__class__(str(uuid.uuid4()), tuple(new_list))
     elif isinstance(key, tuple):
       raise NotImplementedError
     else:
@@ -222,7 +223,7 @@ class InMemoryText(Text):
     ...
 
 @attr.s(auto_attribs=True)
-class InMemorySpatialText(Text):
+class InMemorySpatialText(SpatialText):
   _id: str
   _lines: List[InMemoryText]
 
@@ -236,30 +237,23 @@ class InMemorySpatialText(Text):
 
   def _get_in_memory_text(self) -> 'InMemoryText':
     # Gets a one dimensional InMemoryText
-    full_list: List[Union[Word, Whitespace]] = list(self._lines[0].get_children_with_spaces())
-    new_line = InMemoryWhitespace(text='\n')
+    full_list: List[Union[Word, Whitespace]] = list(self._lines[0]._get_children_with_spaces())
     for i in range(1, len(self._lines)):
-      full_list.append(new_line)
-      full_list.extend(self._lines[i].get_children_with_spaces())
+      full_list.append(InMemoryWhitespace(text='\n'))
+      full_list.extend(self._lines[i]._get_children_with_spaces())
     
-    return InMemoryText('TODO', tuple(full_list))
-  
-  def __str__(self) -> str:
-    return '\n'.join([str(line) for line in self._lines])
+    return InMemoryText(str(uuid.uuid4()), tuple(full_list))
+
+  def get_children(self) -> Iterable[Word]:
+    return self._get_in_memory_text().get_children()
   
   def __len__(self) -> int:
     # +1 accounts for new line at each line, -1 because no new line at the end
     return sum([len(line) + 1 for line in self._lines]) - 1
-  
-  def get_children(self) -> Iterable[Word]:
-    return self._get_in_memory_text().get_children()
 
-  def lstrip(self) -> 'InMemoryText':
-    return self._get_in_memory_text().lstrip()
-  
-  def rstrip(self) -> 'InMemoryText':
-    return self._get_in_memory_text().rstrip()
-  
+  def __str__(self) -> str:
+    return '\n'.join([str(line) for line in self._lines])
+
   def __getitem__(self, key: Union[int, slice, Tuple[slice, slice]]) -> Any:
     if isinstance(key, int) or isinstance(key, slice):
       return self._get_in_memory_text()[key]
@@ -268,7 +262,7 @@ class InMemorySpatialText(Text):
         raise ValueError('Too many slices')
       x_key, y_key = key
       new_lines = [line[x_key.start:x_key.stop] for line in self._lines[y_key.start:y_key.stop]]
-      return self.__class__('TODO', new_lines)
+      return self.__class__(str(uuid.uuid4()), new_lines)
     else:
       raise ValueError('Invalid key argument')
 
