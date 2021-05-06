@@ -1,4 +1,4 @@
-import * as BBox from './bbox';
+import * as BBox from '../geometry/bbox';
 
 export type t = {
   bbox: BBox.t;

@@ -1,5 +1,5 @@
-import * as BBox from './bbox';
-import * as Word from './word';
+import * as BBox from '../geometry/bbox';
+import * as Word from '../word';
 
 export type t = {
   bbox: BBox.t;

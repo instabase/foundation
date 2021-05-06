@@ -1,4 +1,4 @@
-import * as BBox from './bbox';
+import * as BBox from './geometry/bbox';
 import * as Word from './word';
 
 export type t = {

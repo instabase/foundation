@@ -1,4 +1,4 @@
-import * as BBox from './bbox';
+import * as BBox from './geometry/bbox';
 import * as Entity from './entity';
 import memo from './util/memo';
 
