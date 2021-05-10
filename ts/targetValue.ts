@@ -17,6 +17,12 @@ export type t = {
 
 export type NonNullTargetValue = {
   text: string;
+  words: NonemptyArray<TargetWord.t> | undefined;
+  geometry_validated: boolean;
+};
+
+export type PositionedTargetValue = {
+  text: string;
   words: NonemptyArray<TargetWord.t>;
   geometry_validated: boolean;
 };
@@ -75,7 +81,7 @@ function build(words: TargetWord.t[]): t {
 }
 
 export const bbox = memo(
-  function(targetValue: NonNullTargetValue): BBox.t {
+  function(targetValue: PositionedTargetValue): BBox.t {
     return BBox.union(
       targetValue.words.map(word => word.bbox) as NonemptyArray<BBox.t>
     );
@@ -150,7 +156,10 @@ export function extractedValueShouldBeUndefined(targetValue: t): boolean {
 }
 
 export function isNonNull(targetValue: t): targetValue is NonNullTargetValue {
-  return targetValue.text != undefined &&
-         targetValue.words != undefined &&
-         targetValue.words.length > 0;
+  return targetValue.text != undefined;
+}
+
+export function isPositioned(targetValue: t): targetValue is PositionedTargetValue {
+  return isNonNull(targetValue) &&
+         targetValue.words != undefined;
 }
