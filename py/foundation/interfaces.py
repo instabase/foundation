@@ -124,6 +124,47 @@ class Page(Entity):
   @abstractmethod
   def image(self) -> Image: ...
 
+class Date(Text):
+  @property
+  @abstractmethod
+  def year(self) -> Optional[int]: ...
+
+  @property
+  @abstractmethod
+  def month(self) -> Optional[int]: ...
+
+  @property
+  @abstractmethod
+  def day(self) -> Optional[int]: ...
+
+  @property
+  def is_complete(self) -> bool:
+    """
+    Returns true if the date contains all date elements (year, month, and day)
+    """
+    return all(
+      i is not None 
+      for i in [self.year, self.month, self.day]
+    )
+
+  @property
+  @abstractmethod
+  def likeness_score(self) -> float: ...
+
+class CurrencyAmount(Text):
+  @property
+  @abstractmethod
+  def likeness_score(self) -> float: ...
+
+class PersonName(Text):
+  @property
+  @abstractmethod
+  def likeness_score(self) -> float: ...
+
+class Address(Text):
+  @property
+  @abstractmethod
+  def likeness_score(self) -> float: ...
 
 class RecordContext(FoundationType):
   @abstractmethod
