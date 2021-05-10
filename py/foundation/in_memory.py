@@ -1,9 +1,9 @@
-from typing import Tuple, cast, Dict, Iterable, Any, Union, List
+from typing import Tuple, cast, Dict, Iterable, Any, Union, List, Optional
 import uuid
 
 import attr
 from .geometry import BBox
-from .interfaces import Page, RecordContext, Word, \
+from .interfaces import Address, CurrencyAmount, Date, Page, PersonName, RecordContext, Word, \
   Image, Entity, Text, Whitespace, Subword, SpatialText
 
 
@@ -221,6 +221,86 @@ class InMemoryText(Text):
   @staticmethod
   def from_dict(d: Dict[str, Any]) -> 'InMemoryText':
     ...
+
+@attr.s(auto_attribs=True)
+class InMemoryDate(Date):
+  _id: str
+  _year: Optional[int]
+  _month: Optional[int]
+  _day: Optional[int]
+  _likeness_score: float
+  _children: Tuple[Union[Word, Whitespace], ...]
+
+  @property
+  def id(self) -> str:
+    return self._id
+
+  @property
+  def year(self) -> Optional[int]:
+    return self._year
+
+  @property
+  def month(self) -> Optional[int]:
+    return self._month
+
+  @property
+  def day(self) -> Optional[int]:
+    return self._day
+
+  @property
+  def likeness_score(self) -> float:
+    return self._likeness_score
+
+  def get_children(self) -> Iterable[Word]:
+    yield from (c for c in self._children if isinstance(c, Word))
+
+class InMemoryCurrencyAmount(CurrencyAmount):
+  _id: str
+  _likeness_score: float
+  _children: Tuple[Union[Word, Whitespace], ...]
+
+  @property
+  def id(self) -> str:
+    return self._id
+
+  @property
+  def likeness_score(self) -> float:
+    return self._likeness_score
+
+  def get_children(self) -> Iterable[Word]:
+    yield from (c for c in self._children if isinstance(c, Word))
+
+class InMemoryPersonName(PersonName):
+  _id: str
+  _likeness_score: float
+  _children: Tuple[Union[Word, Whitespace], ...]
+
+  @property
+  def id(self) -> str:
+    return self._id
+
+  @property
+  def likeness_score(self) -> float:
+    return self._likeness_score
+
+  def get_children(self) -> Iterable[Word]:
+    yield from (c for c in self._children if isinstance(c, Word))
+
+class InMemoryAddress(Address):
+  _id: str
+  _likeness_score: float
+  _children: Tuple[Union[Word, Whitespace], ...]
+
+  @property
+  def id(self) -> str:
+    return self._id
+
+  @property
+  def likeness_score(self) -> float:
+    return self._likeness_score
+
+  def get_children(self) -> Iterable[Word]:
+    yield from (c for c in self._children if isinstance(c, Word))
 
 @attr.s(auto_attribs=True)
 class InMemorySpatialText(SpatialText):
