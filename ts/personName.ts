@@ -1,11 +1,13 @@
 import * as BBox from './geometry/bbox';
-import * as Text from './text';
+import * as Word from './text/word';
+import * as Whitespace from './text/whitespace';
+
 
 export type t = {
   bbox: BBox.t;
 
   text: string;
-  name_parts: Text.t[];
+  words: Array<Word.t | Whitespace.t>;
   likeness_score: number | undefined;
   type: 'PersonName';
 };
