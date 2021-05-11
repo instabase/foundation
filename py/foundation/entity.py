@@ -539,4 +539,4 @@ def load_entity_from_json(blob: Dict) -> Entity:
 
 
 def dump_to_json(entity: Entity) -> str:
-  return json.dumps(asdict(entity), indent=2, sort_keys=True)
+  return json.dumps(asdict(entity))

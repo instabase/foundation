@@ -72,7 +72,7 @@ def load_document(path: Path) -> Document:
 
 
 def dump_to_json(root: Document) -> str:
-  return json.dumps(asdict(root), indent=2, sort_keys=True)
+  return json.dumps(asdict(root))
 
 
 def save_document(root: Document, path: Path) -> None:
