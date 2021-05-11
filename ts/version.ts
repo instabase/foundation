@@ -1,1 +1,1 @@
-export const FOUNDATION_VERSION = '0.0.7';
+export const FOUNDATION_VERSION = '0.0.8';

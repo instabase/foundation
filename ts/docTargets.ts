@@ -40,11 +40,20 @@ export function hasAllValues(docTargets: t, fields: string[]): boolean {
 
 export function hasNonNullValue(docTargets: t, field: string): boolean {
   const value = asDict(docTargets)[field];
-  return value?.text != undefined;
+  return value != undefined && TargetValue.isNonNull(value);
 }
 
 export function hasAllNonNullValues(docTargets: t, fields: string[]): boolean {
   return fields.every(field => hasNonNullValue(docTargets, field));
+}
+
+export function hasPositionedValue(docTargets: t, field: string): boolean {
+  const value = asDict(docTargets)[field];
+  return value != undefined && TargetValue.isPositioned(value);
+}
+
+export function hasAllPositionedValues(docTargets: t, fields: string[]): boolean {
+  return fields.every(field => hasPositionedValue(docTargets, field));
 }
 
 export const asDict = memo(
