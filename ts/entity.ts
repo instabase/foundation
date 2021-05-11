@@ -1,15 +1,15 @@
 import * as Address from './address';
 import * as Cluster from './cluster';
 import * as Date from './date';
-import * as DollarAmount from './dollarAmount';
+import * as CurrencyAmount from './currencyAmount';
 import * as PersonName from './personName';
-import * as Text from './text';
+import * as Text from './text/text';
 
 export const Types = [
   'Address',
   'Cluster',
   'Date',
-  'DollarAmount',
+  'CurrencyAmount',
   'PersonName',
   'Text',
 ] as const;
@@ -18,7 +18,7 @@ export type t =
   | Address.t
   | Cluster.t
   | Date.t
-  | DollarAmount.t
+  | CurrencyAmount.t
   | PersonName.t
   | Text.t
 ;

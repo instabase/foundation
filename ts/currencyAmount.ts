@@ -1,5 +1,4 @@
 import * as BBox from './geometry/bbox';
-import * as Text from './text/text';
 import * as Word from './text/word';
 import * as Whitespace from './text/whitespace';
 
@@ -9,5 +8,5 @@ export type t = {
   text: string;
   words: Array<Word.t | Whitespace.t>;
   likeness_score: number | undefined;
-  type: 'Address';
+  type: 'CurrencyAmount'
 };

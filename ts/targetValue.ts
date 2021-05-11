@@ -1,9 +1,9 @@
 import * as Entity from './entity';
 import * as FndDoc from './doc';
 import * as TargetWord from './targetWord';
-import * as Word from './word';
-import * as BBox from './bbox';
-import * as Interval from './interval';
+import * as Word from './text/word';
+import * as BBox from './geometry/bbox';
+import * as Interval from './geometry/interval';
 import {NonemptyArray, isNonemptyArray} from './util/types';
 
 import assert from './util/assert';

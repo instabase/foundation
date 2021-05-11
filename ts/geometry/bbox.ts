@@ -1,6 +1,6 @@
 import * as Interval from './interval';
 import * as Point from './point';
-import {NonemptyArray} from './util/types';
+import {NonemptyArray} from '../util/types';
 
 export type t = {
   ix: Interval.t;
