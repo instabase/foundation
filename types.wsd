@@ -1,0 +1,254 @@
+@startuml
+
+title "Foundation Types"
+
+class Legend {
+  - serialized_attribute: type
+  ---
+  - property: returned_type
+  + method() -> returned_type
+}
+
+package serialization {
+  class Serialized {
+    - data: Dict[str, SerializedTypeOneOf]
+    - root_id: str
+    - version: List[int]
+  }
+  class SerializedTypeOneOf {
+    - record_context: RecordContext
+    - extracted_value: ExtractedValue
+    - target_value: TargetValue
+    - compared_value: ComparedValue
+    - compared_value_collection: ComparedValueCollection
+    - entity: Entity
+  }
+  Serialized -> SerializedTypeOneOf
+}
+
+Legend -[hidden]->serialization
+
+package "targets (serializable)" as targets {
+  class TargetValue {
+    - id: str
+    - name: str
+    - bbox: BBox
+    - value: str
+    ---
+    - id: str
+    - name: str
+    - bbox: BBox
+    - value: str
+  }
+  note left of TargetValue {
+    Open question: Is there a
+    difference between "TargetValue"
+    and an "AnnotatedValue", which is
+    more tailored to training? What
+    does "Target" imply that may or
+    may not be desirable
+  }
+}
+
+package "comparison (serializable)" as comparison {
+  class ComparedValueCollection {
+    - id: str
+    - compared_value_ids: List[str]
+    ---
+    - id: str
+    + get_compared_values() -> Iterable[ComparedValue]
+  }
+  class ComparedValue {
+    - id: str
+    - target_id: str
+    - extracted_id: str
+    - score: float
+    - msg: str
+    ---
+    - id: str
+    - target: TargetValue
+    - extracted: ExtractedValue
+    - score: float
+    - msg: str
+  }
+  note right of ComparedValue {
+    Open question: should we
+    be separating ComparedValue
+    from ExtractedValue in
+    order to keep comparison
+    logic separate
+  }
+}
+
+package "record (serializable)" as record {
+  class RecordContext {
+    - id: str
+    - entity_ids: List[str]
+    - collection_ids: List[str]
+    - page_ids: List[str]
+    - spatial_text_id: str
+    ---
+    - id: str
+    + get_entities() -> Iterable[Entity]
+    + get_collection_entities() -> Iterable[Entity]
+    + get_pages() -> Iterable[Page]
+    - spatial_text: SpatialText
+  }
+}
+
+package extraction {
+  class ExtractedValue {
+    - id: str
+    - field: str
+    - type: str
+    - serialized_value: bytes
+    - entity_ids: Optional[List[str]]
+    ---
+    - id: str
+    - field: str
+    - type: str
+    - serialized_value: bytes
+    + get_entities() -> Optional[Iterable[Entity]]
+  }
+}
+
+package entity {
+  class Entity {
+    - id: str
+    - children_ids: List[str]
+    - type_specific: EntityTypeOneOf
+    ---
+    - id: str
+    - bbox: BBox
+    + get_children() -> Iterable[Entity]
+    + get_bboxes() -> Iterable[BBox]
+    ... more from type_specific
+  }
+
+  class EntityTypeOneOf {
+    - word: Word
+    - filler_string: FillerString
+    - sub_word: SubWord
+    - page: Page
+    - text: Text
+  }
+
+  Entity -> EntityTypeOneOf
+
+  class Word {
+    - bbox: BBox
+    - text: str
+    ---
+    - text: str
+    + __getitem__(slice) -> SubWord
+  }
+  class FillerString {
+    - text: str
+    ---
+    - text: str
+  }
+  class SubWord {
+    - word_id: str
+    - start_index: int
+    - end_index: int
+    ---
+    - text: str
+    + __getitem__(slice) -> SubWord
+  }
+  class Page {
+    - bbox: BBox
+    - image_path: str
+    ---
+    - image_path: str
+  }
+  class Text {
+    - word_ids: List[str] # can be subwords
+    - type_specific: Optional[TextTypeOneOf]
+    ---
+    - text: str
+    + __getitem__(slice) -> Text
+  }
+  class TextTypeOneOf {
+    - date: Date
+    - currency_amount: CurrencyAmount
+    - person_name: PersonName
+    - address: Address
+  }
+  Text -> TextTypeOneOf
+  EntityTypeOneOf --> Word
+  EntityTypeOneOf --> FillerString
+  EntityTypeOneOf --> SubWord
+  EntityTypeOneOf --> Page
+  EntityTypeOneOf --> Text
+
+  class Date {
+    - year: int
+    - month: int
+    - day: int
+    - likeness_score: float
+    ---
+    - year: int
+    - month: int
+    - day: int
+    - likeness_score: float
+  }
+  class CurrencyAmount {
+    - currency: str
+    - amount: float
+    - likeness_score: float
+    ---
+    - currency: str
+    - amount: float
+    - likeness_score: float
+  }
+  class PersonName {
+    - likeness_score: float
+    ---
+    - likeness_score: float
+  }
+  class Address {
+    - likeness_score: float
+    ---
+    - likeness_score: float
+  }
+  TextTypeOneOf --> Date
+  TextTypeOneOf --> CurrencyAmount
+  TextTypeOneOf --> PersonName
+  TextTypeOneOf --> Address
+}
+
+package geometry {
+  class Interval {
+    a: float
+    b: float
+  }
+  class Point {
+    x: float
+    y: float
+  }
+  class Rectangle {
+    ix: Interval
+    iy: Interval
+  }
+  class BBox {
+    - page: int
+    - rectangle: Rectangle
+  }
+  BBox -> Rectangle
+  Rectangle -> Interval
+}
+
+
+ComparedValue --> TargetValue
+
+Entity --> BBox
+ExtractedValue --> Entity
+ComparedValue --> ExtractedValue
+
+RecordContext --> ExtractedValue
+RecordContext --> Entity
+
+Serialized -[hidden]-> RecordContext
+Serialized -[hidden]-> ComparedValue
+
+@enduml
