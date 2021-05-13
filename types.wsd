@@ -20,10 +20,23 @@ package serialization {
     - extracted_value: ExtractedValue
     - target_value: TargetValue
     - compared_value: ComparedValue
-    - compared_value_collection: ComparedValueCollection
     - entity: Entity
+    - extracted_value_collection: ExtractedValueCollection
+    - target_value_collection: TargetValueCollection
+    - compared_value_collection: ComparedValueCollection
+    - entity_collection: EntityCollection
+  }
+
+  class RecordContextTransaction {
+    - id: str
+    - field_additions: RecordContext
+    - previous_transaction: Optional[str]
+    ---
+    not applicable (serialization only)
+    NOTE: This is a sketch for deduplication
   }
   Serialized -> SerializedTypeOneOf
+  SerializedTypeOneOf -[hidden]right- RecordContextTransaction
 }
 
 Legend -[hidden]->serialization
@@ -31,13 +44,13 @@ Legend -[hidden]->serialization
 package "targets (serializable)" as targets {
   class TargetValue {
     - id: str
-    - name: str
-    - bbox: BBox
+    - field_name: str
+    - bbox: Optional[BBox]
     - value: str
     ---
     - id: str
-    - name: str
-    - bbox: BBox
+    - field_name: str
+    - bbox: Optional[BBox]
     - value: str
   }
   note left of TargetValue {
@@ -47,6 +60,13 @@ package "targets (serializable)" as targets {
     more tailored to training? What
     does "Target" imply that may or
     may not be desirable
+  }
+  class TargetValueCollection {
+    - id: str
+    - target_value_ids: List[str]
+    ---
+    - id: str
+    + get_target_values() -> Iterable[TargetValue]
   }
 }
 
@@ -63,13 +83,13 @@ package "comparison (serializable)" as comparison {
     - target_id: str
     - extracted_id: str
     - score: float
-    - msg: str
+    - message: Optional[str]
     ---
     - id: str
     - target: TargetValue
     - extracted: ExtractedValue
     - score: float
-    - msg: str
+    - message: Optional[str]
   }
   note right of ComparedValue {
     Open question: should we
@@ -99,16 +119,20 @@ package "record (serializable)" as record {
 package extraction {
   class ExtractedValue {
     - id: str
-    - field: str
+    - field_name: str
     - type: str
     - serialized_value: bytes
     - entity_ids: Optional[List[str]]
     ---
     - id: str
-    - field: str
+    - field_name: str
     - type: str
     - serialized_value: bytes
     + get_entities() -> Optional[Iterable[Entity]]
+  }
+  class ExtractedValueCollection {
+    - id: str
+    - extracted_value_ids
   }
 }
 
@@ -119,11 +143,18 @@ package entity {
     - type_specific: EntityTypeOneOf
     ---
     - id: str
-    - bbox: BBox
+    - bbox: Optional[BBox]
     + get_children() -> Iterable[Entity]
     + get_bboxes() -> Iterable[BBox]
     ... more from type_specific
   }
+
+  class EntityCollection {
+    - id: str
+    - entity_ids: List[str]
+  }
+
+  Entity <- EntityCollection
 
   class EntityTypeOneOf {
     - word: Word
@@ -231,7 +262,7 @@ package geometry {
     iy: Interval
   }
   class BBox {
-    - page: int
+    - page_index: int
     - rectangle: Rectangle
   }
   BBox -> Rectangle

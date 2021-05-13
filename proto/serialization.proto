@@ -1,0 +1,30 @@
+syntax = "proto2";
+
+package foundation;
+
+import "entity.proto";
+import "extraction.proto";
+import "targets.proto";
+import "comparison.proto";
+import "record.proto";
+
+message Serialized {
+  map<string, SerializedTypeOneOf> data = 1;
+  required string root_id = 2;
+  repeated uint32 foundation_type_version = 3;
+}
+
+message SerializedTypeOneOf {
+  oneof serialized_type_one_of {
+    RecordContext record_context = 1;
+    ExtractedValue extracted_value = 2;
+    TargetValue target_value = 3;
+    ComparedValue compared_value = 4;
+    Entity entity = 5;
+
+    ExtractedValueCollection extracted_value_collection = 6;
+    TargetValueCollection target_value_collection = 7;
+    ComparedValueCollection compared_value_collection = 8;
+    EntityCollection entity_collection = 9;
+  }
+}

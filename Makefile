@@ -1,5 +1,5 @@
 test:
 	./python_tests.sh
 
-avro:
-	PYTHONPATH=$(PYTHONPATH):./py/ python scripts/generate_avro.py
+build-protos:
+	protoc --proto_path=./proto/ --python_out=./py/foundation/proto/ --mypy_out=./py/foundation/proto ./proto/*.proto
