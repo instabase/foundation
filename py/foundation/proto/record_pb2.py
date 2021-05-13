@@ -11,8 +11,6 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-import entity_pb2 as entity__pb2
-import extraction_pb2 as extraction__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -21,9 +19,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0crecord.proto\x12\nfoundation\x1a\x0c\x65ntity.proto\x1a\x10\x65xtraction.proto\"\x90\x02\n\rRecordContext\x12\n\n\x02id\x18\x01 \x02(\t\x12\x31\n\x0b\x65ntities_id\x18\x02 \x01(\x0b\x32\x1c.foundation.EntityCollection\x12\x34\n\x0e\x63ollections_id\x18\x03 \x01(\x0b\x32\x1c.foundation.EntityCollection\x12.\n\x08pages_id\x18\x04 \x01(\x0b\x32\x1c.foundation.EntityCollection\x12\x17\n\x0fspatial_text_id\x18\x05 \x02(\t\x12\x41\n\x13\x65xtracted_values_id\x18\x06 \x01(\x0b\x32$.foundation.ExtractedValueCollection'
-  ,
-  dependencies=[entity__pb2.DESCRIPTOR,extraction__pb2.DESCRIPTOR,])
+  serialized_pb=b'\n\x0crecord.proto\x12\nfoundation\"\x90\x01\n\rRecordContext\x12\n\n\x02id\x18\x01 \x02(\t\x12\x13\n\x0b\x65ntities_id\x18\x02 \x01(\t\x12\x16\n\x0e\x63ollections_id\x18\x03 \x01(\t\x12\x10\n\x08pages_id\x18\x04 \x01(\t\x12\x17\n\x0fspatial_text_id\x18\x05 \x02(\t\x12\x1b\n\x13\x65xtracted_values_id\x18\x06 \x01(\t'
+)
 
 
 
@@ -45,22 +42,22 @@ _RECORDCONTEXT = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='entities_id', full_name='foundation.RecordContext.entities_id', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='collections_id', full_name='foundation.RecordContext.collections_id', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='pages_id', full_name='foundation.RecordContext.pages_id', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -73,8 +70,8 @@ _RECORDCONTEXT = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='extracted_values_id', full_name='foundation.RecordContext.extracted_values_id', index=5,
-      number=6, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -90,14 +87,10 @@ _RECORDCONTEXT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=61,
-  serialized_end=333,
+  serialized_start=29,
+  serialized_end=173,
 )
 
-_RECORDCONTEXT.fields_by_name['entities_id'].message_type = entity__pb2._ENTITYCOLLECTION
-_RECORDCONTEXT.fields_by_name['collections_id'].message_type = entity__pb2._ENTITYCOLLECTION
-_RECORDCONTEXT.fields_by_name['pages_id'].message_type = entity__pb2._ENTITYCOLLECTION
-_RECORDCONTEXT.fields_by_name['extracted_values_id'].message_type = extraction__pb2._EXTRACTEDVALUECOLLECTION
 DESCRIPTOR.message_types_by_name['RecordContext'] = _RECORDCONTEXT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 

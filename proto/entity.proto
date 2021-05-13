@@ -11,7 +11,7 @@ message EntityCollection {
 
 message Entity {
   required string id = 1;
-  optional EntityCollection children_id = 2;
+  optional string children_id = 2;
   oneof type_specific {
     Word word = 3;
     FillerString filler_string = 4;

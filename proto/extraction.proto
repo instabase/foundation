@@ -2,14 +2,12 @@ syntax = "proto2";
 
 package foundation;
 
-import "entity.proto";
-
 message ExtractedValue {
   required string id = 1;
   required string field_name = 2;
   required string type = 3;
   optional bytes serialized_value = 4;
-  optional EntityCollection entities_id = 5;
+  optional string entities_id = 5;
 }
 
 message ExtractedValueCollection {

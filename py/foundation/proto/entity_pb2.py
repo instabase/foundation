@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0c\x65ntity.proto\x12\nfoundation\x1a\x0egeometry.proto\"2\n\x10\x45ntityCollection\x12\n\n\x02id\x18\x01 \x02(\t\x12\x12\n\nentity_ids\x18\x02 \x03(\t\"\x9a\x02\n\x06\x45ntity\x12\n\n\x02id\x18\x01 \x02(\t\x12\x31\n\x0b\x63hildren_id\x18\x02 \x01(\x0b\x32\x1c.foundation.EntityCollection\x12 \n\x04word\x18\x03 \x01(\x0b\x32\x10.foundation.WordH\x00\x12\x31\n\rfiller_string\x18\x04 \x01(\x0b\x32\x18.foundation.FillerStringH\x00\x12\'\n\x08sub_word\x18\x05 \x01(\x0b\x32\x13.foundation.SubWordH\x00\x12 \n\x04page\x18\x06 \x01(\x0b\x32\x10.foundation.PageH\x00\x12 \n\x04text\x18\x07 \x01(\x0b\x32\x10.foundation.TextH\x00\x42\x0f\n\rtype_specific\"4\n\x04Word\x12\x1e\n\x04\x62\x62ox\x18\x01 \x02(\x0b\x32\x10.foundation.BBox\x12\x0c\n\x04text\x18\x02 \x02(\t\"\x1c\n\x0c\x46illerString\x12\x0c\n\x04text\x18\x01 \x02(\t\"B\n\x07SubWord\x12\x0f\n\x07word_id\x18\x01 \x02(\t\x12\x13\n\x0bstart_index\x18\x02 \x02(\r\x12\x11\n\tend_index\x18\x03 \x02(\r\":\n\x04Page\x12\x1e\n\x04\x62\x62ox\x18\x01 \x03(\x0b\x32\x10.foundation.BBox\x12\x12\n\nimage_path\x18\x02 \x02(\t\"\x8f\x02\n\x04Text\x12.\n\x08words_id\x18\x01 \x01(\x0b\x32\x1c.foundation.EntityCollection\x12\x16\n\x0elikeness_score\x18\x02 \x01(\x01\x12 \n\x04\x64\x61te\x18\x03 \x01(\x0b\x32\x10.foundation.DateH\x00\x12\x35\n\x0f\x63urrency_amount\x18\x04 \x01(\x0b\x32\x1a.foundation.CurrencyAmountH\x00\x12-\n\x0bperson_name\x18\x05 \x01(\x0b\x32\x16.foundation.PersonNameH\x00\x12&\n\x07\x61\x64\x64ress\x18\x06 \x01(\x0b\x32\x13.foundation.AddressH\x00\x42\x0f\n\rtype_specific\"0\n\x04\x44\x61te\x12\x0c\n\x04year\x18\x01 \x02(\r\x12\r\n\x05month\x18\x02 \x02(\r\x12\x0b\n\x03\x64\x61y\x18\x03 \x02(\r\"m\n\x0e\x43urrencyAmount\x12\x35\n\x08\x63urrency\x18\x01 \x02(\x0e\x32#.foundation.CurrencyAmount.Currency\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x03\"\x14\n\x08\x43urrency\x12\x08\n\x03USD\x10\xc8\x06\"\x0c\n\nPersonName\"\t\n\x07\x41\x64\x64ress'
+  serialized_pb=b'\n\x0c\x65ntity.proto\x12\nfoundation\x1a\x0egeometry.proto\"2\n\x10\x45ntityCollection\x12\n\n\x02id\x18\x01 \x02(\t\x12\x12\n\nentity_ids\x18\x02 \x03(\t\"\xfc\x01\n\x06\x45ntity\x12\n\n\x02id\x18\x01 \x02(\t\x12\x13\n\x0b\x63hildren_id\x18\x02 \x01(\t\x12 \n\x04word\x18\x03 \x01(\x0b\x32\x10.foundation.WordH\x00\x12\x31\n\rfiller_string\x18\x04 \x01(\x0b\x32\x18.foundation.FillerStringH\x00\x12\'\n\x08sub_word\x18\x05 \x01(\x0b\x32\x13.foundation.SubWordH\x00\x12 \n\x04page\x18\x06 \x01(\x0b\x32\x10.foundation.PageH\x00\x12 \n\x04text\x18\x07 \x01(\x0b\x32\x10.foundation.TextH\x00\x42\x0f\n\rtype_specific\"4\n\x04Word\x12\x1e\n\x04\x62\x62ox\x18\x01 \x02(\x0b\x32\x10.foundation.BBox\x12\x0c\n\x04text\x18\x02 \x02(\t\"\x1c\n\x0c\x46illerString\x12\x0c\n\x04text\x18\x01 \x02(\t\"B\n\x07SubWord\x12\x0f\n\x07word_id\x18\x01 \x02(\t\x12\x13\n\x0bstart_index\x18\x02 \x02(\r\x12\x11\n\tend_index\x18\x03 \x02(\r\":\n\x04Page\x12\x1e\n\x04\x62\x62ox\x18\x01 \x03(\x0b\x32\x10.foundation.BBox\x12\x12\n\nimage_path\x18\x02 \x02(\t\"\x8f\x02\n\x04Text\x12.\n\x08words_id\x18\x01 \x01(\x0b\x32\x1c.foundation.EntityCollection\x12\x16\n\x0elikeness_score\x18\x02 \x01(\x01\x12 \n\x04\x64\x61te\x18\x03 \x01(\x0b\x32\x10.foundation.DateH\x00\x12\x35\n\x0f\x63urrency_amount\x18\x04 \x01(\x0b\x32\x1a.foundation.CurrencyAmountH\x00\x12-\n\x0bperson_name\x18\x05 \x01(\x0b\x32\x16.foundation.PersonNameH\x00\x12&\n\x07\x61\x64\x64ress\x18\x06 \x01(\x0b\x32\x13.foundation.AddressH\x00\x42\x0f\n\rtype_specific\"0\n\x04\x44\x61te\x12\x0c\n\x04year\x18\x01 \x02(\r\x12\r\n\x05month\x18\x02 \x02(\r\x12\x0b\n\x03\x64\x61y\x18\x03 \x02(\r\"m\n\x0e\x43urrencyAmount\x12\x35\n\x08\x63urrency\x18\x01 \x02(\x0e\x32#.foundation.CurrencyAmount.Currency\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x03\"\x14\n\x08\x43urrency\x12\x08\n\x03USD\x10\xc8\x06\"\x0c\n\nPersonName\"\t\n\x07\x41\x64\x64ress'
   ,
   dependencies=[geometry__pb2.DESCRIPTOR,])
 
@@ -41,8 +41,8 @@ _CURRENCYAMOUNT_CURRENCY = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1006,
-  serialized_end=1026,
+  serialized_start=976,
+  serialized_end=996,
 )
 _sym_db.RegisterEnumDescriptor(_CURRENCYAMOUNT_CURRENCY)
 
@@ -103,8 +103,8 @@ _ENTITY = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='children_id', full_name='foundation.Entity.children_id', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -161,7 +161,7 @@ _ENTITY = _descriptor.Descriptor(
     fields=[]),
   ],
   serialized_start=97,
-  serialized_end=379,
+  serialized_end=349,
 )
 
 
@@ -199,8 +199,8 @@ _WORD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=381,
-  serialized_end=433,
+  serialized_start=351,
+  serialized_end=403,
 )
 
 
@@ -231,8 +231,8 @@ _FILLERSTRING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=435,
-  serialized_end=463,
+  serialized_start=405,
+  serialized_end=433,
 )
 
 
@@ -277,8 +277,8 @@ _SUBWORD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=465,
-  serialized_end=531,
+  serialized_start=435,
+  serialized_end=501,
 )
 
 
@@ -316,8 +316,8 @@ _PAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=533,
-  serialized_end=591,
+  serialized_start=503,
+  serialized_end=561,
 )
 
 
@@ -388,8 +388,8 @@ _TEXT = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=594,
-  serialized_end=865,
+  serialized_start=564,
+  serialized_end=835,
 )
 
 
@@ -434,8 +434,8 @@ _DATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=867,
-  serialized_end=915,
+  serialized_start=837,
+  serialized_end=885,
 )
 
 
@@ -474,8 +474,8 @@ _CURRENCYAMOUNT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=917,
-  serialized_end=1026,
+  serialized_start=887,
+  serialized_end=996,
 )
 
 
@@ -499,8 +499,8 @@ _PERSONNAME = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1028,
-  serialized_end=1040,
+  serialized_start=998,
+  serialized_end=1010,
 )
 
 
@@ -524,11 +524,10 @@ _ADDRESS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1042,
-  serialized_end=1051,
+  serialized_start=1012,
+  serialized_end=1021,
 )
 
-_ENTITY.fields_by_name['children_id'].message_type = _ENTITYCOLLECTION
 _ENTITY.fields_by_name['word'].message_type = _WORD
 _ENTITY.fields_by_name['filler_string'].message_type = _FILLERSTRING
 _ENTITY.fields_by_name['sub_word'].message_type = _SUBWORD

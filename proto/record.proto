@@ -2,14 +2,11 @@ syntax = "proto2";
 
 package foundation;
 
-import "entity.proto";
-import "extraction.proto";
-
 message RecordContext {
   required string id = 1;
-  optional EntityCollection entities_id = 2;
-  optional EntityCollection collections_id = 3;
-  optional EntityCollection pages_id = 4;
+  optional string entities_id = 2;
+  optional string collections_id = 3;
+  optional string pages_id = 4;
   required string spatial_text_id = 5;
-  optional ExtractedValueCollection extracted_values_id = 6;
+  optional string extracted_values_id = 6;
 }

@@ -11,7 +11,6 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-import entity_pb2 as entity__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -20,9 +19,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10\x65xtraction.proto\x12\nfoundation\x1a\x0c\x65ntity.proto\"\x8b\x01\n\x0e\x45xtractedValue\x12\n\n\x02id\x18\x01 \x02(\t\x12\x12\n\nfield_name\x18\x02 \x02(\t\x12\x0c\n\x04type\x18\x03 \x02(\t\x12\x18\n\x10serialized_value\x18\x04 \x01(\x0c\x12\x31\n\x0b\x65ntities_id\x18\x05 \x01(\x0b\x32\x1c.foundation.EntityCollection\"C\n\x18\x45xtractedValueCollection\x12\n\n\x02id\x18\x01 \x02(\t\x12\x1b\n\x13\x65xtracted_value_ids\x18\x02 \x03(\t'
-  ,
-  dependencies=[entity__pb2.DESCRIPTOR,])
+  serialized_pb=b'\n\x10\x65xtraction.proto\x12\nfoundation\"m\n\x0e\x45xtractedValue\x12\n\n\x02id\x18\x01 \x02(\t\x12\x12\n\nfield_name\x18\x02 \x02(\t\x12\x0c\n\x04type\x18\x03 \x02(\t\x12\x18\n\x10serialized_value\x18\x04 \x01(\x0c\x12\x13\n\x0b\x65ntities_id\x18\x05 \x01(\t\"C\n\x18\x45xtractedValueCollection\x12\n\n\x02id\x18\x01 \x02(\t\x12\x1b\n\x13\x65xtracted_value_ids\x18\x02 \x03(\t'
+)
 
 
 
@@ -65,8 +63,8 @@ _EXTRACTEDVALUE = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='entities_id', full_name='foundation.ExtractedValue.entities_id', index=4,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -82,8 +80,8 @@ _EXTRACTEDVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=47,
-  serialized_end=186,
+  serialized_start=32,
+  serialized_end=141,
 )
 
 
@@ -121,11 +119,10 @@ _EXTRACTEDVALUECOLLECTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=188,
-  serialized_end=255,
+  serialized_start=143,
+  serialized_end=210,
 )
 
-_EXTRACTEDVALUE.fields_by_name['entities_id'].message_type = entity__pb2._ENTITYCOLLECTION
 DESCRIPTOR.message_types_by_name['ExtractedValue'] = _EXTRACTEDVALUE
 DESCRIPTOR.message_types_by_name['ExtractedValueCollection'] = _EXTRACTEDVALUECOLLECTION
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
