@@ -5,18 +5,25 @@ from itertools import chain
 from math import sqrt
 from typing import Dict, FrozenSet, Generator, Iterable, Optional
 
-from .meta import FoundationType
+from .proto import geometry_pb2
 
 @dataclass
-class Interval(FoundationType):
+class Interval:
   """Represents a closed interval."""
-
-  a: float
-  b: float
+  _proto: geometry_pb2.Interval
 
   @property
-  def type(self) -> str:
-    return "Interval"
+  def a(self) -> float:
+    return self._proto.a
+  
+  @property
+  def b(self) -> float:
+    return self._proto.b
+
+  @staticmethod
+  def build(a: float, b: float) -> 'Interval':
+    assert a <= b, "a must be less than or equal to b"
+    return Interval(geometry_pb2.Interval(a=a, b=b))
 
   @property
   def length(self) -> float:
@@ -53,8 +60,8 @@ class Interval(FoundationType):
     if intersection is None:
       return None
     if self.length == 0:
-      return Interval(0, 1)
-    return Interval(
+      return Interval.build(0, 1)
+    return Interval.build(
         (intersection.a - self.a) / self.length,
         (intersection.b - self.a) / self.length)
 
@@ -66,15 +73,11 @@ class Interval(FoundationType):
     return intersection.length / other.length if intersection else 0.0
 
   def eroded(self, amount: float) -> Optional['Interval']:
-    result = Interval(self.a + amount, self.b - amount)
+    result = Interval.build(self.a + amount, self.b - amount)
     return result if result.non_empty else None
 
   def expanded(self, amount: float) -> 'Interval':
-    return Interval(self.a - amount, self.b + amount)
-
-  @staticmethod
-  def build(a: float, b: float) -> Optional['Interval']:
-    return Interval(a, b) if a <= b else None
+    return Interval.build(self.a - amount, self.b + amount)
 
   @staticmethod
   def spanning(xs: Iterable[float]) -> 'Interval':
@@ -84,7 +87,7 @@ class Interval(FoundationType):
       # in this case the real line -- so it's not really right to return `None`.
       raise RuntimeError('cannot take the spanning interval '
         'of an empty list of points')
-    return Interval(min(xs), max(xs))
+    return Interval.build(min(xs), max(xs))
 
   @staticmethod
   def spanning_intervals(Is: Iterable['Interval']) -> 'Interval':
@@ -100,21 +103,21 @@ class Interval(FoundationType):
         'of an empty list of intervals')
     return Interval.build(max(I.a for I in Is), min(I.b for I in Is))
 
-  def as_dict(self) -> Dict:
-    return {
-      'a': self.a,
-      'b': self.b,
-    }
-
 @dataclass
-class Point(FoundationType):
-  x: float
-  y: float
-  page_index: int
+class Point:
+  _proto: geometry_pb2.Point
 
   @property
-  def type(self) -> str:
-    return "Point"
+  def x(self) -> float:
+    return self._proto.x
+  
+  @property
+  def y(self) -> float:
+    return self._proto.y
+
+  @staticmethod
+  def build(self, x: float, y: float) -> 'Point':
+    return Point(geometry_pb2.Point(x=x, y=y))
 
   def __str__(self) -> str:
     return "Point({}, {})".format(self.x, self.y)
@@ -140,18 +143,20 @@ class Point(FoundationType):
     return max(p.y for p in points)
 
 @dataclass
-class BBox(FoundationType):
-  ix: Interval
-  iy: Interval
-  page_index: int
+class Rectangle:
+  _proto: geometry_pb2.Rectangle
 
   @property
-  def type(self) -> str:
-    return "BBox"
+  def ix(self) -> Interval:
+    return Interval(self._proto.ix)
+
+  @property
+  def iy(self) -> Interval:
+    return Interval(self._proto.iy)
 
   @property
   def center(self) -> Point:
-    return Point(self.ix.center, self.iy.center, self.page_index)
+    return Point.build(self.ix.center, self.iy.center, self.page_index)
 
   @property
   def width(self) -> float:
@@ -177,54 +182,50 @@ class BBox(FoundationType):
     return p.x in self.ix and p.y in self.iy
 
   def __str__(self) -> str:
-    return "BBox(ix={}, iy={})".format(self.ix, self.iy)
+    return "Rectangle(ix={}, iy={})".format(self.ix, self.iy)
 
   def corners(self) -> Generator[Point, None, None]:
-    yield Point(self.ix.a, self.iy.a, self.page_index)
-    yield Point(self.ix.a, self.iy.b, self.page_index)
-    yield Point(self.ix.b, self.iy.b, self.page_index)
-    yield Point(self.ix.b, self.iy.a, self.page_index)
+    yield Point.build(self.ix.a, self.iy.a, self.page_index)
+    yield Point.build(self.ix.a, self.iy.b, self.page_index)
+    yield Point.build(self.ix.b, self.iy.b, self.page_index)
+    yield Point.build(self.ix.b, self.iy.a, self.page_index)
 
-  def contains_bbox(self, other: 'BBox') -> bool:
+  def contains_rectangle(self, other: 'Rectangle') -> bool:
     return self.ix.contains_interval(other.ix) and self.iy.contains_interval(
         other.iy)
 
-  def intersects_bbox(self, other: 'BBox') -> bool:
+  def intersects_rectangle(self, other: 'Rectangle') -> bool:
     return self.ix.intersects_interval(
         other.ix) and self.iy.intersects_interval(other.iy)
 
-  def percentages_overlapping(self, other: 'BBox') -> Optional['BBox']:
+  def percentages_overlapping(self, other: 'Rectangle') -> Optional['Rectangle']:
     """The percentage ranges of self which other overlaps.
     Example:
-      box1 = BBox(Interval(1, 3), Interval(2, 6))
-      box2 = BBox(Interval(0, 2), Interval(3, 5))
-      result = BBox(Interval(0, 0.5), Interval(0.25, 0.75))
+      box1 = Rectangle.build(Interval.build(1, 3), Interval.build(2, 6))
+      box2 = Rectangle.build(Interval.build(0, 2), Interval.build(3, 5))
+      result = Rectangle.build(Interval.build(0, 0.5), Interval.build(0.25, 0.75))
       assert box1.percentages_overlapping(box2) == result
     """
-    if self.page_index != other.page_index:
-      return None
-
-    return BBox.build(
+    return Rectangle.build(
         self.ix.percentages_overlapping(other.ix),
         self.iy.percentages_overlapping(other.iy),
         self.page_index)
 
   @staticmethod
-  def build(ix: Optional[Interval], iy: Optional[Interval], page_index: Optional[int]) -> Optional['BBox']:
-    return BBox(ix, iy, page_index) if ix is not None and iy is not None and page_index is not None else None
+  def build(ix: Interval, iy: Interval) -> 'Rectangle':
+    return Rectangle(geometry_pb2.Rectangle(ix._proto, iy._proto))
 
   @staticmethod
-  def spanning(ps: Iterable[Point]) -> 'BBox':
+  def spanning(ps: Iterable[Point]) -> 'Rectangle':
     ps = tuple(ps)
     if not ps:
       raise ValueError('Cannot get spanning of an empty iterrable')
-    ix = Interval(min(p.x for p in ps), max(p.x for p in ps))
-    iy = Interval(min(p.y for p in ps), max(p.y for p in ps))
-    page_index = ps[0].page_index
-    return BBox(ix, iy, page_index)
+    ix = Interval.build(min(p.x for p in ps), max(p.x for p in ps))
+    iy = Interval.build(min(p.y for p in ps), max(p.y for p in ps))
+    return Rectangle.build(ix, iy)
 
   @staticmethod
-  def intersection(bs: Iterable['BBox']) -> Optional['BBox']:
+  def intersection(bs: Iterable['Rectangle']) -> Optional['Rectangle']:
     bs = tuple(bs)
     if not bs:
       return None
@@ -232,29 +233,35 @@ class BBox(FoundationType):
     iy = Interval.intersection(b.iy for b in bs)
     if ix is None or iy is None:
       return None
-    return BBox(ix, iy, bs[0].page_index)
+    return Rectangle.build(ix, iy)
 
   @staticmethod
-  def union(bs: Iterable['BBox']) -> 'BBox':
-    """Returns the smallest bbox containing all bs (their union).
+  def union(bs: Iterable['Rectangle']) -> 'Rectangle':
+    """Returns the smallest rectangle containing all bs (their union).
 
     Returns:
       None if bs is an empty iterator.
     """
-    b = BBox.spanning(
+    b = Rectangle.spanning(
       chain.from_iterable([b.corners() for b in bs]))
     return b
 
   @staticmethod
-  def distance(b1: 'BBox', b2: 'BBox') -> float:
-    ix = Interval(min(b1.ix.a, b2.ix.a), max(b1.ix.b, b2.ix.b))
-    iy = Interval(min(b1.iy.a, b2.iy.a), max(b1.iy.b, b2.iy.b))
+  def distance(b1: 'Rectangle', b2: 'Rectangle') -> float:
+    ix = Interval.build(min(b1.ix.a, b2.ix.a), max(b1.ix.b, b2.ix.b))
+    iy = Interval.build(min(b1.iy.a, b2.iy.a), max(b1.iy.b, b2.iy.b))
     inner_width = max(0, ix.length - b1.ix.length - b2.ix.length)
     inner_height = max(0, iy.length - b1.iy.length - b2.iy.length)
     return sqrt(inner_width**2 + inner_height**2)
 
-  def as_dict(self) -> Dict:
-    return {
-      'ix': self.ix.as_dict(),
-      'iy': self.iy.as_dict(),
-    }
+@dataclass
+class BBox:
+  _proto: geometry_pb2.BBox
+
+  @property
+  def rectangle(self) -> Rectangle:
+    return Rectangle(self._proto.rectangle)
+
+  @property
+  def page_index(self) -> int:
+    return self._proto.page_index
