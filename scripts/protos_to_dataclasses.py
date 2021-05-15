@@ -49,5 +49,39 @@ for filename, module in modules.items():
 
   rtn[filename] = fields_by_type
 
-from pprint import pprint
-pprint(rtn)
+for filename, module in rtn.items():
+  classes = []
+  for name, fields in module.items():
+    field_strs = [
+      f"" if fieldname.endswith("_id") else f"  _{fieldname}: {fieldtype}"
+      for fieldname, fieldtype in fields.items()
+    ]
+    method_strs = [ \
+f'''  @property
+  def {fieldname}(self) -> {}
+''' if fieldname.endswith("_id") else f'''  @property
+  def {fieldname}(self) -> {fieldtype}:
+    return self._{fieldname}'''
+      for fieldname, fieldtype in fields.items()
+    ]
+    fields_str = '\n'.join(field_strs)
+    methods_str = '\n'.join(method_strs)
+    classes.append(\
+f'''
+@dataclass
+class {name}:
+{fields_str}
+
+{methods_str}
+''')
+  class_str = '\n\n'.join(classes)
+  out_str = \
+f'''
+from typing import Optional, Iterable
+from dataclasses import dataclass
+
+from .proto import {filename}_pb2
+
+{class_str}
+'''
+  print(out_str)

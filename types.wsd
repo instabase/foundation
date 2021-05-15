@@ -3,8 +3,10 @@
 title "Foundation Types"
 
 class Legend {
+  Serialized Fields
   - serialized_attribute: type
   ---
+  Interface (Python for now)
   - property: returned_type
   + method() -> returned_type
 }
@@ -41,7 +43,7 @@ package serialization {
 
 Legend -[hidden]->serialization
 
-package "targets (serializable)" as targets {
+package "targets" as targets {
   class TargetValue {
     - id: str
     - field_name: str
@@ -70,7 +72,7 @@ package "targets (serializable)" as targets {
   }
 }
 
-package "comparison (serializable)" as comparison {
+package "comparison" as comparison {
   class ComparedValueCollection {
     - id: str
     - compared_value_ids: List[str]
@@ -100,7 +102,7 @@ package "comparison (serializable)" as comparison {
   }
 }
 
-package "record (serializable)" as record {
+package "record" as record {
   class RecordContext {
     - id: str
     - entity_ids: List[str]
