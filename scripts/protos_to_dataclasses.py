@@ -49,19 +49,39 @@ for filename, module in modules.items():
 
   rtn[filename] = fields_by_type
 
+def attribute_definition(fieldname: str, fieldtype: str):
+  if fieldname.endswith("_id"):
+    return f"  _{fieldname[:-3]}: Tuple[TODO]"
+  elif fieldname.endswith("_ids"):
+    return f"  _{fieldname[:-4]}s: {fieldtype}"
+  else:
+    return f"  _{fieldname}: {fieldtype}"
+
+def property_definition(fieldname: str, fieldtype: str):
+  if fieldname.endswith("_id"):
+    return f'''  @property
+  def {fieldname[:-3]}(self) -> TODO:
+    return self._{fieldname[:-3]}
+'''
+  elif fieldname.endswith("_ids"):
+    return f'''  @property
+  def {fieldname[:-4]}s(self) -> Iterable[TODO]:
+    yield from self._{fieldname[:-4]}s
+'''
+  else:
+    return f'''  @property
+  def {fieldname}(self) -> {fieldtype}:
+    return self._{fieldname}'''
+
 for filename, module in rtn.items():
   classes = []
   for name, fields in module.items():
     field_strs = [
-      f"" if fieldname.endswith("_id") else f"  _{fieldname}: {fieldtype}"
+      attribute_definition(fieldname, fieldtype)
       for fieldname, fieldtype in fields.items()
     ]
-    method_strs = [ \
-f'''  @property
-  def {fieldname}(self) -> {}
-''' if fieldname.endswith("_id") else f'''  @property
-  def {fieldname}(self) -> {fieldtype}:
-    return self._{fieldname}'''
+    method_strs = [
+      property_definition(fieldname, fieldtype)
       for fieldname, fieldtype in fields.items()
     ]
     fields_str = '\n'.join(field_strs)
