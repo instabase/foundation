@@ -68,3 +68,14 @@ export function fieldValuePairs(
   return fields(schema).map(
     field => [field, DocTargets.value(docTargets, field)]);
 }
+
+export function fieldToTypeMap(
+  schema: t):
+    Record<string, Entity.Type>
+{
+  const result: Record<string, Entity.Type> = {}
+  schema.forEach(
+    ({field, type}) => result[field] = type
+  );
+  return result;
+}

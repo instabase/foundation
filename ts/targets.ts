@@ -4,11 +4,19 @@ import * as TargetValue from './targetValue';
 import * as TargetsSchema from './targetsSchema';
 import memo from './util/memo';
 
+type DocTagDescription = {
+  short: string | undefined;
+  long: string | undefined;
+};
+
+type DocTags = Partial<Record<string, DocTagDescription>>;
+
 export type t = {
   doc_targets: DocTargets.t[];
-  schema: TargetsSchema.t;
+  schema: TargetsSchema.t; /* FIXME: Delete this. */
+  doc_tags: DocTags;
+
   // output_config
-  // doc_tags
   // field_groups
 };
 
@@ -16,6 +24,7 @@ export function build(): t {
   return {
     doc_targets: [],
     schema: TargetsSchema.build(),
+    doc_tags: {},
   };
 }
 
@@ -39,13 +48,7 @@ export const asDict = memo(
   function(targets: t):
     Partial<Record<string, DocTargets.t>>
   {
-    const result: Partial<Record<string, DocTargets.t>> = {};
-    targets.doc_targets.forEach(
-      docTargets => {
-        result[docTargets.doc_name] = docTargets;
-      }
-    );
-    return result;
+    return DocTargets.asDocNameDict(targets.doc_targets);
   }
 );
 
@@ -70,4 +73,26 @@ export function fieldValuePairs(
       targets.schema,
       theseDocTargets);
   }
+}
+
+export function merged(existing: t, provided: t): t {
+  return {
+    doc_targets: DocTargets.merged(existing.doc_targets, provided.doc_targets),
+    schema: existing.schema, /* FIXME: Delete. */
+    doc_tags: mergedDocTags(existing.doc_tags, provided.doc_tags),
+  };
+}
+
+function mergedDocTags(existing: DocTags, provided: DocTags) {
+  const keys = new Set([...Object.keys(existing), ...Object.keys(provided)]);
+  const result: DocTags = {};
+  keys.forEach(
+    key => {
+      result[key] = {
+        short: existing[key]?.short || provided[key]?.short,
+        long: existing[key]?.long || provided[key]?.long,
+      };
+    }
+  );
+  return result;
 }
