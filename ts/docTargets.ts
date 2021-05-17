@@ -1,5 +1,6 @@
 import * as TargetAssignment from './targetAssignment';
 import * as TargetValue from './targetValue';
+import assert from './util/assert';
 import memo from './util/memo';
 
 export type t = {
@@ -69,6 +70,20 @@ export const asDict = memo(
   }
 );
 
+export const asDocNameDict = memo(
+  function(docTargets: t[]):
+    Partial<Record<string, t>>
+  {
+    const result: Partial<Record<string, t>> = {};
+    docTargets.forEach(
+      forDoc => {
+        result[forDoc.doc_name] = forDoc;
+      }
+    );
+    return result;
+  }
+);
+
 export const value = memo(
   function(
     docTargets: t,
@@ -78,3 +93,55 @@ export const value = memo(
     return asDict(docTargets)[field];
   }
 );
+
+export function merged(existing: t[], provided: t[]): t[] {
+  const existingDict = asDocNameDict(existing);
+  const providedDict = asDocNameDict(provided);
+  const docNames = new Set([...Object.keys(existingDict),
+                            ...Object.keys(providedDict)]);
+  return [...docNames].map(
+    docName => mergedForDoc(existingDict[docName], providedDict[docName])
+  );
+}
+
+function mergedForDoc(existing: t | undefined, provided: t | undefined): t {
+  if (!existing) {
+    assert(provided);
+    return provided;
+  } else if (!provided) {
+    assert(existing);
+    return existing;
+  } else {
+    assert(existing && provided);
+    return {
+      ...provided,
+      assignments:
+        TargetAssignment.merged(
+          existing.assignments,
+          provided.assignments),
+      doc_tags: [
+        ...(
+          /* Could preserve order ... if that matters. Whatever. */
+          new Set([...existing.doc_tags, ...provided.doc_tags])
+        )
+      ],
+      notes: mergeNotes(
+        provided.notes,
+        existing.notes),
+    };
+  }
+}
+
+function mergeNotes(s1: string | undefined, s2: string | undefined): string | undefined {
+  if (!s1) {
+    return s2;
+  } else if (!s2) {
+    return s2;
+  } else if (s1.includes(s2)) { // Hack?
+    return s1;
+  } else if (s2.includes(s1)) { // Hack?
+    return s2;
+  } else {
+    return `${s1}\n\n${s2}`;
+  }
+}

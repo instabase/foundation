@@ -163,3 +163,8 @@ export function isPositioned(targetValue: t): targetValue is PositionedTargetVal
   return isNonNull(targetValue) &&
          targetValue.words != undefined;
 }
+
+export function merged(existing: t, provided: t | undefined): t {
+  // Erm. What's the right way to do this merge?
+  return existing;
+}
