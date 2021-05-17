@@ -1,3 +1,1 @@
-import * as PackageJSON from '../package.json';
-
-export const FOUNDATION_VERSION = PackageJSON.version;
+export const FOUNDATION_VERSION = '0.0.10';
