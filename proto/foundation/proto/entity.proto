@@ -2,7 +2,7 @@ syntax = "proto2";
 
 package foundation;
 
-import "geometry.proto";
+import "foundation/proto/geometry.proto";
 
 message EntityCollection {
   required string id = 1;

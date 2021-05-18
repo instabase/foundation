@@ -2,11 +2,11 @@ syntax = "proto2";
 
 package foundation;
 
-import "entity.proto";
-import "extraction.proto";
-import "targets.proto";
-import "comparison.proto";
-import "record.proto";
+import "foundation/proto/entity.proto";
+import "foundation/proto/extraction.proto";
+import "foundation/proto/targets.proto";
+import "foundation/proto/comparison.proto";
+import "foundation/proto/record.proto";
 
 message SerializedTypeOneOf {
   oneof serialized_type_one_of {

@@ -13,16 +13,16 @@ class ExtractedValue:
   _reference_map: Mapping[str, Any]
 
   @property
-  def id(self) -> str:
+  def id(self) -> 'str':
     return self._proto.id
   @property
-  def field_name(self) -> str:
+  def field_name(self) -> 'str':
     return self._proto.field_name
   @property
-  def type(self) -> str:
+  def type(self) -> 'str':
     return self._proto.type
   @property
-  def serialized_value(self) -> bytes:
+  def serialized_value(self) -> 'bytes':
     return self._proto.serialized_value
   @property
   def entitys(self) -> Iterable[Entity]:
@@ -44,10 +44,10 @@ class ExtractedValueCollection:
   _reference_map: Mapping[str, Any]
 
   @property
-  def id(self) -> str:
+  def id(self) -> 'str':
     return self._proto.id
   @property
-  def extracted_values(self) -> Iterable[ExtractedValue]:
+  def extracted_values(self) -> Iterable['ExtractedValue']:
     yield from (self._reference_map[i] for i in self._proto.extracted_value_ids)
 
 

@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 from .proto import comparison_pb2
 
-from .extraction import ExtractedValue
 from .targets import TargetValue
+from .extraction import ExtractedValue
 
 
 @dataclass
@@ -14,7 +14,7 @@ class ComparedValue:
   _reference_map: Mapping[str, Any]
 
   @property
-  def id(self) -> str:
+  def id(self) -> 'str':
     return self._proto.id
   @property
   def target_value(self) -> TargetValue:
@@ -25,10 +25,10 @@ class ComparedValue:
     return self._reference_map[self._proto.extracted_value_id]
 
   @property
-  def score(self) -> float:
+  def score(self) -> 'float':
     return self._proto.score
   @property
-  def message(self) -> str:
+  def message(self) -> 'str':
     return self._proto.message
 
   def as_proto(self) -> comparison_pb2.ComparedValue:
@@ -46,10 +46,10 @@ class ComparedValueCollection:
   _reference_map: Mapping[str, Any]
 
   @property
-  def id(self) -> str:
+  def id(self) -> 'str':
     return self._proto.id
   @property
-  def compared_values(self) -> Iterable[ComparedValue]:
+  def compared_values(self) -> Iterable['ComparedValue']:
     yield from (self._reference_map[i] for i in self._proto.compared_value_ids)
 
 

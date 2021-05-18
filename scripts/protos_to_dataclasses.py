@@ -9,7 +9,6 @@ modules = {
   "targets": targets_pb2,
   "record": record_pb2,
   "comparison": comparison_pb2,
-  "serialization": serialization_pb2
 }
 
 rtn = {}
@@ -100,6 +99,8 @@ def property_definition(fieldname: str, fieldtype: str, mutable_imports: Set[str
       import_from = filenames_by_type[field_type]
       if import_from != current_module and import_from is not None:
         mutable_imports.add(f"from .{import_from} import {field_type}")
+      else:
+        field_type = f"'{field_type}'"
     except KeyError as e:
       print(fieldname, fieldtype)
       raise(e)
@@ -116,7 +117,9 @@ def property_definition(fieldname: str, fieldtype: str, mutable_imports: Set[str
       print(fieldname, fieldtype)
       raise(e)
     if import_from != current_module and import_from is not None:
-        mutable_imports.add(f"from .{import_from} import {field_type}")
+      mutable_imports.add(f"from .{import_from} import {field_type}")
+    else:
+      field_type = f"'{field_type}'"
     return f'''  @property
   def {id_free_field_name}s(self) -> Iterable[{field_type}]:
     yield from (self._reference_map[i] for i in self._proto.{fieldname})
@@ -129,6 +132,8 @@ def property_definition(fieldname: str, fieldtype: str, mutable_imports: Set[str
       if import_from != current_module and import_from is not None:
         mutable_imports.add(f"from .{import_from} import {field_type}")
         return_line = f"{field_type}(self._proto.{fieldname}, self._reference_map)"
+      else:
+        field_type = f"'{field_type}'"
     except KeyError as e:
       print(fieldname, fieldtype)
       raise(e)

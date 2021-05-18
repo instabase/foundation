@@ -13,16 +13,16 @@ class TargetValue:
   _reference_map: Mapping[str, Any]
 
   @property
-  def id(self) -> str:
+  def id(self) -> 'str':
     return self._proto.id
   @property
-  def field_name(self) -> str:
+  def field_name(self) -> 'str':
     return self._proto.field_name
   @property
   def bbox(self) -> BBox:
     return BBox(self._proto.bbox, self._reference_map)
   @property
-  def value(self) -> str:
+  def value(self) -> 'str':
     return self._proto.value
 
   def as_proto(self) -> targets_pb2.TargetValue:
@@ -40,10 +40,10 @@ class TargetValueCollection:
   _reference_map: Mapping[str, Any]
 
   @property
-  def id(self) -> str:
+  def id(self) -> 'str':
     return self._proto.id
   @property
-  def target_values(self) -> Iterable[TargetValue]:
+  def target_values(self) -> Iterable['TargetValue']:
     yield from (self._reference_map[i] for i in self._proto.target_value_ids)
 
 

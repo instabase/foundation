@@ -29,10 +29,10 @@ class CurrencyAmount:
   _reference_map: Mapping[str, Any]
 
   @property
-  def currency(self) -> int:
+  def currency(self) -> 'int':
     return self._proto.currency
   @property
-  def amount(self) -> int:
+  def amount(self) -> 'int':
     return self._proto.amount
 
   def as_proto(self) -> entity_pb2.CurrencyAmount:
@@ -50,13 +50,13 @@ class Date:
   _reference_map: Mapping[str, Any]
 
   @property
-  def year(self) -> int:
+  def year(self) -> 'int':
     return self._proto.year
   @property
-  def month(self) -> int:
+  def month(self) -> 'int':
     return self._proto.month
   @property
-  def day(self) -> int:
+  def day(self) -> 'int':
     return self._proto.day
 
   def as_proto(self) -> entity_pb2.Date:
@@ -74,26 +74,26 @@ class Entity:
   _reference_map: Mapping[str, Any]
 
   @property
-  def id(self) -> str:
+  def id(self) -> 'str':
     return self._proto.id
   @property
-  def children(self) -> Entity:
+  def children(self) -> 'Entity':
     return self._reference_map[self._proto.children_id]
 
   @property
-  def word(self) -> Word:
+  def word(self) -> 'Word':
     return self._proto.word
   @property
-  def filler_string(self) -> FillerString:
+  def filler_string(self) -> 'FillerString':
     return self._proto.filler_string
   @property
-  def sub_word(self) -> SubWord:
+  def sub_word(self) -> 'SubWord':
     return self._proto.sub_word
   @property
-  def page(self) -> Page:
+  def page(self) -> 'Page':
     return self._proto.page
   @property
-  def text(self) -> Text:
+  def text(self) -> 'Text':
     return self._proto.text
 
   def as_proto(self) -> entity_pb2.Entity:
@@ -111,10 +111,10 @@ class EntityCollection:
   _reference_map: Mapping[str, Any]
 
   @property
-  def id(self) -> str:
+  def id(self) -> 'str':
     return self._proto.id
   @property
-  def entitys(self) -> Iterable[Entity]:
+  def entitys(self) -> Iterable['Entity']:
     yield from (self._reference_map[i] for i in self._proto.entity_ids)
 
 
@@ -133,7 +133,7 @@ class FillerString:
   _reference_map: Mapping[str, Any]
 
   @property
-  def text(self) -> str:
+  def text(self) -> 'str':
     return self._proto.text
 
   def as_proto(self) -> entity_pb2.FillerString:
@@ -154,7 +154,7 @@ class Page:
   def bbox(self) -> BBox:
     return BBox(self._proto.bbox, self._reference_map)
   @property
-  def image_path(self) -> str:
+  def image_path(self) -> 'str':
     return self._proto.image_path
 
   def as_proto(self) -> entity_pb2.Page:
@@ -188,14 +188,14 @@ class SubWord:
   _reference_map: Mapping[str, Any]
 
   @property
-  def word(self) -> Word:
+  def word(self) -> 'Word':
     return self._reference_map[self._proto.word_id]
 
   @property
-  def start_index(self) -> int:
+  def start_index(self) -> 'int':
     return self._proto.start_index
   @property
-  def end_index(self) -> int:
+  def end_index(self) -> 'int':
     return self._proto.end_index
 
   def as_proto(self) -> entity_pb2.SubWord:
@@ -213,23 +213,23 @@ class Text:
   _reference_map: Mapping[str, Any]
 
   @property
-  def words(self) -> Iterable[Word]:
+  def words(self) -> Iterable['Word']:
     yield from (self._reference_map[i] for i in self._proto.word_ids)
 
   @property
-  def likeness_score(self) -> float:
+  def likeness_score(self) -> 'float':
     return self._proto.likeness_score
   @property
-  def date(self) -> Date:
+  def date(self) -> 'Date':
     return self._proto.date
   @property
-  def currency_amount(self) -> CurrencyAmount:
+  def currency_amount(self) -> 'CurrencyAmount':
     return self._proto.currency_amount
   @property
-  def person_name(self) -> PersonName:
+  def person_name(self) -> 'PersonName':
     return self._proto.person_name
   @property
-  def address(self) -> Address:
+  def address(self) -> 'Address':
     return self._proto.address
 
   def as_proto(self) -> entity_pb2.Text:
@@ -250,7 +250,7 @@ class Word:
   def bbox(self) -> BBox:
     return BBox(self._proto.bbox, self._reference_map)
   @property
-  def text(self) -> str:
+  def text(self) -> 'str':
     return self._proto.text
 
   def as_proto(self) -> entity_pb2.Word:

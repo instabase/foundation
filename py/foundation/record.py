@@ -4,10 +4,10 @@ from dataclasses import dataclass
 
 from .proto import record_pb2
 
-from .extraction import ExtractedValue
-from .entity import Page
-from .entity import Text
 from .entity import Entity
+from .extraction import ExtractedValue
+from .entity import Text
+from .entity import Page
 
 
 @dataclass
@@ -16,7 +16,7 @@ class RecordContext:
   _reference_map: Mapping[str, Any]
 
   @property
-  def id(self) -> str:
+  def id(self) -> 'str':
     return self._proto.id
   @property
   def entitys(self) -> Iterable[Entity]:

@@ -13,10 +13,10 @@ class BBox:
   _reference_map: Mapping[str, Any]
 
   @property
-  def rectangle(self) -> Rectangle:
+  def rectangle(self) -> 'Rectangle':
     return self._proto.rectangle
   @property
-  def page_index(self) -> int:
+  def page_index(self) -> 'int':
     return self._proto.page_index
 
   def as_proto(self) -> geometry_pb2.BBox:
@@ -34,10 +34,10 @@ class Interval:
   _reference_map: Mapping[str, Any]
 
   @property
-  def a(self) -> float:
+  def a(self) -> 'float':
     return self._proto.a
   @property
-  def b(self) -> float:
+  def b(self) -> 'float':
     return self._proto.b
 
   def as_proto(self) -> geometry_pb2.Interval:
@@ -55,10 +55,10 @@ class Point:
   _reference_map: Mapping[str, Any]
 
   @property
-  def x(self) -> float:
+  def x(self) -> 'float':
     return self._proto.x
   @property
-  def y(self) -> float:
+  def y(self) -> 'float':
     return self._proto.y
 
   def as_proto(self) -> geometry_pb2.Point:
@@ -76,10 +76,10 @@ class Rectangle:
   _reference_map: Mapping[str, Any]
 
   @property
-  def ix(self) -> Interval:
+  def ix(self) -> 'Interval':
     return self._proto.ix
   @property
-  def iy(self) -> Interval:
+  def iy(self) -> 'Interval':
     return self._proto.iy
 
   def as_proto(self) -> geometry_pb2.Rectangle:
