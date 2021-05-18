@@ -2,10 +2,10 @@
 from typing import Optional, Iterable, Any, Mapping
 from dataclasses import dataclass
 
-from .proto import comparison_pb2
+from foundation.proto import comparison_pb2
 
-from .targets import TargetValue
-from .extraction import ExtractedValue
+from foundation.extraction import ExtractedValue
+from foundation.targets import TargetValue
 
 
 @dataclass
@@ -35,7 +35,7 @@ class ComparedValue:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: comparison_pb2.ComparedValue, reference_map: Mapping[str, Any]):
+  def from_proto(proto: comparison_pb2.ComparedValue, reference_map: Mapping[str, Any]) -> 'ComparedValue':
     return ComparedValue(proto, reference_map)
 
 
@@ -57,6 +57,6 @@ class ComparedValueCollection:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: comparison_pb2.ComparedValueCollection, reference_map: Mapping[str, Any]):
+  def from_proto(proto: comparison_pb2.ComparedValueCollection, reference_map: Mapping[str, Any]) -> 'ComparedValueCollection':
     return ComparedValueCollection(proto, reference_map)
 

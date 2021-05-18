@@ -2,9 +2,9 @@
 from typing import Optional, Iterable, Any, Mapping
 from dataclasses import dataclass
 
-from .proto import targets_pb2
+from foundation.proto import targets_pb2
 
-from .geometry import BBox
+from foundation.geometry import BBox
 
 
 @dataclass
@@ -29,7 +29,7 @@ class TargetValue:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: targets_pb2.TargetValue, reference_map: Mapping[str, Any]):
+  def from_proto(proto: targets_pb2.TargetValue, reference_map: Mapping[str, Any]) -> 'TargetValue':
     return TargetValue(proto, reference_map)
 
 
@@ -51,6 +51,6 @@ class TargetValueCollection:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: targets_pb2.TargetValueCollection, reference_map: Mapping[str, Any]):
+  def from_proto(proto: targets_pb2.TargetValueCollection, reference_map: Mapping[str, Any]) -> 'TargetValueCollection':
     return TargetValueCollection(proto, reference_map)
 

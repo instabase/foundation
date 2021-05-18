@@ -8,7 +8,6 @@ from google.protobuf.descriptor import (
 )
 
 from google.protobuf.internal.containers import (
-    RepeatedCompositeFieldContainer as google___protobuf___internal___containers___RepeatedCompositeFieldContainer,
     RepeatedScalarFieldContainer as google___protobuf___internal___containers___RepeatedScalarFieldContainer,
 )
 
@@ -117,11 +116,11 @@ class Page(google___protobuf___message___Message):
     image_path = ... # type: typing___Text
 
     @property
-    def bbox(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[foundation___proto___geometry_pb2___BBox]: ...
+    def bbox(self) -> foundation___proto___geometry_pb2___BBox: ...
 
     def __init__(self,
+        bbox : foundation___proto___geometry_pb2___BBox,
         image_path : typing___Text,
-        bbox : typing___Optional[typing___Iterable[foundation___proto___geometry_pb2___BBox]] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> Page: ...

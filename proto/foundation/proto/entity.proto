@@ -35,7 +35,7 @@ message SubWord {
 }
 
 message Page {
-  repeated BBox bbox = 1;
+  required BBox bbox = 1;
   required string image_path = 2;
 }
 

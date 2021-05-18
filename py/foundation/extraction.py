@@ -2,9 +2,9 @@
 from typing import Optional, Iterable, Any, Mapping
 from dataclasses import dataclass
 
-from .proto import extraction_pb2
+from foundation.proto import extraction_pb2
 
-from .entity import Entity
+from foundation.entity import Entity
 
 
 @dataclass
@@ -33,7 +33,7 @@ class ExtractedValue:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: extraction_pb2.ExtractedValue, reference_map: Mapping[str, Any]):
+  def from_proto(proto: extraction_pb2.ExtractedValue, reference_map: Mapping[str, Any]) -> 'ExtractedValue':
     return ExtractedValue(proto, reference_map)
 
 
@@ -55,6 +55,6 @@ class ExtractedValueCollection:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: extraction_pb2.ExtractedValueCollection, reference_map: Mapping[str, Any]):
+  def from_proto(proto: extraction_pb2.ExtractedValueCollection, reference_map: Mapping[str, Any]) -> 'ExtractedValueCollection':
     return ExtractedValueCollection(proto, reference_map)
 

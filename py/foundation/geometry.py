@@ -2,7 +2,7 @@
 from typing import Optional, Iterable, Any, Mapping
 from dataclasses import dataclass
 
-from .proto import geometry_pb2
+from foundation.proto import geometry_pb2
 
 
 
@@ -14,7 +14,7 @@ class BBox:
 
   @property
   def rectangle(self) -> 'Rectangle':
-    return self._proto.rectangle
+    return Rectangle(self._proto.rectangle, self._reference_map)
   @property
   def page_index(self) -> 'int':
     return self._proto.page_index
@@ -23,7 +23,7 @@ class BBox:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: geometry_pb2.BBox, reference_map: Mapping[str, Any]):
+  def from_proto(proto: geometry_pb2.BBox, reference_map: Mapping[str, Any]) -> 'BBox':
     return BBox(proto, reference_map)
 
 
@@ -44,7 +44,7 @@ class Interval:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: geometry_pb2.Interval, reference_map: Mapping[str, Any]):
+  def from_proto(proto: geometry_pb2.Interval, reference_map: Mapping[str, Any]) -> 'Interval':
     return Interval(proto, reference_map)
 
 
@@ -65,7 +65,7 @@ class Point:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: geometry_pb2.Point, reference_map: Mapping[str, Any]):
+  def from_proto(proto: geometry_pb2.Point, reference_map: Mapping[str, Any]) -> 'Point':
     return Point(proto, reference_map)
 
 
@@ -77,15 +77,15 @@ class Rectangle:
 
   @property
   def ix(self) -> 'Interval':
-    return self._proto.ix
+    return Interval(self._proto.ix, self._reference_map)
   @property
   def iy(self) -> 'Interval':
-    return self._proto.iy
+    return Interval(self._proto.iy, self._reference_map)
 
   def as_proto(self) -> geometry_pb2.Rectangle:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: geometry_pb2.Rectangle, reference_map: Mapping[str, Any]):
+  def from_proto(proto: geometry_pb2.Rectangle, reference_map: Mapping[str, Any]) -> 'Rectangle':
     return Rectangle(proto, reference_map)
 

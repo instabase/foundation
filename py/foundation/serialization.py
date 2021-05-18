@@ -40,6 +40,7 @@ class Serialized(Mapping[str, SerializedTypeOneOf]):
   def __getitem__(self, k: str) -> SerializedTypeOneOf:
       item = self._proto.data[k]
       item_type = item.WhichOneof("serialized_type_one_of")
+      return None
 
   def as_proto(self) -> serialization_pb2.Serialized:
     return self._proto

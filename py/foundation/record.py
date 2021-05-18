@@ -2,12 +2,12 @@
 from typing import Optional, Iterable, Any, Mapping
 from dataclasses import dataclass
 
-from .proto import record_pb2
+from foundation.proto import record_pb2
 
-from .entity import Entity
-from .extraction import ExtractedValue
-from .entity import Text
-from .entity import Page
+from foundation.extraction import ExtractedValue
+from foundation.entity import Text
+from foundation.entity import Entity
+from foundation.entity import Page
 
 
 @dataclass
@@ -43,6 +43,6 @@ class RecordContext:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: record_pb2.RecordContext, reference_map: Mapping[str, Any]):
+  def from_proto(proto: record_pb2.RecordContext, reference_map: Mapping[str, Any]) -> 'RecordContext':
     return RecordContext(proto, reference_map)
 

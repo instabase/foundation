@@ -2,9 +2,9 @@
 from typing import Optional, Iterable, Any, Mapping
 from dataclasses import dataclass
 
-from .proto import entity_pb2
+from foundation.proto import entity_pb2
 
-from .geometry import BBox
+from foundation.geometry import BBox
 
 
 @dataclass
@@ -18,7 +18,7 @@ class Address:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: entity_pb2.Address, reference_map: Mapping[str, Any]):
+  def from_proto(proto: entity_pb2.Address, reference_map: Mapping[str, Any]) -> 'Address':
     return Address(proto, reference_map)
 
 
@@ -39,7 +39,7 @@ class CurrencyAmount:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: entity_pb2.CurrencyAmount, reference_map: Mapping[str, Any]):
+  def from_proto(proto: entity_pb2.CurrencyAmount, reference_map: Mapping[str, Any]) -> 'CurrencyAmount':
     return CurrencyAmount(proto, reference_map)
 
 
@@ -63,7 +63,7 @@ class Date:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: entity_pb2.Date, reference_map: Mapping[str, Any]):
+  def from_proto(proto: entity_pb2.Date, reference_map: Mapping[str, Any]) -> 'Date':
     return Date(proto, reference_map)
 
 
@@ -82,25 +82,25 @@ class Entity:
 
   @property
   def word(self) -> 'Word':
-    return self._proto.word
+    return Word(self._proto.word, self._reference_map)
   @property
   def filler_string(self) -> 'FillerString':
-    return self._proto.filler_string
+    return FillerString(self._proto.filler_string, self._reference_map)
   @property
   def sub_word(self) -> 'SubWord':
-    return self._proto.sub_word
+    return SubWord(self._proto.sub_word, self._reference_map)
   @property
   def page(self) -> 'Page':
-    return self._proto.page
+    return Page(self._proto.page, self._reference_map)
   @property
   def text(self) -> 'Text':
-    return self._proto.text
+    return Text(self._proto.text, self._reference_map)
 
   def as_proto(self) -> entity_pb2.Entity:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: entity_pb2.Entity, reference_map: Mapping[str, Any]):
+  def from_proto(proto: entity_pb2.Entity, reference_map: Mapping[str, Any]) -> 'Entity':
     return Entity(proto, reference_map)
 
 
@@ -122,7 +122,7 @@ class EntityCollection:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: entity_pb2.EntityCollection, reference_map: Mapping[str, Any]):
+  def from_proto(proto: entity_pb2.EntityCollection, reference_map: Mapping[str, Any]) -> 'EntityCollection':
     return EntityCollection(proto, reference_map)
 
 
@@ -140,7 +140,7 @@ class FillerString:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: entity_pb2.FillerString, reference_map: Mapping[str, Any]):
+  def from_proto(proto: entity_pb2.FillerString, reference_map: Mapping[str, Any]) -> 'FillerString':
     return FillerString(proto, reference_map)
 
 
@@ -161,7 +161,7 @@ class Page:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: entity_pb2.Page, reference_map: Mapping[str, Any]):
+  def from_proto(proto: entity_pb2.Page, reference_map: Mapping[str, Any]) -> 'Page':
     return Page(proto, reference_map)
 
 
@@ -177,7 +177,7 @@ class PersonName:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: entity_pb2.PersonName, reference_map: Mapping[str, Any]):
+  def from_proto(proto: entity_pb2.PersonName, reference_map: Mapping[str, Any]) -> 'PersonName':
     return PersonName(proto, reference_map)
 
 
@@ -202,7 +202,7 @@ class SubWord:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: entity_pb2.SubWord, reference_map: Mapping[str, Any]):
+  def from_proto(proto: entity_pb2.SubWord, reference_map: Mapping[str, Any]) -> 'SubWord':
     return SubWord(proto, reference_map)
 
 
@@ -221,22 +221,22 @@ class Text:
     return self._proto.likeness_score
   @property
   def date(self) -> 'Date':
-    return self._proto.date
+    return Date(self._proto.date, self._reference_map)
   @property
   def currency_amount(self) -> 'CurrencyAmount':
-    return self._proto.currency_amount
+    return CurrencyAmount(self._proto.currency_amount, self._reference_map)
   @property
   def person_name(self) -> 'PersonName':
-    return self._proto.person_name
+    return PersonName(self._proto.person_name, self._reference_map)
   @property
   def address(self) -> 'Address':
-    return self._proto.address
+    return Address(self._proto.address, self._reference_map)
 
   def as_proto(self) -> entity_pb2.Text:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: entity_pb2.Text, reference_map: Mapping[str, Any]):
+  def from_proto(proto: entity_pb2.Text, reference_map: Mapping[str, Any]) -> 'Text':
     return Text(proto, reference_map)
 
 
@@ -257,6 +257,6 @@ class Word:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: entity_pb2.Word, reference_map: Mapping[str, Any]):
+  def from_proto(proto: entity_pb2.Word, reference_map: Mapping[str, Any]) -> 'Word':
     return Word(proto, reference_map)
 

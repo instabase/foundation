@@ -98,7 +98,7 @@ def property_definition(fieldname: str, fieldtype: str, mutable_imports: Set[str
     try:
       import_from = filenames_by_type[field_type]
       if import_from != current_module and import_from is not None:
-        mutable_imports.add(f"from .{import_from} import {field_type}")
+        mutable_imports.add(f"from foundation.{import_from} import {field_type}")
       else:
         field_type = f"'{field_type}'"
     except KeyError as e:
@@ -117,7 +117,7 @@ def property_definition(fieldname: str, fieldtype: str, mutable_imports: Set[str
       print(fieldname, fieldtype)
       raise(e)
     if import_from != current_module and import_from is not None:
-      mutable_imports.add(f"from .{import_from} import {field_type}")
+      mutable_imports.add(f"from foundation.{import_from} import {field_type}")
     else:
       field_type = f"'{field_type}'"
     return f'''  @property
@@ -129,9 +129,10 @@ def property_definition(fieldname: str, fieldtype: str, mutable_imports: Set[str
     try:
       import_from = filenames_by_type[field_type]
       return_line = f"self._proto.{fieldname}"
-      if import_from != current_module and import_from is not None:
-        mutable_imports.add(f"from .{import_from} import {field_type}")
+      if import_from is not None:
         return_line = f"{field_type}(self._proto.{fieldname}, self._reference_map)"
+      if import_from != current_module and import_from is not None:
+        mutable_imports.add(f"from foundation.{import_from} import {field_type}")
       else:
         field_type = f"'{field_type}'"
     except KeyError as e:
@@ -170,7 +171,7 @@ class {name}:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: {filename}_pb2.{name}, reference_map: Mapping[str, Any]):
+  def from_proto(proto: {filename}_pb2.{name}, reference_map: Mapping[str, Any]) -> '{name}':
     return {name}(proto, reference_map)
 ''')
   class_str = '\n\n'.join(classes)
@@ -180,7 +181,7 @@ f'''
 from typing import Optional, Iterable, Any, Mapping
 from dataclasses import dataclass
 
-from .proto import {filename}_pb2
+from foundation.proto import {filename}_pb2
 
 {imports_str}
 
