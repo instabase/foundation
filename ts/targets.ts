@@ -1,7 +1,9 @@
 import * as Doc from './doc';
 import * as DocTargets from './docTargets';
+import * as Schema from './targetsSchema';
 import * as TargetValue from './targetValue';
-import * as TargetsSchema from './targetsSchema';
+import * as Entity from './entity';
+
 import memo from './util/memo';
 
 type DocTagDescription = {
@@ -13,7 +15,7 @@ type DocTags = Partial<Record<string, DocTagDescription>>;
 
 export type t = {
   doc_targets: DocTargets.t[];
-  schema: TargetsSchema.t; /* FIXME: Delete this. */
+  schema: Schema.t;
   doc_tags: DocTags;
 
   // output_config
@@ -23,7 +25,7 @@ export type t = {
 export function build(): t {
   return {
     doc_targets: [],
-    schema: TargetsSchema.build(),
+    schema: Schema.build(),
     doc_tags: {},
   };
 }
@@ -53,11 +55,11 @@ export const asDict = memo(
 );
 
 export function fields(targets: t): string[] {
-  return TargetsSchema.fields(targets.schema);
+  return Schema.fields(targets.schema);
 }
 
 export function hasField(targets: t, field: string): boolean {
-  return TargetsSchema.hasField(targets.schema, field);
+  return Schema.hasField(targets.schema, field);
 }
 
 export type FieldValuePair = [string, TargetValue.t | undefined];
@@ -69,7 +71,7 @@ export function fieldValuePairs(
 {
   const theseDocTargets = docTargets(targets, docName);
   if (theseDocTargets != undefined) {
-    return TargetsSchema.fieldValuePairs(
+    return Schema.fieldValuePairs(
       targets.schema,
       theseDocTargets);
   }
@@ -78,9 +80,31 @@ export function fieldValuePairs(
 export function merged(existing: t, provided: t): t {
   return {
     doc_targets: DocTargets.merged(existing.doc_targets, provided.doc_targets),
-    schema: existing.schema, /* FIXME: Delete. */
+    schema: Schema.merged(existing.schema, provided.schema),
     doc_tags: mergedDocTags(existing.doc_tags, provided.doc_tags),
   };
+}
+
+export function populateSchema(targets: t): t {
+  const schema = [...targets.schema];
+
+  targets.doc_targets.forEach(
+    docTargets => {
+      docTargets.assignments.forEach(
+        ({field}) => {
+          if (!Schema.hasField(schema, field)) {
+            schema.push({
+              field,
+              type: Entity.heuristicDefaultType(field),
+              is_label: Entity.heuristicDefaultIsLabel(field),
+            });
+          }
+        }
+      );
+    }
+  );
+
+  return {...targets, schema};
 }
 
 function mergedDocTags(existing: DocTags, provided: DocTags) {

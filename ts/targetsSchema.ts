@@ -1,6 +1,6 @@
 import * as Entity from './entity';
 import * as Targets from './targets';
-import * as TargetsSchema from './targetsSchema';
+import * as Schema from './targetsSchema';
 import * as DocTargets from './docTargets';
 import memo from './util/memo';
 
@@ -20,9 +20,11 @@ export function build(): t {
   return [];
 }
 
-export function fields(schema: t): string[] {
-  return schema.map(entry => entry.field);
-}
+export const fields = memo(
+  function(schema: t): string[] {
+    return schema.map(entry => entry.field);
+  }
+);
 
 export function entries(schema: t): Entry[] {
   return schema;
@@ -78,4 +80,13 @@ export function fieldToTypeMap(
     ({field, type}) => result[field] = type
   );
   return result;
+}
+
+export function merged(existing: t, provided: t): t {
+  // Resolving collisions in favor of the existing schema entries.
+  // XXX: Is this correct?
+  return [
+    ...existing,
+    ...provided.filter(entry => !fields(existing).includes(entry.field)),
+  ];
 }

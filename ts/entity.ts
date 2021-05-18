@@ -30,3 +30,24 @@ export const DefaultType: Type = 'Text';
 export function text(entity: t): string | undefined {
   return entity.text;
 }
+
+export function heuristicDefaultType(field: string): Type {
+  if (field.endsWith('date')) {
+    return 'Date';
+  } else if (field.endsWith('address')) {
+    // return 'Address'; // Address finding is janky ATM.
+    return 'Text';
+  } else if (field.endsWith('name')) {
+    // return 'PersonName'; // Person name finding is janky ATM.
+    return 'Text';
+  } else if (field.endsWith('amount')) {
+    return 'DollarAmount';
+  } else {
+    return 'Text';
+  }
+}
+
+export function heuristicDefaultIsLabel(field: string): boolean {
+  return heuristicDefaultType(field) == 'Text' &&
+         field.includes('label');
+}
