@@ -20,7 +20,7 @@ class TargetValue:
     return self._proto.field_name
   @property
   def bbox(self) -> BBox:
-    return self._proto.bbox
+    return BBox(self._proto.bbox, self._reference_map)
   @property
   def value(self) -> str:
     return self._proto.value

@@ -152,7 +152,7 @@ class Page:
 
   @property
   def bbox(self) -> BBox:
-    return self._proto.bbox
+    return BBox(self._proto.bbox, self._reference_map)
   @property
   def image_path(self) -> str:
     return self._proto.image_path
@@ -248,7 +248,7 @@ class Word:
 
   @property
   def bbox(self) -> BBox:
-    return self._proto.bbox
+    return BBox(self._proto.bbox, self._reference_map)
   @property
   def text(self) -> str:
     return self._proto.text

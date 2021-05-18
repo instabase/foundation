@@ -13,7 +13,7 @@ class BBox:
   _reference_map: Mapping[str, Any]
 
   @property
-  def rectangle(self) -> 'Rectangle':
+  def rectangle(self) -> Rectangle:
     return self._proto.rectangle
   @property
   def page_index(self) -> int:

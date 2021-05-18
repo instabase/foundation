@@ -4,10 +4,10 @@ from dataclasses import dataclass
 
 from .proto import record_pb2
 
-from .entity import Page
-from .entity import Entity
-from .entity import Text
 from .extraction import ExtractedValue
+from .entity import Page
+from .entity import Text
+from .entity import Entity
 
 
 @dataclass

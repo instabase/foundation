@@ -125,15 +125,17 @@ def property_definition(fieldname: str, fieldtype: str, mutable_imports: Set[str
     field_type = SPECIAL_CASES.get(fieldtype, fieldtype)
     try:
       import_from = filenames_by_type[field_type]
+      return_line = f"self._proto.{fieldname}"
       if import_from != current_module and import_from is not None:
         mutable_imports.add(f"from .{import_from} import {field_type}")
+        return_line = f"{field_type}(self._proto.{fieldname}, self._reference_map)"
     except KeyError as e:
       print(fieldname, fieldtype)
       raise(e)
 
     return f'''  @property
   def {fieldname}(self) -> {field_type}:
-    return self._proto.{fieldname}'''
+    return {return_line}'''
 
 for filename, module in rtn.items():
   classes = []
