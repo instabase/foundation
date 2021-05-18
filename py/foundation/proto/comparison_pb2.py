@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10\x63omparison.proto\x12\nfoundation\"d\n\rComparedValue\x12\n\n\x02id\x18\x01 \x02(\t\x12\x11\n\ttarget_id\x18\x02 \x02(\t\x12\x14\n\x0c\x65xtracted_id\x18\x03 \x02(\t\x12\r\n\x05score\x18\x04 \x01(\x02\x12\x0f\n\x07message\x18\x05 \x01(\t\"A\n\x17\x43omparedValueCollection\x12\n\n\x02id\x18\x01 \x02(\t\x12\x1a\n\x12\x63ompared_value_ids\x18\x02 \x02(\t'
+  serialized_pb=b'\n\x10\x63omparison.proto\x12\nfoundation\"p\n\rComparedValue\x12\n\n\x02id\x18\x01 \x02(\t\x12\x17\n\x0ftarget_value_id\x18\x02 \x02(\t\x12\x1a\n\x12\x65xtracted_value_id\x18\x03 \x02(\t\x12\r\n\x05score\x18\x04 \x01(\x02\x12\x0f\n\x07message\x18\x05 \x01(\t\"A\n\x17\x43omparedValueCollection\x12\n\n\x02id\x18\x01 \x02(\t\x12\x1a\n\x12\x63ompared_value_ids\x18\x02 \x02(\t'
 )
 
 
@@ -41,14 +41,14 @@ _COMPAREDVALUE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='target_id', full_name='foundation.ComparedValue.target_id', index=1,
+      name='target_value_id', full_name='foundation.ComparedValue.target_value_id', index=1,
       number=2, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='extracted_id', full_name='foundation.ComparedValue.extracted_id', index=2,
+      name='extracted_value_id', full_name='foundation.ComparedValue.extracted_value_id', index=2,
       number=3, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -81,7 +81,7 @@ _COMPAREDVALUE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=32,
-  serialized_end=132,
+  serialized_end=144,
 )
 
 
@@ -119,8 +119,8 @@ _COMPAREDVALUECOLLECTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=134,
-  serialized_end=199,
+  serialized_start=146,
+  serialized_end=211,
 )
 
 DESCRIPTOR.message_types_by_name['ComparedValue'] = _COMPAREDVALUE

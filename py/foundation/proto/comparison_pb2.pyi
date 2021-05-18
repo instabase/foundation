@@ -11,15 +11,15 @@ from typing import (
 
 class ComparedValue(google___protobuf___message___Message):
     id = ... # type: typing___Text
-    target_id = ... # type: typing___Text
-    extracted_id = ... # type: typing___Text
+    target_value_id = ... # type: typing___Text
+    extracted_value_id = ... # type: typing___Text
     score = ... # type: float
     message = ... # type: typing___Text
 
     def __init__(self,
         id : typing___Text,
-        target_id : typing___Text,
-        extracted_id : typing___Text,
+        target_value_id : typing___Text,
+        extracted_value_id : typing___Text,
         score : typing___Optional[float] = None,
         message : typing___Optional[typing___Text] = None,
         ) -> None: ...

@@ -4,9 +4,9 @@ package foundation;
 
 message RecordContext {
   required string id = 1;
-  optional string entities_id = 2;
-  optional string collections_id = 3;
-  optional string pages_id = 4;
-  required string spatial_text_id = 5;
-  optional string extracted_values_id = 6;
+  repeated string entity_ids = 2;
+  repeated string collection_ids = 3;
+  repeated string page_ids = 4;
+  required string text_id = 5;
+  repeated string extracted_value_ids = 6;
 }

@@ -11,7 +11,7 @@ message EntityCollection {
 
 message Entity {
   required string id = 1;
-  optional string children_id = 2;
+  optional string children_id = 2; // this is an entity collection
   oneof type_specific {
     Word word = 3;
     FillerString filler_string = 4;
@@ -40,7 +40,7 @@ message Page {
 }
 
 message Text {
-  optional EntityCollection words_id = 1;
+  repeated string word_ids = 1;
   optional double likeness_score = 2;
   oneof type_specific {
     Date date = 3;

@@ -7,7 +7,7 @@ message ExtractedValue {
   required string field_name = 2;
   required string type = 3;
   optional bytes serialized_value = 4;
-  optional string entities_id = 5;
+  repeated string entity_ids = 5;
 }
 
 message ExtractedValueCollection {

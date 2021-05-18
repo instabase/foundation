@@ -4,8 +4,8 @@ package foundation;
 
 message ComparedValue {
   required string id = 1;
-  required string target_id = 2;
-  required string extracted_id = 3;
+  required string target_value_id = 2;
+  required string extracted_value_id = 3;
   optional float score = 4;
   optional string message = 5;
 }

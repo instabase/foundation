@@ -8,12 +8,6 @@ import "targets.proto";
 import "comparison.proto";
 import "record.proto";
 
-message Serialized {
-  map<string, SerializedTypeOneOf> data = 1;
-  required string root_id = 2;
-  repeated uint32 foundation_type_version = 3;
-}
-
 message SerializedTypeOneOf {
   oneof serialized_type_one_of {
     RecordContext record_context = 1;
@@ -27,4 +21,10 @@ message SerializedTypeOneOf {
     ComparedValueCollection compared_value_collection = 8;
     EntityCollection entity_collection = 9;
   }
+}
+
+message Serialized {
+  map<string, SerializedTypeOneOf> data = 1;
+  required string root_id = 2;
+  repeated uint32 foundation_type_version = 3;
 }

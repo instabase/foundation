@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0crecord.proto\x12\nfoundation\"\x90\x01\n\rRecordContext\x12\n\n\x02id\x18\x01 \x02(\t\x12\x13\n\x0b\x65ntities_id\x18\x02 \x01(\t\x12\x16\n\x0e\x63ollections_id\x18\x03 \x01(\t\x12\x10\n\x08pages_id\x18\x04 \x01(\t\x12\x17\n\x0fspatial_text_id\x18\x05 \x02(\t\x12\x1b\n\x13\x65xtracted_values_id\x18\x06 \x01(\t'
+  serialized_pb=b'\n\x0crecord.proto\x12\nfoundation\"\x87\x01\n\rRecordContext\x12\n\n\x02id\x18\x01 \x02(\t\x12\x12\n\nentity_ids\x18\x02 \x03(\t\x12\x16\n\x0e\x63ollection_ids\x18\x03 \x03(\t\x12\x10\n\x08page_ids\x18\x04 \x03(\t\x12\x0f\n\x07text_id\x18\x05 \x02(\t\x12\x1b\n\x13\x65xtracted_value_ids\x18\x06 \x03(\t'
 )
 
 
@@ -41,37 +41,37 @@ _RECORDCONTEXT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='entities_id', full_name='foundation.RecordContext.entities_id', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='entity_ids', full_name='foundation.RecordContext.entity_ids', index=1,
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='collections_id', full_name='foundation.RecordContext.collections_id', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='collection_ids', full_name='foundation.RecordContext.collection_ids', index=2,
+      number=3, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='pages_id', full_name='foundation.RecordContext.pages_id', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='page_ids', full_name='foundation.RecordContext.page_ids', index=3,
+      number=4, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='spatial_text_id', full_name='foundation.RecordContext.spatial_text_id', index=4,
+      name='text_id', full_name='foundation.RecordContext.text_id', index=4,
       number=5, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='extracted_values_id', full_name='foundation.RecordContext.extracted_values_id', index=5,
-      number=6, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='extracted_value_ids', full_name='foundation.RecordContext.extracted_value_ids', index=5,
+      number=6, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -88,7 +88,7 @@ _RECORDCONTEXT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=29,
-  serialized_end=173,
+  serialized_end=164,
 )
 
 DESCRIPTOR.message_types_by_name['RecordContext'] = _RECORDCONTEXT

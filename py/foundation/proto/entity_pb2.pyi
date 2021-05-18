@@ -129,10 +129,8 @@ class Page(google___protobuf___message___Message):
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
 
 class Text(google___protobuf___message___Message):
+    word_ids = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
     likeness_score = ... # type: float
-
-    @property
-    def words_id(self) -> EntityCollection: ...
 
     @property
     def date(self) -> Date: ...
@@ -147,7 +145,7 @@ class Text(google___protobuf___message___Message):
     def address(self) -> Address: ...
 
     def __init__(self,
-        words_id : typing___Optional[EntityCollection] = None,
+        word_ids : typing___Optional[typing___Iterable[typing___Text]] = None,
         likeness_score : typing___Optional[float] = None,
         date : typing___Optional[Date] = None,
         currency_amount : typing___Optional[CurrencyAmount] = None,
