@@ -3,21 +3,21 @@ syntax = "proto2";
 package foundation;
 
 message Interval {
-  required double a = 1;
-  required double b = 2;
+  optional double a = 1;
+  optional double b = 2;
 }
 
 message Point {
-  required double x = 1;
-  required double y = 2;
+  optional double x = 1;
+  optional double y = 2;
 }
 
 message Rectangle {
-  required Interval ix = 1;
-  required Interval iy = 2;
+  optional Interval ix = 1;
+  optional Interval iy = 2;
 }
 
 message BBox {
-  required Rectangle rectangle = 1;
-  required uint32 page_index = 2;
+  optional Rectangle rectangle = 1;
+  optional uint32 page_index = 2;
 }

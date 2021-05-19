@@ -3,14 +3,18 @@ from google.protobuf.message import (
     Message as google___protobuf___message___Message,
 )
 
+from typing import (
+    Optional as typing___Optional,
+)
+
 
 class Interval(google___protobuf___message___Message):
     a = ... # type: float
     b = ... # type: float
 
     def __init__(self,
-        a : float,
-        b : float,
+        a : typing___Optional[float] = None,
+        b : typing___Optional[float] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> Interval: ...
@@ -22,8 +26,8 @@ class Point(google___protobuf___message___Message):
     y = ... # type: float
 
     def __init__(self,
-        x : float,
-        y : float,
+        x : typing___Optional[float] = None,
+        y : typing___Optional[float] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> Point: ...
@@ -39,8 +43,8 @@ class Rectangle(google___protobuf___message___Message):
     def iy(self) -> Interval: ...
 
     def __init__(self,
-        ix : Interval,
-        iy : Interval,
+        ix : typing___Optional[Interval] = None,
+        iy : typing___Optional[Interval] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> Rectangle: ...
@@ -54,8 +58,8 @@ class BBox(google___protobuf___message___Message):
     def rectangle(self) -> Rectangle: ...
 
     def __init__(self,
-        rectangle : Rectangle,
-        page_index : int,
+        rectangle : typing___Optional[Rectangle] = None,
+        page_index : typing___Optional[int] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> BBox: ...

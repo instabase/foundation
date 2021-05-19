@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1e\x66oundation/proto/targets.proto\x12\nfoundation\x1a\x1f\x66oundation/proto/geometry.proto\"\\\n\x0bTargetValue\x12\n\n\x02id\x18\x01 \x02(\t\x12\x12\n\nfield_name\x18\x02 \x02(\t\x12\x1e\n\x04\x62\x62ox\x18\x03 \x01(\x0b\x32\x10.foundation.BBox\x12\r\n\x05value\x18\x04 \x02(\t\"=\n\x15TargetValueCollection\x12\n\n\x02id\x18\x01 \x02(\t\x12\x18\n\x10target_value_ids\x18\x02 \x03(\t'
+  serialized_pb=b'\n\x1e\x66oundation/proto/targets.proto\x12\nfoundation\x1a\x1f\x66oundation/proto/geometry.proto\"\\\n\x0bTargetValue\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nfield_name\x18\x02 \x01(\t\x12\x1e\n\x04\x62\x62ox\x18\x03 \x01(\x0b\x32\x10.foundation.BBox\x12\r\n\x05value\x18\x04 \x01(\t\"=\n\x15TargetValueCollection\x12\n\n\x02id\x18\x01 \x01(\t\x12\x18\n\x10target_value_ids\x18\x02 \x03(\t'
   ,
   dependencies=[foundation_dot_proto_dot_geometry__pb2.DESCRIPTOR,])
 
@@ -37,14 +37,14 @@ _TARGETVALUE = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='foundation.TargetValue.id', index=0,
-      number=1, type=9, cpp_type=9, label=2,
+      number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='field_name', full_name='foundation.TargetValue.field_name', index=1,
-      number=2, type=9, cpp_type=9, label=2,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -58,7 +58,7 @@ _TARGETVALUE = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='value', full_name='foundation.TargetValue.value', index=3,
-      number=4, type=9, cpp_type=9, label=2,
+      number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -90,7 +90,7 @@ _TARGETVALUECOLLECTION = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='foundation.TargetValueCollection.id', index=0,
-      number=1, type=9, cpp_type=9, label=2,
+      number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,

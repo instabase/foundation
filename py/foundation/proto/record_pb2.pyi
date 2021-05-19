@@ -23,11 +23,11 @@ class RecordContext(google___protobuf___message___Message):
     extracted_value_ids = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
 
     def __init__(self,
-        id : typing___Text,
-        text_id : typing___Text,
+        id : typing___Optional[typing___Text] = None,
         entity_ids : typing___Optional[typing___Iterable[typing___Text]] = None,
         collection_ids : typing___Optional[typing___Iterable[typing___Text]] = None,
         page_ids : typing___Optional[typing___Iterable[typing___Text]] = None,
+        text_id : typing___Optional[typing___Text] = None,
         extracted_value_ids : typing___Optional[typing___Iterable[typing___Text]] = None,
         ) -> None: ...
     @classmethod

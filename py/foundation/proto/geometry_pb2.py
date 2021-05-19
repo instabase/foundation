@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1f\x66oundation/proto/geometry.proto\x12\nfoundation\" \n\x08Interval\x12\t\n\x01\x61\x18\x01 \x02(\x01\x12\t\n\x01\x62\x18\x02 \x02(\x01\"\x1d\n\x05Point\x12\t\n\x01x\x18\x01 \x02(\x01\x12\t\n\x01y\x18\x02 \x02(\x01\"O\n\tRectangle\x12 \n\x02ix\x18\x01 \x02(\x0b\x32\x14.foundation.Interval\x12 \n\x02iy\x18\x02 \x02(\x0b\x32\x14.foundation.Interval\"D\n\x04\x42\x42ox\x12(\n\trectangle\x18\x01 \x02(\x0b\x32\x15.foundation.Rectangle\x12\x12\n\npage_index\x18\x02 \x02(\r'
+  serialized_pb=b'\n\x1f\x66oundation/proto/geometry.proto\x12\nfoundation\" \n\x08Interval\x12\t\n\x01\x61\x18\x01 \x01(\x01\x12\t\n\x01\x62\x18\x02 \x01(\x01\"\x1d\n\x05Point\x12\t\n\x01x\x18\x01 \x01(\x01\x12\t\n\x01y\x18\x02 \x01(\x01\"O\n\tRectangle\x12 \n\x02ix\x18\x01 \x01(\x0b\x32\x14.foundation.Interval\x12 \n\x02iy\x18\x02 \x01(\x0b\x32\x14.foundation.Interval\"D\n\x04\x42\x42ox\x12(\n\trectangle\x18\x01 \x01(\x0b\x32\x15.foundation.Rectangle\x12\x12\n\npage_index\x18\x02 \x01(\r'
 )
 
 
@@ -35,14 +35,14 @@ _INTERVAL = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='a', full_name='foundation.Interval.a', index=0,
-      number=1, type=1, cpp_type=5, label=2,
+      number=1, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='b', full_name='foundation.Interval.b', index=1,
-      number=2, type=1, cpp_type=5, label=2,
+      number=2, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -74,14 +74,14 @@ _POINT = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='x', full_name='foundation.Point.x', index=0,
-      number=1, type=1, cpp_type=5, label=2,
+      number=1, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='y', full_name='foundation.Point.y', index=1,
-      number=2, type=1, cpp_type=5, label=2,
+      number=2, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -113,14 +113,14 @@ _RECTANGLE = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='ix', full_name='foundation.Rectangle.ix', index=0,
-      number=1, type=11, cpp_type=10, label=2,
+      number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='iy', full_name='foundation.Rectangle.iy', index=1,
-      number=2, type=11, cpp_type=10, label=2,
+      number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -152,14 +152,14 @@ _BBOX = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='rectangle', full_name='foundation.BBox.rectangle', index=0,
-      number=1, type=11, cpp_type=10, label=2,
+      number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='page_index', full_name='foundation.BBox.page_index', index=1,
-      number=2, type=13, cpp_type=3, label=2,
+      number=2, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,

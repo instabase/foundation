@@ -25,6 +25,6 @@ message SerializedTypeOneOf {
 
 message Serialized {
   map<string, SerializedTypeOneOf> data = 1;
-  required string root_id = 2;
+  optional string root_id = 2;
   repeated uint32 foundation_type_version = 3;
 }

@@ -30,7 +30,7 @@ class EntityCollection(google___protobuf___message___Message):
     entity_ids = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
 
     def __init__(self,
-        id : typing___Text,
+        id : typing___Optional[typing___Text] = None,
         entity_ids : typing___Optional[typing___Iterable[typing___Text]] = None,
         ) -> None: ...
     @classmethod
@@ -58,7 +58,7 @@ class Entity(google___protobuf___message___Message):
     def text(self) -> Text: ...
 
     def __init__(self,
-        id : typing___Text,
+        id : typing___Optional[typing___Text] = None,
         children_ids : typing___Optional[typing___Iterable[typing___Text]] = None,
         word : typing___Optional[Word] = None,
         filler_string : typing___Optional[FillerString] = None,
@@ -78,8 +78,8 @@ class Word(google___protobuf___message___Message):
     def bbox(self) -> foundation___proto___geometry_pb2___BBox: ...
 
     def __init__(self,
-        bbox : foundation___proto___geometry_pb2___BBox,
-        text : typing___Text,
+        bbox : typing___Optional[foundation___proto___geometry_pb2___BBox] = None,
+        text : typing___Optional[typing___Text] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> Word: ...
@@ -90,7 +90,7 @@ class FillerString(google___protobuf___message___Message):
     text = ... # type: typing___Text
 
     def __init__(self,
-        text : typing___Text,
+        text : typing___Optional[typing___Text] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> FillerString: ...
@@ -103,9 +103,9 @@ class SubWord(google___protobuf___message___Message):
     end_index = ... # type: int
 
     def __init__(self,
-        word_id : typing___Text,
-        start_index : int,
-        end_index : int,
+        word_id : typing___Optional[typing___Text] = None,
+        start_index : typing___Optional[int] = None,
+        end_index : typing___Optional[int] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> SubWord: ...
@@ -119,8 +119,8 @@ class Page(google___protobuf___message___Message):
     def bbox(self) -> foundation___proto___geometry_pb2___BBox: ...
 
     def __init__(self,
-        bbox : foundation___proto___geometry_pb2___BBox,
-        image_path : typing___Text,
+        bbox : typing___Optional[foundation___proto___geometry_pb2___BBox] = None,
+        image_path : typing___Optional[typing___Text] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> Page: ...
@@ -128,7 +128,6 @@ class Page(google___protobuf___message___Message):
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
 
 class Text(google___protobuf___message___Message):
-    word_ids = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
     likeness_score = ... # type: float
 
     @property
@@ -144,7 +143,6 @@ class Text(google___protobuf___message___Message):
     def address(self) -> Address: ...
 
     def __init__(self,
-        word_ids : typing___Optional[typing___Iterable[typing___Text]] = None,
         likeness_score : typing___Optional[float] = None,
         date : typing___Optional[Date] = None,
         currency_amount : typing___Optional[CurrencyAmount] = None,
@@ -162,9 +160,9 @@ class Date(google___protobuf___message___Message):
     day = ... # type: int
 
     def __init__(self,
-        year : int,
-        month : int,
-        day : int,
+        year : typing___Optional[int] = None,
+        month : typing___Optional[int] = None,
+        day : typing___Optional[int] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> Date: ...
@@ -190,8 +188,8 @@ class CurrencyAmount(google___protobuf___message___Message):
     amount = ... # type: int
 
     def __init__(self,
-        currency : CurrencyAmount.Currency,
-        amount : int,
+        currency : typing___Optional[CurrencyAmount.Currency] = None,
+        amount : typing___Optional[int] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> CurrencyAmount: ...

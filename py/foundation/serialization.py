@@ -1,5 +1,5 @@
 
-from typing import Any, Mapping, Union, Iterable
+from typing import Mapping, Union, Iterable, Dict
 from dataclasses import dataclass
 
 from foundation.proto import serialization_pb2
@@ -67,7 +67,6 @@ class Serialized(Mapping[str, SerializedTypeOneOf]):
 
   @staticmethod
   def from_reference_map(reference_map: Mapping[str, SerializedTypeOneOf], root_id: str) -> 'Serialized':
-    data: Mapping[str, serialization_pb2.SerializedTypeOneOf] = {}
     proto = serialization_pb2.Serialized(
       root_id=root_id,
       foundation_type_version=[0,1,0],
@@ -80,3 +79,14 @@ class Serialized(Mapping[str, SerializedTypeOneOf]):
       assert oneof.WhichOneof is not None, f"Instance of {type(v)} was not recognized for serialization"
       proto.data[k] = oneof
     return Serialized(proto)
+
+def dumps(obj: SerializedTypeOneOf) -> bytes:
+  root_id = obj.id
+  reference_map: Dict[str, SerializedTypeOneOf] = {}
+  serialized = Serialized.from_reference_map(reference_map, root_id)
+  return serialized.as_proto().SerializeToString()
+
+def loads(bytestring: bytes) -> SerializedTypeOneOf:
+  proto = serialization_pb2.Serialized.ParseFromString(bytestring)
+  serialized = Serialized(proto)
+  return serialized.root

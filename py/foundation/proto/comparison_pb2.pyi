@@ -17,9 +17,9 @@ class ComparedValue(google___protobuf___message___Message):
     message = ... # type: typing___Text
 
     def __init__(self,
-        id : typing___Text,
-        target_value_id : typing___Text,
-        extracted_value_id : typing___Text,
+        id : typing___Optional[typing___Text] = None,
+        target_value_id : typing___Optional[typing___Text] = None,
+        extracted_value_id : typing___Optional[typing___Text] = None,
         score : typing___Optional[float] = None,
         message : typing___Optional[typing___Text] = None,
         ) -> None: ...
@@ -33,8 +33,8 @@ class ComparedValueCollection(google___protobuf___message___Message):
     compared_value_ids = ... # type: typing___Text
 
     def __init__(self,
-        id : typing___Text,
-        compared_value_ids : typing___Text,
+        id : typing___Optional[typing___Text] = None,
+        compared_value_ids : typing___Optional[typing___Text] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> ComparedValueCollection: ...

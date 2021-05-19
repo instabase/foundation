@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1d\x66oundation/proto/entity.proto\x12\nfoundation\x1a\x1f\x66oundation/proto/geometry.proto\"2\n\x10\x45ntityCollection\x12\n\n\x02id\x18\x01 \x02(\t\x12\x12\n\nentity_ids\x18\x02 \x03(\t\"\xfd\x01\n\x06\x45ntity\x12\n\n\x02id\x18\x01 \x02(\t\x12\x14\n\x0c\x63hildren_ids\x18\x02 \x03(\t\x12 \n\x04word\x18\x03 \x01(\x0b\x32\x10.foundation.WordH\x00\x12\x31\n\rfiller_string\x18\x04 \x01(\x0b\x32\x18.foundation.FillerStringH\x00\x12\'\n\x08sub_word\x18\x05 \x01(\x0b\x32\x13.foundation.SubWordH\x00\x12 \n\x04page\x18\x06 \x01(\x0b\x32\x10.foundation.PageH\x00\x12 \n\x04text\x18\x07 \x01(\x0b\x32\x10.foundation.TextH\x00\x42\x0f\n\rtype_specific\"4\n\x04Word\x12\x1e\n\x04\x62\x62ox\x18\x01 \x02(\x0b\x32\x10.foundation.BBox\x12\x0c\n\x04text\x18\x02 \x02(\t\"\x1c\n\x0c\x46illerString\x12\x0c\n\x04text\x18\x01 \x02(\t\"B\n\x07SubWord\x12\x0f\n\x07word_id\x18\x01 \x02(\t\x12\x13\n\x0bstart_index\x18\x02 \x02(\r\x12\x11\n\tend_index\x18\x03 \x02(\r\":\n\x04Page\x12\x1e\n\x04\x62\x62ox\x18\x01 \x02(\x0b\x32\x10.foundation.BBox\x12\x12\n\nimage_path\x18\x02 \x02(\t\"\xf1\x01\n\x04Text\x12\x10\n\x08word_ids\x18\x01 \x03(\t\x12\x16\n\x0elikeness_score\x18\x02 \x01(\x01\x12 \n\x04\x64\x61te\x18\x03 \x01(\x0b\x32\x10.foundation.DateH\x00\x12\x35\n\x0f\x63urrency_amount\x18\x04 \x01(\x0b\x32\x1a.foundation.CurrencyAmountH\x00\x12-\n\x0bperson_name\x18\x05 \x01(\x0b\x32\x16.foundation.PersonNameH\x00\x12&\n\x07\x61\x64\x64ress\x18\x06 \x01(\x0b\x32\x13.foundation.AddressH\x00\x42\x0f\n\rtype_specific\"0\n\x04\x44\x61te\x12\x0c\n\x04year\x18\x01 \x02(\r\x12\r\n\x05month\x18\x02 \x02(\r\x12\x0b\n\x03\x64\x61y\x18\x03 \x02(\r\"m\n\x0e\x43urrencyAmount\x12\x35\n\x08\x63urrency\x18\x01 \x02(\x0e\x32#.foundation.CurrencyAmount.Currency\x12\x0e\n\x06\x61mount\x18\x02 \x02(\x03\"\x14\n\x08\x43urrency\x12\x08\n\x03USD\x10\xc8\x06\"\x0c\n\nPersonName\"\t\n\x07\x41\x64\x64ress'
+  serialized_pb=b'\n\x1d\x66oundation/proto/entity.proto\x12\nfoundation\x1a\x1f\x66oundation/proto/geometry.proto\"2\n\x10\x45ntityCollection\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nentity_ids\x18\x02 \x03(\t\"\xfd\x01\n\x06\x45ntity\x12\n\n\x02id\x18\x01 \x01(\t\x12\x14\n\x0c\x63hildren_ids\x18\x02 \x03(\t\x12 \n\x04word\x18\x03 \x01(\x0b\x32\x10.foundation.WordH\x00\x12\x31\n\rfiller_string\x18\x04 \x01(\x0b\x32\x18.foundation.FillerStringH\x00\x12\'\n\x08sub_word\x18\x05 \x01(\x0b\x32\x13.foundation.SubWordH\x00\x12 \n\x04page\x18\x06 \x01(\x0b\x32\x10.foundation.PageH\x00\x12 \n\x04text\x18\x07 \x01(\x0b\x32\x10.foundation.TextH\x00\x42\x0f\n\rtype_specific\"4\n\x04Word\x12\x1e\n\x04\x62\x62ox\x18\x01 \x01(\x0b\x32\x10.foundation.BBox\x12\x0c\n\x04text\x18\x02 \x01(\t\"\x1c\n\x0c\x46illerString\x12\x0c\n\x04text\x18\x01 \x01(\t\"B\n\x07SubWord\x12\x0f\n\x07word_id\x18\x01 \x01(\t\x12\x13\n\x0bstart_index\x18\x02 \x01(\r\x12\x11\n\tend_index\x18\x03 \x01(\r\":\n\x04Page\x12\x1e\n\x04\x62\x62ox\x18\x01 \x01(\x0b\x32\x10.foundation.BBox\x12\x12\n\nimage_path\x18\x02 \x01(\t\"\xdf\x01\n\x04Text\x12\x16\n\x0elikeness_score\x18\x01 \x01(\x01\x12 \n\x04\x64\x61te\x18\x02 \x01(\x0b\x32\x10.foundation.DateH\x00\x12\x35\n\x0f\x63urrency_amount\x18\x03 \x01(\x0b\x32\x1a.foundation.CurrencyAmountH\x00\x12-\n\x0bperson_name\x18\x04 \x01(\x0b\x32\x16.foundation.PersonNameH\x00\x12&\n\x07\x61\x64\x64ress\x18\x05 \x01(\x0b\x32\x13.foundation.AddressH\x00\x42\x0f\n\rtype_specific\"0\n\x04\x44\x61te\x12\x0c\n\x04year\x18\x01 \x01(\r\x12\r\n\x05month\x18\x02 \x01(\r\x12\x0b\n\x03\x64\x61y\x18\x03 \x01(\r\"m\n\x0e\x43urrencyAmount\x12\x35\n\x08\x63urrency\x18\x01 \x01(\x0e\x32#.foundation.CurrencyAmount.Currency\x12\x0e\n\x06\x61mount\x18\x02 \x01(\x03\"\x14\n\x08\x43urrency\x12\x08\n\x03USD\x10\xc8\x06\"\x0c\n\nPersonName\"\t\n\x07\x41\x64\x64ress'
   ,
   dependencies=[foundation_dot_proto_dot_geometry__pb2.DESCRIPTOR,])
 
@@ -41,8 +41,8 @@ _CURRENCYAMOUNT_CURRENCY = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=981,
-  serialized_end=1001,
+  serialized_start=963,
+  serialized_end=983,
 )
 _sym_db.RegisterEnumDescriptor(_CURRENCYAMOUNT_CURRENCY)
 
@@ -57,7 +57,7 @@ _ENTITYCOLLECTION = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='foundation.EntityCollection.id', index=0,
-      number=1, type=9, cpp_type=9, label=2,
+      number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -96,7 +96,7 @@ _ENTITY = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='foundation.Entity.id', index=0,
-      number=1, type=9, cpp_type=9, label=2,
+      number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -175,14 +175,14 @@ _WORD = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='bbox', full_name='foundation.Word.bbox', index=0,
-      number=1, type=11, cpp_type=10, label=2,
+      number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='text', full_name='foundation.Word.text', index=1,
-      number=2, type=9, cpp_type=9, label=2,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -214,7 +214,7 @@ _FILLERSTRING = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='text', full_name='foundation.FillerString.text', index=0,
-      number=1, type=9, cpp_type=9, label=2,
+      number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -246,21 +246,21 @@ _SUBWORD = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='word_id', full_name='foundation.SubWord.word_id', index=0,
-      number=1, type=9, cpp_type=9, label=2,
+      number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='start_index', full_name='foundation.SubWord.start_index', index=1,
-      number=2, type=13, cpp_type=3, label=2,
+      number=2, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='end_index', full_name='foundation.SubWord.end_index', index=2,
-      number=3, type=13, cpp_type=3, label=2,
+      number=3, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -292,14 +292,14 @@ _PAGE = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='bbox', full_name='foundation.Page.bbox', index=0,
-      number=1, type=11, cpp_type=10, label=2,
+      number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='image_path', full_name='foundation.Page.image_path', index=1,
-      number=2, type=9, cpp_type=9, label=2,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -330,43 +330,36 @@ _TEXT = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='word_ids', full_name='foundation.Text.word_ids', index=0,
-      number=1, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='likeness_score', full_name='foundation.Text.likeness_score', index=1,
-      number=2, type=1, cpp_type=5, label=1,
+      name='likeness_score', full_name='foundation.Text.likeness_score', index=0,
+      number=1, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='date', full_name='foundation.Text.date', index=2,
+      name='date', full_name='foundation.Text.date', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='currency_amount', full_name='foundation.Text.currency_amount', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='currency_amount', full_name='foundation.Text.currency_amount', index=3,
+      name='person_name', full_name='foundation.Text.person_name', index=3,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='person_name', full_name='foundation.Text.person_name', index=4,
+      name='address', full_name='foundation.Text.address', index=4,
       number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='address', full_name='foundation.Text.address', index=5,
-      number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -389,7 +382,7 @@ _TEXT = _descriptor.Descriptor(
     fields=[]),
   ],
   serialized_start=599,
-  serialized_end=840,
+  serialized_end=822,
 )
 
 
@@ -403,21 +396,21 @@ _DATE = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='year', full_name='foundation.Date.year', index=0,
-      number=1, type=13, cpp_type=3, label=2,
+      number=1, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='month', full_name='foundation.Date.month', index=1,
-      number=2, type=13, cpp_type=3, label=2,
+      number=2, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='day', full_name='foundation.Date.day', index=2,
-      number=3, type=13, cpp_type=3, label=2,
+      number=3, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -434,8 +427,8 @@ _DATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=842,
-  serialized_end=890,
+  serialized_start=824,
+  serialized_end=872,
 )
 
 
@@ -449,14 +442,14 @@ _CURRENCYAMOUNT = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='currency', full_name='foundation.CurrencyAmount.currency', index=0,
-      number=1, type=14, cpp_type=8, label=2,
+      number=1, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=840,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='amount', full_name='foundation.CurrencyAmount.amount', index=1,
-      number=2, type=3, cpp_type=2, label=2,
+      number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -474,8 +467,8 @@ _CURRENCYAMOUNT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=892,
-  serialized_end=1001,
+  serialized_start=874,
+  serialized_end=983,
 )
 
 
@@ -499,8 +492,8 @@ _PERSONNAME = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1003,
-  serialized_end=1015,
+  serialized_start=985,
+  serialized_end=997,
 )
 
 
@@ -524,8 +517,8 @@ _ADDRESS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1017,
-  serialized_end=1026,
+  serialized_start=999,
+  serialized_end=1008,
 )
 
 _ENTITY.fields_by_name['word'].message_type = _WORD

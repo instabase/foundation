@@ -5,13 +5,13 @@ package foundation;
 import "foundation/proto/geometry.proto";
 
 message TargetValue {
-  required string id = 1;
-  required string field_name = 2;
+  optional string id = 1;
+  optional string field_name = 2;
   optional BBox bbox = 3;
-  required string value = 4;
+  optional string value = 4;
 }
 
 message TargetValueCollection {
-  required string id = 1;
+  optional string id = 1;
   repeated string target_value_ids = 2;
 }

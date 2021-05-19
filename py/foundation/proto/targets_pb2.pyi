@@ -27,10 +27,10 @@ class TargetValue(google___protobuf___message___Message):
     def bbox(self) -> foundation___proto___geometry_pb2___BBox: ...
 
     def __init__(self,
-        id : typing___Text,
-        field_name : typing___Text,
-        value : typing___Text,
+        id : typing___Optional[typing___Text] = None,
+        field_name : typing___Optional[typing___Text] = None,
         bbox : typing___Optional[foundation___proto___geometry_pb2___BBox] = None,
+        value : typing___Optional[typing___Text] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> TargetValue: ...
@@ -42,7 +42,7 @@ class TargetValueCollection(google___protobuf___message___Message):
     target_value_ids = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
 
     def __init__(self,
-        id : typing___Text,
+        id : typing___Optional[typing___Text] = None,
         target_value_ids : typing___Optional[typing___Iterable[typing___Text]] = None,
         ) -> None: ...
     @classmethod

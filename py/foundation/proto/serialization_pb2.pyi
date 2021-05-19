@@ -108,8 +108,8 @@ class Serialized(google___protobuf___message___Message):
     def data(self) -> typing___MutableMapping[typing___Text, SerializedTypeOneOf]: ...
 
     def __init__(self,
-        root_id : typing___Text,
         data : typing___Optional[typing___Mapping[typing___Text, SerializedTypeOneOf]] = None,
+        root_id : typing___Optional[typing___Text] = None,
         foundation_type_version : typing___Optional[typing___Iterable[int]] = None,
         ) -> None: ...
     @classmethod

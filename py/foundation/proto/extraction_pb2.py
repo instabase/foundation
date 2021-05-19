@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n!foundation/proto/extraction.proto\x12\nfoundation\"l\n\x0e\x45xtractedValue\x12\n\n\x02id\x18\x01 \x02(\t\x12\x12\n\nfield_name\x18\x02 \x02(\t\x12\x0c\n\x04type\x18\x03 \x02(\t\x12\x18\n\x10serialized_value\x18\x04 \x01(\x0c\x12\x12\n\nentity_ids\x18\x05 \x03(\t\"C\n\x18\x45xtractedValueCollection\x12\n\n\x02id\x18\x01 \x02(\t\x12\x1b\n\x13\x65xtracted_value_ids\x18\x02 \x03(\t'
+  serialized_pb=b'\n!foundation/proto/extraction.proto\x12\nfoundation\"l\n\x0e\x45xtractedValue\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nfield_name\x18\x02 \x01(\t\x12\x0c\n\x04type\x18\x03 \x01(\t\x12\x18\n\x10serialized_value\x18\x04 \x01(\x0c\x12\x12\n\nentity_ids\x18\x05 \x03(\t\"C\n\x18\x45xtractedValueCollection\x12\n\n\x02id\x18\x01 \x01(\t\x12\x1b\n\x13\x65xtracted_value_ids\x18\x02 \x03(\t'
 )
 
 
@@ -35,21 +35,21 @@ _EXTRACTEDVALUE = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='foundation.ExtractedValue.id', index=0,
-      number=1, type=9, cpp_type=9, label=2,
+      number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='field_name', full_name='foundation.ExtractedValue.field_name', index=1,
-      number=2, type=9, cpp_type=9, label=2,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='type', full_name='foundation.ExtractedValue.type', index=2,
-      number=3, type=9, cpp_type=9, label=2,
+      number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -95,7 +95,7 @@ _EXTRACTEDVALUECOLLECTION = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='foundation.ExtractedValueCollection.id', index=0,
-      number=1, type=9, cpp_type=9, label=2,
+      number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
