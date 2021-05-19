@@ -12,5 +12,5 @@ message ComparedValue {
 
 message ComparedValueCollection {
   optional string id = 1;
-  optional string compared_value_ids = 2;
+  repeated string compared_value_ids = 2;
 }

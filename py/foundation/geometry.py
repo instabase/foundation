@@ -117,14 +117,16 @@ class Rectangle:
     return Interval(self._proto.ix, self._reference_map)
   @ix.setter
   def ix(self, new_obj: 'Interval') -> None:
-    self._proto.ix = new_obj.as_proto()
+    self._proto.ix.a = new_obj._proto.a
+    self._proto.ix.b = new_obj._proto.b
     self._reference_map.update(new_obj._reference_map)
   @property
   def iy(self) -> 'Interval':
     return Interval(self._proto.iy, self._reference_map)
   @iy.setter
   def iy(self, new_obj: 'Interval') -> None:
-    self._proto.iy = new_obj.as_proto()
+    self._proto.iy.a = new_obj._proto.a
+    self._proto.iy.b = new_obj._proto.b
     self._reference_map.update(new_obj._reference_map)
 
   def _get_dependent_ids(self) -> Iterable[str]:

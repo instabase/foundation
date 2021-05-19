@@ -51,7 +51,11 @@ class Word(Entity):
     return BBox(self._proto.word.bbox, self._reference_map)
   @bbox.setter
   def bbox(self, new_obj: BBox) -> None:
-    self._proto.word.bbox = new_obj.as_proto()
+    self._proto.word.bbox.page_index = new_obj._proto.page_index
+    self._proto.word.bbox.rectangle.ix.a = new_obj._proto.rectangle.ix.a
+    self._proto.word.bbox.rectangle.ix.b = new_obj._proto.rectangle.ix.b
+    self._proto.word.bbox.rectangle.iy.a = new_obj._proto.rectangle.iy.a
+    self._proto.word.bbox.rectangle.iy.b = new_obj._proto.rectangle.iy.b
     self._reference_map.update(new_obj._reference_map)
   @property
   def text(self) -> 'str':
@@ -220,7 +224,11 @@ class Page(Entity):
     return BBox(self._proto.page.bbox, self._reference_map)
   @bbox.setter
   def bbox(self, new_obj: BBox) -> None:
-    self._proto.page.bbox = new_obj.as_proto()
+    self._proto.page.bbox.page_index = new_obj._proto.page_index
+    self._proto.page.bbox.rectangle.ix.a = new_obj._proto.rectangle.ix.a
+    self._proto.page.bbox.rectangle.ix.b = new_obj._proto.rectangle.ix.b
+    self._proto.page.bbox.rectangle.iy.a = new_obj._proto.rectangle.iy.a
+    self._proto.page.bbox.rectangle.iy.b = new_obj._proto.rectangle.iy.b
     self._reference_map.update(new_obj._reference_map)
   @property
   def image_path(self) -> 'str':
@@ -273,7 +281,7 @@ class SubWord(Entity):
     
 
   def _get_dependent_ids(self) -> Iterable[str]:
-    yield from itertools.chain([self._proto.word_id], self._proto.children_ids)
+    yield from itertools.chain([self._proto.sub_word.word_id], self._proto.children_ids)
 
   @staticmethod
   def from_proto(proto: entity_pb2.Entity, reference_map: Dict[str, Any]) -> 'SubWord':

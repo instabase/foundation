@@ -32,7 +32,11 @@ class TargetValue:
     return BBox(self._proto.bbox, self._reference_map)
   @bbox.setter
   def bbox(self, new_obj: BBox) -> None:
-    self._proto.bbox = new_obj.as_proto()
+    self._proto.bbox.page_index = new_obj._proto.page_index
+    self._proto.bbox.rectangle.ix.a = new_obj._proto.rectangle.ix.a
+    self._proto.bbox.rectangle.ix.b = new_obj._proto.rectangle.ix.b
+    self._proto.bbox.rectangle.iy.a = new_obj._proto.rectangle.iy.a
+    self._proto.bbox.rectangle.iy.b = new_obj._proto.rectangle.iy.b
     self._reference_map.update(new_obj._reference_map)
   @property
   def value(self) -> 'str':

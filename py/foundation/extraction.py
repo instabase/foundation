@@ -94,7 +94,7 @@ class ExtractedValueCollection:
 
 
   def _get_dependent_ids(self) -> Iterable[str]:
-    yield from itertools.chain(self._proto.extracted_value_ids, self._proto.entity_ids)
+    yield from itertools.chain(self._proto.extracted_value_ids)
 
   def as_proto(self) -> extraction_pb2.ExtractedValueCollection:
     return self._proto

@@ -87,6 +87,7 @@ def dumps(obj: SerializedTypeOneOf) -> bytes:
   return serialized.as_proto().SerializeToString()
 
 def loads(bytestring: bytes) -> SerializedTypeOneOf:
-  proto = serialization_pb2.Serialized.ParseFromString(bytestring)
+  proto = serialization_pb2.Serialized()
+  proto.ParseFromString(bytestring)
   serialized = Serialized(proto)
   return serialized.root

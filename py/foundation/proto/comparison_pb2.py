@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n!foundation/proto/comparison.proto\x12\nfoundation\"p\n\rComparedValue\x12\n\n\x02id\x18\x01 \x01(\t\x12\x17\n\x0ftarget_value_id\x18\x02 \x01(\t\x12\x1a\n\x12\x65xtracted_value_id\x18\x03 \x01(\t\x12\r\n\x05score\x18\x04 \x01(\x02\x12\x0f\n\x07message\x18\x05 \x01(\t\"A\n\x17\x43omparedValueCollection\x12\n\n\x02id\x18\x01 \x01(\t\x12\x1a\n\x12\x63ompared_value_ids\x18\x02 \x01(\t'
+  serialized_pb=b'\n!foundation/proto/comparison.proto\x12\nfoundation\"p\n\rComparedValue\x12\n\n\x02id\x18\x01 \x01(\t\x12\x17\n\x0ftarget_value_id\x18\x02 \x01(\t\x12\x1a\n\x12\x65xtracted_value_id\x18\x03 \x01(\t\x12\r\n\x05score\x18\x04 \x01(\x02\x12\x0f\n\x07message\x18\x05 \x01(\t\"A\n\x17\x43omparedValueCollection\x12\n\n\x02id\x18\x01 \x01(\t\x12\x1a\n\x12\x63ompared_value_ids\x18\x02 \x03(\t'
 )
 
 
@@ -102,8 +102,8 @@ _COMPAREDVALUECOLLECTION = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='compared_value_ids', full_name='foundation.ComparedValueCollection.compared_value_ids', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),

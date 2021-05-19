@@ -81,21 +81,21 @@ class ComparedValueCollection:
     self._proto.id = new_obj
     
   @property
-  def compared_values(self) -> Iterable['ComparedValue']:
+  def compared_values(self) -> Iterable[ComparedValue]:
     yield from (self._reference_map[i] for i in self._proto.compared_value_ids)
   @compared_values.setter
-  def compared_values(self, new_obj: Iterable['ComparedValue']) -> None:
+  def compared_values(self, new_obj: Iterable[ComparedValue]) -> None:
     # TODO(erick): check to make sure object is a valid foundation type
     del self._proto.compared_value_ids[:]
     for obj in new_obj:
-      if not isinstance(obj, 'ComparedValue'):
+      if not isinstance(obj, ComparedValue):
         raise TypeError("compared_value element must be a 'ComparedValue', not {}".format(type(obj)))
       self._proto.compared_value_ids.append(obj.id)
       self._reference_map[obj.id] = obj
 
 
   def _get_dependent_ids(self) -> Iterable[str]:
-    yield from itertools.chain([self._proto.target_value_id], [self._proto.extracted_value_id], self._proto.compared_value_ids)
+    yield from itertools.chain(self._proto.compared_value_ids)
 
   def as_proto(self) -> comparison_pb2.ComparedValueCollection:
     return self._proto
