@@ -11,6 +11,13 @@ export function intersect(i1: t, i2: t): boolean {
   return Math.max(i1.a, i2.a) <= Math.min(i1.b, i2.b);
 }
 
+export function intersection(i1: t, i2: t): t {
+  return {
+    a: Math.max(i1.a, i2.a),
+    b: Math.min(i1.b, i2.b),
+  };
+}
+
 export function contains(i1: t, i2: t): boolean {
   return i1.a <= i2.a && i2.b <= i1.b;
 }

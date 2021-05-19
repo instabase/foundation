@@ -120,3 +120,16 @@ function mergedDocTags(existing: DocTags, provided: DocTags) {
   );
   return result;
 }
+
+export function withoutField(targets: t, field: string): t {
+  return {
+    ...targets,
+    doc_targets:
+      targets.doc_targets.map(
+        docTargets =>
+          DocTargets.withoutField(
+            docTargets,
+            field)),
+    schema: Schema.withoutField(targets.schema, field),
+  };
+}

@@ -145,3 +145,12 @@ function mergeNotes(s1: string | undefined, s2: string | undefined): string | un
     return `${s1}\n\n${s2}`;
   }
 }
+
+export function withoutField(docTargets: t, field: string): t {
+  return {
+    ...docTargets,
+    assignments:
+      docTargets.assignments.filter(
+        assignment => assignment.field != field),
+  };
+}

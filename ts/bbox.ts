@@ -135,6 +135,13 @@ export function intersect(bbox1: t, bbox2: t): boolean {
          Interval.intersect(bbox1.iy, bbox2.iy);
 }
 
+export function intersection(bbox1: t, bbox2: t): t {
+  return {
+    ix: Interval.intersection(bbox1.ix, bbox2.ix),
+    iy: Interval.intersection(bbox1.iy, bbox2.iy),
+  };
+}
+
 export function areEqual(bbox1: t, bbox2: t): boolean {
   return bbox1.ix.a == bbox2.ix.a &&
           bbox1.ix.b == bbox2.ix.b &&
@@ -148,4 +155,17 @@ export function splitSquareLike(bbox: t): [t, t] {
   } else {
     return [upperHalf(bbox), lowerHalf(bbox)];
   }
+}
+
+export const UNIT_BOX: t = {
+  ix: {a: 0, b: 1},
+  iy: {a: 0, b: 1},
+};
+
+export function isInUnitBox(bbox: t): boolean {
+  return contains(UNIT_BOX, bbox);
+}
+
+export function area(bbox: t): number {
+  return Interval.length(bbox.ix) * Interval.length(bbox.iy);
 }

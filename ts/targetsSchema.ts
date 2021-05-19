@@ -90,3 +90,7 @@ export function merged(existing: t, provided: t): t {
     ...provided.filter(entry => !fields(existing).includes(entry.field)),
   ];
 }
+
+export function withoutField(schema: t, field: string): t {
+  return schema.filter(entry => entry.field != field);
+}

@@ -43,3 +43,7 @@ export const getWords = memo(
 export function absoluteBBox(doc: t, percentageBBox: BBox.t): BBox.t {
   return BBox.absolutePositionIn(doc.bbox, percentageBBox);
 }
+
+export function percentageBasedPositionIn(doc: t, bbox: BBox.t): BBox.t {
+  return BBox.percentageBasedPositionIn(bbox, doc.bbox);
+}
