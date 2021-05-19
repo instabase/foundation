@@ -7,4 +7,4 @@ build-protos:
 protos-to-dataclasses: build-protos
 	PYTHONPATH=./py:./py/foundation/proto:$(PYTHONPATH) python3 scripts/protos_to_dataclasses.py
 
-build: protos-to-dataclasses
+build: build-protos
