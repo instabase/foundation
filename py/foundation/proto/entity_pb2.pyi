@@ -40,7 +40,7 @@ class EntityCollection(google___protobuf___message___Message):
 
 class Entity(google___protobuf___message___Message):
     id = ... # type: typing___Text
-    children_id = ... # type: typing___Text
+    children_ids = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
 
     @property
     def word(self) -> Word: ...
@@ -59,7 +59,7 @@ class Entity(google___protobuf___message___Message):
 
     def __init__(self,
         id : typing___Text,
-        children_id : typing___Optional[typing___Text] = None,
+        children_ids : typing___Optional[typing___Iterable[typing___Text]] = None,
         word : typing___Optional[Word] = None,
         filler_string : typing___Optional[FillerString] = None,
         sub_word : typing___Optional[SubWord] = None,

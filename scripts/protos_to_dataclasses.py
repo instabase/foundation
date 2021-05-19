@@ -9,6 +9,7 @@ modules = {
   "targets": targets_pb2,
   "record": record_pb2,
   "comparison": comparison_pb2,
+  # "serialization": serialization_pb2,
 }
 
 rtn = {}

@@ -4,10 +4,10 @@ from dataclasses import dataclass
 
 from foundation.proto import record_pb2
 
-from foundation.extraction import ExtractedValue
+from foundation.entity import Page
 from foundation.entity import Text
 from foundation.entity import Entity
-from foundation.entity import Page
+from foundation.extraction import ExtractedValue
 
 
 @dataclass

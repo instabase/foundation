@@ -77,8 +77,8 @@ class Entity:
   def id(self) -> 'str':
     return self._proto.id
   @property
-  def children(self) -> 'Entity':
-    return self._reference_map[self._proto.children_id]
+  def childrens(self) -> Iterable['Entity']:
+    yield from (self._reference_map[i] for i in self._proto.children_ids)
 
   @property
   def word(self) -> 'Word':
