@@ -2,6 +2,8 @@
 from typing import Mapping, Union, Iterable, Dict
 from dataclasses import dataclass
 
+from google.protobuf import json_format
+
 from foundation.proto import serialization_pb2
 
 from foundation.record import RecordContext
@@ -84,10 +86,11 @@ def dumps(obj: SerializedTypeOneOf) -> bytes:
   root_id = obj.id
   reference_map: Dict[str, SerializedTypeOneOf] = {}
   serialized = Serialized.from_reference_map(reference_map, root_id)
-  return serialized.as_proto().SerializeToString()
+  return json_format.MessageToJson(serialized.as_proto()).encode('utf-8')
 
 def loads(bytestring: bytes) -> SerializedTypeOneOf:
   proto = serialization_pb2.Serialized()
-  proto.ParseFromString(bytestring)
+  string = bytestring.decode('utf-8')
+  json_format.Parse(string, proto)
   serialized = Serialized(proto)
   return serialized.root
