@@ -1,7 +1,8 @@
 
-from typing import Optional, Iterable, Any, Mapping, Dict
+from typing import Optional, Iterable, Any, Mapping, Dict, Type
 from dataclasses import dataclass
 import itertools
+import uuid
 
 from foundation.proto import record_pb2
 
@@ -85,9 +86,21 @@ class RecordContext:
       self._proto.extracted_value_ids.append(obj.id)
       self._reference_map[obj.id] = obj
 
+  # def add(self, cls: Type, **kwargs: Dict) -> Any:
+  #   id: str = kwargs.get("id", str(uuid.uuid4))
+  #   return cls(id=id, reference_map=self._reference_map, **kwargs)
 
   def _get_dependent_ids(self) -> Iterable[str]:
     yield from itertools.chain(self._proto.extracted_value_ids, self._proto.entity_ids, self._proto.collection_ids, [self._proto.text_id], self._proto.page_ids)
+
+  @staticmethod
+  def build(id: Optional[str] = None, reference_map: Optional[Dict[str, Any]] = None) -> 'RecordContext':
+    """
+    Build a new RecordContext. Optionally takes a set `id` and `reference_map` as arguments.
+    """
+    record_id = str(uuid.uuid4()) if id is None else id
+    record_reference_map = {} if reference_map is None else reference_map
+    return RecordContext(record_pb2.RecordContext(id=record_id), record_reference_map)
 
   def as_proto(self) -> record_pb2.RecordContext:
     return self._proto

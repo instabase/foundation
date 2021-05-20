@@ -5,3 +5,5 @@ from foundation.geometry import BBox, Interval, Point, Rectangle
 from foundation.record import RecordContext
 from foundation.serialization import Serialized, dumps, loads
 from foundation.targets import TargetValue, TargetValueCollection
+
+from foundation.proto import *

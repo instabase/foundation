@@ -48,7 +48,7 @@ class Entity:
 class Word(Entity):
   @property
   def bbox(self) -> BBox:
-    return BBox(self._proto.word.bbox, self._reference_map)
+    return BBox(self._proto.word.bbox)
   @bbox.setter
   def bbox(self, new_obj: BBox) -> None:
     self._proto.word.bbox.page_index = new_obj._proto.page_index
@@ -56,13 +56,24 @@ class Word(Entity):
     self._proto.word.bbox.rectangle.ix.b = new_obj._proto.rectangle.ix.b
     self._proto.word.bbox.rectangle.iy.a = new_obj._proto.rectangle.iy.a
     self._proto.word.bbox.rectangle.iy.b = new_obj._proto.rectangle.iy.b
-    self._reference_map.update(new_obj._reference_map)
   @property
   def text(self) -> 'str':
     return self._proto.word.text
   @text.setter
   def text(self, new_obj: 'str') -> None:
     self._proto.word.text = new_obj
+
+  @staticmethod
+  def build(id: str, bbox: BBox, text: str, reference_map: Dict[str, Any]) -> 'Word':
+    proto = entity_pb2.Entity(
+      id=id,
+      children_ids=[],
+      word=entity_pb2.Word(
+        bbox=bbox.as_proto(),
+        text=text
+      )
+    )
+    return Word(proto, reference_map)
 
   @staticmethod
   def from_proto(proto: entity_pb2.Entity, reference_map: Dict[str, Any]) -> 'Word':
@@ -221,7 +232,7 @@ class Page(Entity):
 
   @property
   def bbox(self) -> BBox:
-    return BBox(self._proto.page.bbox, self._reference_map)
+    return BBox(self._proto.page.bbox)
   @bbox.setter
   def bbox(self, new_obj: BBox) -> None:
     self._proto.page.bbox.page_index = new_obj._proto.page_index
@@ -229,7 +240,6 @@ class Page(Entity):
     self._proto.page.bbox.rectangle.ix.b = new_obj._proto.rectangle.ix.b
     self._proto.page.bbox.rectangle.iy.a = new_obj._proto.rectangle.iy.a
     self._proto.page.bbox.rectangle.iy.b = new_obj._proto.rectangle.iy.b
-    self._reference_map.update(new_obj._reference_map)
   @property
   def image_path(self) -> 'str':
     return self._proto.page.image_path

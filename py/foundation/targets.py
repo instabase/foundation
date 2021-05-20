@@ -11,7 +11,6 @@ from foundation.geometry import BBox
 @dataclass
 class TargetValue:
   _proto: targets_pb2.TargetValue
-  _reference_map: Dict[str, Any]
 
   @property
   def id(self) -> 'str':
@@ -29,7 +28,7 @@ class TargetValue:
     
   @property
   def bbox(self) -> BBox:
-    return BBox(self._proto.bbox, self._reference_map)
+    return BBox(self._proto.bbox)
   @bbox.setter
   def bbox(self, new_obj: BBox) -> None:
     self._proto.bbox.page_index = new_obj._proto.page_index
@@ -37,7 +36,6 @@ class TargetValue:
     self._proto.bbox.rectangle.ix.b = new_obj._proto.rectangle.ix.b
     self._proto.bbox.rectangle.iy.a = new_obj._proto.rectangle.iy.a
     self._proto.bbox.rectangle.iy.b = new_obj._proto.rectangle.iy.b
-    self._reference_map.update(new_obj._reference_map)
   @property
   def value(self) -> 'str':
     return self._proto.value
@@ -53,8 +51,8 @@ class TargetValue:
     return self._proto
 
   @staticmethod
-  def from_proto(proto: targets_pb2.TargetValue, reference_map: Dict[str, Any]) -> 'TargetValue':
-    return TargetValue(proto, reference_map)
+  def from_proto(proto: targets_pb2.TargetValue, reference_map: Dict[str, Any] = None) -> 'TargetValue':
+    return TargetValue(proto)
 
 
 
