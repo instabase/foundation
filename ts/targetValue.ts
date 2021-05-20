@@ -33,7 +33,7 @@ export const NotPresent: t = {
   geometry_validated: true,
 };
 
-function build(words: TargetWord.t[]): t {
+export function build(words: TargetWord.t[]): t {
   if (isNonemptyArray(words)) {
     words.sort(
       (w1: TargetWord.t, w2: TargetWord.t) =>
