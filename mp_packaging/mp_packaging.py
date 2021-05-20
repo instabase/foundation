@@ -22,7 +22,7 @@ def sanitize_for_path(s: str) -> str:
 
 TIMESTAMP = sanitize_for_path(str(datetime.datetime.now()))
 
-FOUNDATION_VERSION = '0.0.11'
+FOUNDATION_VERSION = '0.0.12'
 
 # Configure paths
 # ===============
