@@ -80,8 +80,14 @@ export function fieldValuePairs(
 export function merged(existing: t, provided: t): t {
   return {
     doc_targets: DocTargets.merged(existing.doc_targets, provided.doc_targets),
-    schema: Schema.merged(existing.schema, provided.schema),
-    doc_tags: mergedDocTags(existing.doc_tags, provided.doc_tags),
+    schema:
+      provided.schema
+        ? Schema.merged(existing.schema, provided.schema)
+        : existing.schema,
+    doc_tags:
+      provided.doc_tags
+        ? mergedDocTags(existing.doc_tags, provided.doc_tags)
+        : existing.doc_tags,
   };
 }
 
