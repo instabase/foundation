@@ -78,7 +78,7 @@ export function fieldValuePairs(
 }
 
 export function merged(existing: t, provided: t): t {
-  return {
+  return populateSchema({
     doc_targets: DocTargets.merged(existing.doc_targets, provided.doc_targets),
     schema:
       provided.schema
@@ -88,7 +88,7 @@ export function merged(existing: t, provided: t): t {
       provided.doc_tags
         ? mergedDocTags(existing.doc_tags, provided.doc_tags)
         : existing.doc_tags,
-  };
+  });
 }
 
 export function populateSchema(targets: t): t {
