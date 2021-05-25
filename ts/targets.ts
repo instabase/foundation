@@ -30,6 +30,18 @@ export function build(): t {
   };
 }
 
+export function tagsPresentInSomeDoc(targets: t): string[] {
+  const result: string[] = [];
+  for (let docTargets of targets.doc_targets) {
+    for (let tag of docTargets.doc_tags) {
+      if (!result.includes(tag)) {
+        result.push(tag);
+      }
+    }
+  }
+  return result;
+}
+
 export const docNames = memo(
   function(targets: t): string[] {
     return targets.doc_targets.map(
